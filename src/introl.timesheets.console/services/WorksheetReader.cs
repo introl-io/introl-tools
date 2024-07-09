@@ -3,7 +3,7 @@ using Introl.Timesheets.Console.models;
 
 namespace Introl.Timesheets.Console.services;
 
-public class WorksheetReader : IWorksheetReader
+public class WorksheetReader(ICellFinder cellFinder) : IWorksheetReader
 {
     public InputSheetModel Process(XLWorkbook workbook)
     {
@@ -23,7 +23,7 @@ public class WorksheetReader : IWorksheetReader
 
     private int GetFirstEmployeeRow(IXLWorksheet worksheet)
     {
-        var colA = worksheet.Column("A")!;
+        var colA = worksheet.Column(1)!;
         var cells = colA.CellsUsed(c => c.GetString().ToUpper() == "NAME");
         return cells.ToList().First().Address.RowNumber + 1;
     }
@@ -38,10 +38,8 @@ public class WorksheetReader : IWorksheetReader
 
     private int RatesColumn(IXLWorksheet worksheet)
     {
-        var mondayCell = worksheet.CellsUsed(c => c.GetString().ToUpper() == "RATES");
-        ArgumentNullException.ThrowIfNull(mondayCell);
-
-        return mondayCell.First().Address.ColumnNumber;
+        var cell = cellFinder.FindSingleCellByValue(worksheet, "RATES");
+        return cell.Address.ColumnNumber;
     }
 
     private IEnumerable<Employee> GetEmployees(IXLWorksheet worksheet)
