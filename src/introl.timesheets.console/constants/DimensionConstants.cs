@@ -6,5 +6,5 @@ public static class DimensionConstants
     public static int ImageWightAndHeightInPixels => 200;
     public static int ImageWidthInCharacters => 23;
     public static int ImageHeightInPoints => 150;
-    public static int ZoomLevel => 350;
+    public static int ZoomLevel => 140;
 }
