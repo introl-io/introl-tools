@@ -6,9 +6,9 @@ using Xunit;
 
 namespace Introl.Timesheets.Console.Tests.Unit.services;
 
-public class WorksheetHelperTests
+public class WorksheetReaderHelperTests
 {
-    private WorksheetHelper sut = new();
+    private WorksheetReaderHelper sut = new();
 
     [Fact]
     public void FindSingleCellByValue_WhenValueIsFound_ReturnsCell()

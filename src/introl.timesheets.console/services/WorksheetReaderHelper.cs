@@ -3,7 +3,7 @@ using Introl.Timesheets.Console.models;
 
 namespace Introl.Timesheets.Console.services;
 
-public class WorksheetHelper : IWorksheetHelper
+public class WorksheetReaderHelper : IWorksheetHelper
 {
     public IXLCell FindSingleCellByValue(IXLWorksheet worksheet, string value)
     {
