@@ -6,14 +6,11 @@ namespace Introl.Timesheets.Api.services;
 
 public class WorksheetWriter(IWorksheetWriterHelper worksheetWriterHelper) : IWorksheetWriter
 {
-    public void Process(InputSheetModel inputSheetModel, string outputFileName)
+    public void Process(InputSheetModel inputSheetModel, XLWorkbook workbook)
     {
-        using var workbook = new XLWorkbook();
-
         CreateSummarySheet(workbook, inputSheetModel);
         
         workbook.AddWorksheet(inputSheetModel.RawTimesheetsWorksheet);
-        workbook.SaveAs($"./output/{outputFileName}.xlsx");
     }
 
     private void CreateSummarySheet(XLWorkbook workbook, InputSheetModel inputSheetModel)
@@ -43,5 +40,5 @@ public class WorksheetWriter(IWorksheetWriterHelper worksheetWriterHelper) : IWo
 
 public interface IWorksheetWriter
 {
-    void Process(InputSheetModel inputSheetModel, string outputFileName);
+    void Process(InputSheetModel inputSheetModel, XLWorkbook workbook);
 }
