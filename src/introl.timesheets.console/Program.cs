@@ -11,4 +11,4 @@ var writerHelper = new WorksheetWriterHelper();
 var sheetReader = new WorksheetReader(readerHelper);
 var sheetWriter = new WorksheetWriter(writerHelper);
 var inputModel = sheetReader.Process(workbook);
-sheetWriter.Process(inputModel);
+sheetWriter.Process(inputModel, "july");
