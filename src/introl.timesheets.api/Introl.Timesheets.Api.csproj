@@ -26,4 +26,8 @@
     <_ContentIncludedByDefault Remove="publish\Introl.Timesheets.Api.runtimeconfig.json" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Introl.Timesheets.Api.Tests.Acceptance" />
+  </ItemGroup>
 </Project>

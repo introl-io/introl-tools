@@ -69,8 +69,8 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
     {
         var regularHourRateStr = worksheet.Cell(employeeRow + 1, ratesColumn).GetString();
         var overtimeRateStr = worksheet.Cell(employeeRow + 2, ratesColumn).GetString();
-        var regularHoursRate = !string.IsNullOrEmpty(regularHourRateStr) ? decimal.Parse(regularHourRateStr) : 0;
-        var overtimeRate = !string.IsNullOrEmpty(overtimeRateStr) ? decimal.Parse(overtimeRateStr) : 0;
+        var regularHoursRate = decimal.TryParse(regularHourRateStr, out var parsedRegHrResult) ? parsedRegHrResult : 0;
+        var overtimeRate = decimal.TryParse(overtimeRateStr, out var parsedOtHrResult) ? parsedOtHrResult : 0;
 
         return (regularHoursRate, overtimeRate);
     }

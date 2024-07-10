@@ -12,9 +12,8 @@ public class TimesheetController(
     IWorksheetWriter worksheetWriter) : Controller
 {
     [HttpPost("process")]
-    public IActionResult ProcessTimeSheet(IFormFile model)
+    public IActionResult Process(IFormFile model)
     {
-        using var x = model.OpenReadStream();
         var workbook = new XLWorkbook(model.OpenReadStream());
         
         var inputSheetModel = worksheetReader.Process(workbook);
