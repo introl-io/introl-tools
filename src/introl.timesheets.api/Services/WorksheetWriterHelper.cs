@@ -30,7 +30,7 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
 
     public void AddTitleRows(IXLWorksheet worksheet, InputSheetModel inputSheetModel)
     {
-        var pic = worksheet.AddPicture("./assets/introl_logo.png")
+        var pic = worksheet.AddPicture("./Assets/introl_logo.png")
             .MoveTo(1, 1);
         pic.Width = DimensionConstants.ImageWightAndHeightInPixels;
         pic.Height = DimensionConstants.ImageWightAndHeightInPixels;
