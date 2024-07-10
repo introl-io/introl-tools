@@ -12,7 +12,7 @@ builder.Services.AddScoped<IWorksheetReader, WorksheetReader>();
 builder.Services.AddScoped<IWorksheetReaderHelper, WorksheetReaderReaderHelper>();
 builder.Services.AddScoped<IWorksheetWriterHelper, WorksheetWriterHelper>();
 builder.Services.AddScoped<IWorksheetWriter, WorksheetWriter>();
-
+builder.Services.AddLogging();
 var app = builder.Build();
 
 
