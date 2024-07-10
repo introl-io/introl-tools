@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Introl.Timesheets.Console\Introl.Timesheets.Console.csproj" />
+      <ProjectReference Include="..\..\src\introl.timesheets.console\Introl.Timesheets.Console.csproj" />
     </ItemGroup>
 
 </Project>
