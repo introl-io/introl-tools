@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4A0ED77E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Introl.Timesheets.Console.Tests.Unit", "tests\introl.timesheets.console.tests.unit\Introl.Timesheets.Console.Tests.Unit.csproj", "{428E7E14-88A8-4371-A338-58402132A025}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Introl.Timesheets.Api", "src\Introl.Timesheets.Api\Introl.Timesheets.Api.csproj", "{91055A9D-A661-4BA4-9149-B4F95C4F77FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Introl.Timesheets.Api", "src\introl.timesheets.api\Introl.Timesheets.Api.csproj", "{3BF0AD5E-B599-4EEF-9C99-4D4117F43979}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +24,14 @@ Global
 		{428E7E14-88A8-4371-A338-58402132A025}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{428E7E14-88A8-4371-A338-58402132A025}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{428E7E14-88A8-4371-A338-58402132A025}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91055A9D-A661-4BA4-9149-B4F95C4F77FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91055A9D-A661-4BA4-9149-B4F95C4F77FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91055A9D-A661-4BA4-9149-B4F95C4F77FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91055A9D-A661-4BA4-9149-B4F95C4F77FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BF0AD5E-B599-4EEF-9C99-4D4117F43979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BF0AD5E-B599-4EEF-9C99-4D4117F43979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BF0AD5E-B599-4EEF-9C99-4D4117F43979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BF0AD5E-B599-4EEF-9C99-4D4117F43979}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B9D39EF8-5310-4D35-AE81-B944D3D50C4F} = {C0AB299E-A286-4E39-9D14-A46B010488F9}
 		{428E7E14-88A8-4371-A338-58402132A025} = {4A0ED77E-DDFA-4914-B671-1BB806B69CD6}
-		{91055A9D-A661-4BA4-9149-B4F95C4F77FD} = {C0AB299E-A286-4E39-9D14-A46B010488F9}
+		{3BF0AD5E-B599-4EEF-9C99-4D4117F43979} = {C0AB299E-A286-4E39-9D14-A46B010488F9}
 	EndGlobalSection
 EndGlobal
