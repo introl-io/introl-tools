@@ -1,6 +1,6 @@
 using ClosedXML.Excel;
 
-namespace Introl.Timesheets.Api.constants;
+namespace Introl.Timesheets.Api.Constants;
 
 public static class StyleConstants
 {

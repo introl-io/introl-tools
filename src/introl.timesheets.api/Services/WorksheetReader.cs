@@ -1,7 +1,7 @@
 using ClosedXML.Excel;
 using Introl.Timesheets.Api.models;
 
-namespace Introl.Timesheets.Api.services;
+namespace Introl.Timesheets.Api.Services;
 
 public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWorksheetReader
 {

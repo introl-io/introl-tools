@@ -1,8 +1,8 @@
 using ClosedXML.Excel;
-using Introl.Timesheets.Api.constants;
+using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.models;
 
-namespace Introl.Timesheets.Api.services;
+namespace Introl.Timesheets.Api.Services;
 
 public class WorksheetWriterHelper : IWorksheetWriterHelper
 {

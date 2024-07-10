@@ -1,9 +1,9 @@
 using ClosedXML.Excel;
 using Introl.Timesheets.Api.models;
 
-namespace Introl.Timesheets.Api.services;
+namespace Introl.Timesheets.Api.Services;
 
-public class WorksheetReaderReaderHelper : IWorksheetReaderHelper
+public class WorksheetReaderHelper : IWorksheetReaderHelper
 {
     public IXLCell FindSingleCellByValue(IXLWorksheet worksheet, string value)
     {

@@ -1,10 +1,10 @@
 using ClosedXML.Excel;
 using FluentAssertions;
-using Introl.Timesheets.Console.models;
-using Introl.Timesheets.Console.services;
+using Introl.Timesheets.Api.models;
 using Xunit;
+using Introl.Timesheets.Api.Services;
 
-namespace Introl.Timesheets.Console.Tests.Unit.services;
+namespace Introl.Timesheets.Api.Tests.Unit.services;
 
 public class WorksheetReaderHelperTests
 {
