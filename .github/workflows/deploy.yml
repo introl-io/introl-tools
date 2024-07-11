@@ -60,6 +60,4 @@ jobs:
           app-name: 'introltimesheeets'
           slot-name: 'Production'
           package: .
-        env:
-          Danny: Test
           
