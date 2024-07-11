@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using Introl.Timesheets.Api.Authorization;
-using Introl.Timesheets.Api.Constants;
+﻿using Introl.Timesheets.Api.Authorization;
 using Introl.Timesheets.Api.Services;
 using Microsoft.OpenApi.Models;
 
@@ -34,6 +32,7 @@ builder.Services.AddScoped<IWorksheetReader, WorksheetReader>();
 builder.Services.AddScoped<IWorksheetReaderHelper, WorksheetReaderHelper>();
 builder.Services.AddScoped<IWorksheetWriterHelper, WorksheetWriterHelper>();
 builder.Services.AddScoped<IWorksheetWriter, WorksheetWriter>();
+builder.Services.AddScoped<ITimesheetProcessor, TimesheetProcessor>();
 builder.Services.AddScoped<ApiKeyMiddleware>();
 builder.Services.AddLogging();
 
