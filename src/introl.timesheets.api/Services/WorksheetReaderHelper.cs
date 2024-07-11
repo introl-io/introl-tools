@@ -56,8 +56,12 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
     
     public WorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn)
     {
-        var regularHours = worksheet.Cell(employeeRow + 1, dayColumn).GetString();
-        var overtimeHours = worksheet.Cell(employeeRow + 2, dayColumn).GetString();
+        
+        var (hasDoneRegularHours, hasDoneOvertimeHours) = GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
+        var overtimeIncrement = hasDoneRegularHours ? 2 : 1;
+        
+        var regularHours = hasDoneRegularHours ? worksheet.Cell(employeeRow + 1, dayColumn).GetString() : "";
+        var overtimeHours = hasDoneOvertimeHours ? worksheet.Cell(employeeRow + overtimeIncrement, dayColumn).GetString() : "";
         return new WorkDayHours
         {
             RegularHours = ConvertToRoundedHours(regularHours),
@@ -67,12 +71,25 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
 
     public (decimal regularHoursRate, decimal overtimeRate) GetEmployeeRates(IXLWorksheet worksheet, int employeeRow, int ratesColumn)
     {
-        var regularHourRateStr = worksheet.Cell(employeeRow + 1, ratesColumn).GetString();
-        var overtimeRateStr = worksheet.Cell(employeeRow + 2, ratesColumn).GetString();
+        var (hasDoneRegularHours, hasDoneOvertimeHours) = GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
+        var overtimeIncrement = hasDoneRegularHours ? 2 : 1;
+        
+        var regularHourRateStr = hasDoneRegularHours ?worksheet.Cell(employeeRow + 1, ratesColumn).GetString() : "";
+        var overtimeRateStr = hasDoneOvertimeHours ? worksheet.Cell(employeeRow + overtimeIncrement, ratesColumn).GetString() : "";
+        
         var regularHoursRate = decimal.TryParse(regularHourRateStr, out var parsedRegHrResult) ? parsedRegHrResult : 0;
         var overtimeRate = decimal.TryParse(overtimeRateStr, out var parsedOtHrResult) ? parsedOtHrResult : 0;
 
         return (regularHoursRate, overtimeRate);
+    }
+    
+    public (bool hasRegularHours, bool hasOTHours) GetTypesOfHoursEmployeeHasDone(IXLWorksheet worksheet, int employeeRow)
+    {
+        var hourTypeCell = FindSingleCellByValue(worksheet, "type");
+        var hasRegularHours = worksheet.Cell(employeeRow + 1, hourTypeCell.Address.ColumnNumber).GetString().ToUpper() == "REGULAR HOURS";
+        var incrementForOt = hasRegularHours ? 2 : 1;
+        var overtimeHours = worksheet.Cell(employeeRow + incrementForOt, hourTypeCell.Address.ColumnNumber).GetString().ToUpper() == "WEEKLY OT";
+        return (hasRegularHours, overtimeHours);
     }
 
     private double ConvertToRoundedHours(string inputHours)
@@ -107,4 +124,6 @@ public interface IWorksheetReaderHelper
     (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet);
     WorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn);
     (decimal regularHoursRate, decimal overtimeRate) GetEmployeeRates(IXLWorksheet worksheet, int employeeRow, int ratesColumn);
+
+    (bool hasRegularHours, bool hasOTHours) GetTypesOfHoursEmployeeHasDone(IXLWorksheet worksheet, int employeeRow);
 }

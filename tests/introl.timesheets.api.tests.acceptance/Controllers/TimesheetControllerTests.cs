@@ -24,7 +24,6 @@ public class TimesheetControllerTests
     [Fact]
     public async Task ProcessTimesheet_GivenKnownInput_GivesKnownOutput()
     {
-        var fileName = "timesheet_input.xslx";
         await using var inputFileStream = File.Open("./Resources/timesheet_input.xlsx", FileMode.Open);
 
         var response = await _httpClient.PostAsync("/api/timesheet/process",
@@ -32,8 +31,8 @@ public class TimesheetControllerTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var contentDisposition = response.Content.Headers.ContentDisposition;
-        Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.Content.Headers.ContentType.MediaType);
-        Assert.Equal("timesheet_input.xlsx_processed.xlsx", contentDisposition.FileName);
+        Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal("timesheet_input.xlsx_processed.xlsx", contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
         await using var expectedFileStream = File.Open("./Resources/expected_output.xlsx", FileMode.Open);
@@ -41,7 +40,6 @@ public class TimesheetControllerTests
         var responseWorkbook = new XLWorkbook(responseStream);
 
         CompareWorkbooks(responseWorkbook, expectedWorkbook);
-        // Assert.Equal(expectedOutputFileName, file.FileDownloadName);
     }
 
     private void CompareWorkbooks(XLWorkbook actual, XLWorkbook expected)
