@@ -5,7 +5,10 @@ on:
     branches:
       - main
   workflow_dispatch:
-
+    
+concurrency:
+  group: deploy
+  
 jobs:
   build:
     runs-on: ubuntu-latest
