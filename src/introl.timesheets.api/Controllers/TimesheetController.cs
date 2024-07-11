@@ -1,5 +1,4 @@
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Introl.Timesheets.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,6 +1,6 @@
 using ClosedXML.Excel;
 
-namespace Introl.Timesheets.Api.models;
+namespace Introl.Timesheets.Api.Models;
 
 public class InputSheetModel
 {

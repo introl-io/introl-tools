@@ -1,4 +1,4 @@
-namespace Introl.Timesheets.Api.models;
+namespace Introl.Timesheets.Api.Models;
 
 public enum DayOfTheWeek
 {

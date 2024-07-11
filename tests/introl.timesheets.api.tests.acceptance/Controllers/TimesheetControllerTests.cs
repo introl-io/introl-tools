@@ -1,24 +1,21 @@
 using System.Net;
-using System.Net.Mime;
 using ClosedXML.Excel;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Introl.Timesheets.Api;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
+using Introl.Timesheets.Api.Authorization;
+using Introl.Timesheets.Api.Constants;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Acceptance.Controllers;
 
 public class TimesheetControllerTests
 {
-    private readonly WebApplicationFactory<Program> _webHost = new();
+    private readonly AcceptanceTestsWebHost _webHost = new();
     private HttpClient _httpClient;
 
     public TimesheetControllerTests()
     {
         _httpClient = _webHost.CreateClient();
+        _httpClient.DefaultRequestHeaders.Add(AuthorizationConstants.ApiKeyHeader, AcceptanceTestConstants.ApiKey);
     }
 
     [Fact]
