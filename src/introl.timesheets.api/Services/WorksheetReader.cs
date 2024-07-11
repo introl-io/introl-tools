@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
@@ -64,21 +65,19 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
         {
             numRowsUsedByEmployee += 1;
         }
+
+        var workDays = new Dictionary<DayOfTheWeek, WorkDayHours>();
+        foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
+        {
+            workDays.Add(day, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[day]));
+        }
+
         return new Employee
         {
             Name = name,
             RegularHoursRate = regularHoursRate,
             OvertimeHoursRate = overtimeHoursRate,
-            WorkDays = new Dictionary<DayOfTheWeek, WorkDayHours>
-            {
-                { DayOfTheWeek.Monday, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[DayOfTheWeek.Monday]) },
-                { DayOfTheWeek.Tuesday, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[DayOfTheWeek.Tuesday]) },
-                { DayOfTheWeek.Wednesday, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[DayOfTheWeek.Wednesday]) },
-                { DayOfTheWeek.Thursday, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[DayOfTheWeek.Thursday]) },
-                { DayOfTheWeek.Friday, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[DayOfTheWeek.Friday]) },
-                { DayOfTheWeek.Saturday, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[DayOfTheWeek.Saturday]) },
-                { DayOfTheWeek.Sunday, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[DayOfTheWeek.Sunday]) }
-            }
+            WorkDays = workDays
         };
     }
 }

@@ -1,5 +1,7 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Constants;
+using Introl.Timesheets.Api.Enums;
+using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
@@ -76,33 +78,12 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
     private void AddDayRow(IXLWorksheet worksheet)
     {
         worksheet.Row(DayRow).Style.Font.Bold = true;
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday]).Style.Fill.BackgroundColor =
-            StyleConstants.LightGrey;
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday]).Value = "MON";
-
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Tuesday]).Style.Fill.BackgroundColor =
-            StyleConstants.LightGrey;
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Tuesday]).Value = "TUE";
-
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Wednesday]).Style.Fill.BackgroundColor =
-            StyleConstants.LightGrey;
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Wednesday]).Value = "WED";
-
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Thursday]).Style.Fill.BackgroundColor =
-            StyleConstants.LightGrey;
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Thursday]).Value = "THU";
-
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Friday]).Style.Fill.BackgroundColor =
-            StyleConstants.LightGrey;
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Friday]).Value = "FRI";
-
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Saturday]).Style.Fill.BackgroundColor =
-            StyleConstants.LightGrey;
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Saturday]).Value = "SAT";
-
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday]).Style.Fill.BackgroundColor =
-            StyleConstants.LightGrey;
-        worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday]).Value = "SUN";
+        foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
+        {
+            worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[day]).Style.Fill.BackgroundColor =
+                StyleConstants.LightGrey;
+            worksheet.Cell(DayRow, DayOfTheWeekColumnDictionary[day]).Value = day.StringValue().ToUpper();
+        }
     }
 
     private void AddWeekRow(IXLWorksheet worksheet, InputSheetModel inputSheetModel)
