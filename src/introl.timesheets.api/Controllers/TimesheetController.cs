@@ -14,14 +14,24 @@ public class TimesheetController(
     [HttpPost("process")]
     public IActionResult Process(IFormFile model)
     {
+        var extension = Path.GetExtension(model.FileName);
+        if(extension != ".xlsx")
+        {
+            return BadRequest($"Unsupported file type: {extension}");
+        }
         var workbook = new XLWorkbook(model.OpenReadStream());
         
         var inputSheetModel = worksheetReader.Process(workbook);
         using var output = new XLWorkbook();
         worksheetWriter.Process(inputSheetModel, output);
-        
+
+        var dateFormat = "yyyy.MM.dd";
+        var fileName =
+            $"Weekly Timesheet - Introl.io {inputSheetModel.StartDate.ToString(dateFormat)} - {inputSheetModel.EndDate.ToString(dateFormat)}.xlsx";
         using var stream = new MemoryStream();
         output.SaveAs(stream);
-        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{model.FileName}_processed.xlsx");
+        
+        
+        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 }
