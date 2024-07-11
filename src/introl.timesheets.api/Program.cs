@@ -1,3 +1,4 @@
+using System.Collections;
 using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Middleware;
 using Introl.Timesheets.Api.Services;
@@ -38,6 +39,15 @@ builder.Services.AddLogging();
 
 var app = builder.Build();
 
+app.Use(async (ctx, next) =>
+{
+    var x = Environment.GetEnvironmentVariables();
+    foreach (DictionaryEntry de in x)
+    {
+        Console.WriteLine(" Env var: {0} = {1}", de.Key, de.Value);
+    }
+    await next(ctx);
+});
 app.UseMiddleware<ApiKeyMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI();
