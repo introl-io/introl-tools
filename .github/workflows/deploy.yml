@@ -58,7 +58,7 @@ jobs:
         with:
           app-name: 'introltimesheeets'
           slot-name: 'Production'
-          app-settings-json: '{ "Danny2": "test" }'
+          app-settings-json: '{ "Dannyyy": "test" }'
       
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
