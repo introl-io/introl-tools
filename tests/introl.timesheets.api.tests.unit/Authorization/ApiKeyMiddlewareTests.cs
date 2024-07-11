@@ -1,4 +1,4 @@
-using Introl.Timesheets.Api.Authorization;
+﻿using Introl.Timesheets.Api.Authorization;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
@@ -7,14 +7,14 @@ namespace Introl.Timesheets.Api.Tests.Unit.Authorization;
 public class ApiKeyMiddlewareTests
 {
     private const string ApiKey = "test-api-key";
-    
+
     private readonly ApiKeyMiddleware _sut = new();
 
     public ApiKeyMiddlewareTests()
     {
         Environment.SetEnvironmentVariable(AuthorizationConstants.ApiKeyEnvVariable, ApiKey);
     }
-    
+
     [Theory]
     [InlineData("/swagger", "not-api-key", true)]
     [InlineData("/swagger/index.html", null, true)]

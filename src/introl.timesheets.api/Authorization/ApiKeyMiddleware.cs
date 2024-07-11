@@ -1,4 +1,4 @@
-namespace Introl.Timesheets.Api.Authorization;
+﻿namespace Introl.Timesheets.Api.Authorization;
 
 public class ApiKeyMiddleware : IMiddleware
 {
