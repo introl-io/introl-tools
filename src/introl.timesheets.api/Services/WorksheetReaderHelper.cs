@@ -1,4 +1,4 @@
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
@@ -8,12 +8,12 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
     public IXLCell FindSingleCellByValue(IXLWorksheet worksheet, string value)
     {
         var matchingCells = worksheet.CellsUsed(c => c.GetString().ToUpper() == value.ToUpper());
-        if(!matchingCells.Any())
+        if (!matchingCells.Any())
         {
             throw new ArgumentNullException($"No cell found with the value {value}");
         }
-        
-        if(matchingCells.Count() > 1)
+
+        if (matchingCells.Count() > 1)
         {
             throw new InvalidOperationException($"Multiple cells found with the value {value}");
         }
@@ -47,19 +47,19 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
         var weekCell = FindSingleCellByValue(worksheet, "week");
         var dateString = weekCell.CellRight().GetString();
         var splitDates = dateString.Split(" - ");
-        
+
         var startDate = DateOnly.Parse(splitDates[0]);
         var endDate = DateOnly.Parse(splitDates[1]);
 
         return (startDate, endDate);
     }
-    
+
     public WorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn)
     {
-        
+
         var (hasDoneRegularHours, hasDoneOvertimeHours) = GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
         var overtimeIncrement = hasDoneRegularHours ? 2 : 1;
-        
+
         var regularHours = hasDoneRegularHours ? worksheet.Cell(employeeRow + 1, dayColumn).GetString() : "";
         var overtimeHours = hasDoneOvertimeHours ? worksheet.Cell(employeeRow + overtimeIncrement, dayColumn).GetString() : "";
         return new WorkDayHours
@@ -73,16 +73,16 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
     {
         var (hasDoneRegularHours, hasDoneOvertimeHours) = GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
         var overtimeIncrement = hasDoneRegularHours ? 2 : 1;
-        
-        var regularHourRateStr = hasDoneRegularHours ?worksheet.Cell(employeeRow + 1, ratesColumn).GetString() : "";
+
+        var regularHourRateStr = hasDoneRegularHours ? worksheet.Cell(employeeRow + 1, ratesColumn).GetString() : "";
         var overtimeRateStr = hasDoneOvertimeHours ? worksheet.Cell(employeeRow + overtimeIncrement, ratesColumn).GetString() : "";
-        
+
         var regularHoursRate = decimal.TryParse(regularHourRateStr, out var parsedRegHrResult) ? parsedRegHrResult : 0;
         var overtimeRate = decimal.TryParse(overtimeRateStr, out var parsedOtHrResult) ? parsedOtHrResult : 0;
 
         return (regularHoursRate, overtimeRate);
     }
-    
+
     public (bool hasRegularHours, bool hasOTHours) GetTypesOfHoursEmployeeHasDone(IXLWorksheet worksheet, int employeeRow)
     {
         var hourTypeCell = FindSingleCellByValue(worksheet, "type");
@@ -96,7 +96,7 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
     {
         if (!inputHours.Contains(":"))
         {
-            if(double.TryParse(inputHours, out var parsedHours))
+            if (double.TryParse(inputHours, out var parsedHours))
             {
                 return parsedHours;
             }

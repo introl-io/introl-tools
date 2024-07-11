@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Authorization;
@@ -48,7 +48,7 @@ public class TimesheetControllerTests
         var request =
             new MultipartFormDataContent { { new StringContent(""), "model", "timesheet_input.pdf" } };
         var response = await _httpClient.PostAsync("/api/timesheet/process", request);
-        
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal($"Unsupported file type: .pdf", await response.Content.ReadAsStringAsync());
     }

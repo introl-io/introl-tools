@@ -1,8 +1,8 @@
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Models;
-using Xunit;
 using Introl.Timesheets.Api.Services;
+using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Unit.services;
 
@@ -26,7 +26,7 @@ public class WorksheetReaderHelperTests
         Assert.Equal("C", cell.Address.ColumnLetter);
         Assert.Equal(3, cell.Address.RowNumber);
     }
-    
+
     [Fact]
     public void FindSingleCellByValue_WhenValueIsNotFound_ThrowsException()
     {
@@ -38,7 +38,7 @@ public class WorksheetReaderHelperTests
         // Act
         Assert.Throws<ArgumentNullException>(() => sut.FindSingleCellByValue(worksheet, "find me"));
     }
-    
+
     [Fact]
     public void FindSingleCellByValue_WhenMultipleCellsFound_ThrowsException()
     {
@@ -50,7 +50,7 @@ public class WorksheetReaderHelperTests
         // Act
         Assert.Throws<InvalidOperationException>(() => sut.FindSingleCellByValue(worksheet, "find me"));
     }
-    
+
     [Fact]
     public void GetDayOfTheWeekDictionary_WhenweekExist_ReturnDictionay()
     {
@@ -80,7 +80,7 @@ public class WorksheetReaderHelperTests
 
         result.Should().BeEquivalentTo(expected);
     }
-    
+
     [Fact]
     public void GetDayOfTheWeekDictionary_MissingDay_ThrowsException()
     {
@@ -92,16 +92,16 @@ public class WorksheetReaderHelperTests
         worksheet.Cell("E1").Value = "fri";
         worksheet.Cell("F1").Value = "sat";
         worksheet.Cell("G1").Value = "sun";
-        
+
         Assert.Throws<ArgumentNullException>(() => sut.GetDayOfTheWeekColumnDictionary(worksheet));
     }
-    
+
     [Fact]
     public void GetStartAndEndDate_MissingWeekCell_ThrowsException()
     {
         // Arrange
         var worksheet = new XLWorkbook().Worksheets.Add("Sheet1");
-        
+
         Assert.Throws<ArgumentNullException>(() => sut.GetStartAndEndDate(worksheet));
     }
 
@@ -115,12 +115,12 @@ public class WorksheetReaderHelperTests
 
         var expectedStartDate = new DateOnly(2024, 7, 1);
         var expectedEndDate = new DateOnly(2024, 7, 7);
-        
+
         var (startDate, endDate) = sut.GetStartAndEndDate(worksheet);
         startDate.Should().Be(expectedStartDate);
         endDate.Should().Be(expectedEndDate);
     }
-    
+
     [Theory]
     [InlineData("12:00", "00:00", 12, 0)]
     [InlineData("12:14", "00:15", 12, 0.5)]
@@ -140,7 +140,7 @@ public class WorksheetReaderHelperTests
         result.RegularHours.Should().Be(expectedRegularHours);
         result.OvertimeHours.Should().Be(expectedOvertimeHours);
     }
-    
+
     [Theory]
     [InlineData("53.32", "12.00", 53.32, 12)]
     [InlineData("", " ", 0, 0)]
