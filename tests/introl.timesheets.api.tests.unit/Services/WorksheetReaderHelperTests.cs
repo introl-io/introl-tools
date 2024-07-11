@@ -130,11 +130,14 @@ public class WorksheetReaderHelperTests
     {
         // Arrange
         var worksheet = new XLWorkbook().Worksheets.Add("Sheet1");
-        worksheet.Cell("A2").Value = regularHours;
-        worksheet.Cell("A3").Value = overtimeHours;
+        worksheet.Cell("A1").Value = "Type";
+        worksheet.Cell("A2").Value = "Regular Hours";
+        worksheet.Cell("A3").Value = "Weekly OT";
+        worksheet.Cell("B2").Value = regularHours;
+        worksheet.Cell("B3").Value = overtimeHours;
 
         // Act
-        var result = sut.GetWorkdayHoursForEmployeeAndDay(worksheet, 1, 1);
+        var result = sut.GetWorkdayHoursForEmployeeAndDay(worksheet, 1, 2);
 
         // Assert
         result.RegularHours.Should().Be(expectedRegularHours);
@@ -148,11 +151,14 @@ public class WorksheetReaderHelperTests
     {
         // Arrange
         var worksheet = new XLWorkbook().Worksheets.Add("Sheet1");
-        worksheet.Cell("A2").Value = regularRate;
-        worksheet.Cell("A3").Value = overtimeRate;
+        worksheet.Cell("A1").Value = "Type";
+        worksheet.Cell("A2").Value = "Regular Hours";
+        worksheet.Cell("A3").Value = "Weekly OT";
+        worksheet.Cell("B2").Value = regularRate;
+        worksheet.Cell("B3").Value = overtimeRate;
 
         // Act
-        var result = sut.GetEmployeeRates(worksheet, 1, 1);
+        var result = sut.GetEmployeeRates(worksheet, 1, 2);
 
         // Assert
         result.regularHoursRate.Should().Be(expectedRegularRate);
