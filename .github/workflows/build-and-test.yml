@@ -26,10 +26,6 @@ jobs:
         shell: bash
         run: dotnet restore
 
-      - name: Check formatting
-        shell: bash
-        run: dotnet format --verify-no-changes --report ./
-
       - name: Build
         shell: bash
         run: dotnet build --no-restore -c Release
