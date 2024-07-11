@@ -19,9 +19,14 @@ public class TimesheetController(
         var inputSheetModel = worksheetReader.Process(workbook);
         using var output = new XLWorkbook();
         worksheetWriter.Process(inputSheetModel, output);
-        
+
+        var dateFormat = "yyyy.MM.dd";
+        var fileName =
+            $"Weekly Timesheet - Introl.io {inputSheetModel.StartDate.ToString(dateFormat)} - {inputSheetModel.EndDate.ToString(dateFormat)}.xslx";
         using var stream = new MemoryStream();
         output.SaveAs(stream);
-        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{model.FileName}_processed.xlsx");
+        
+        
+        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 }
