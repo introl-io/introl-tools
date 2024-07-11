@@ -33,23 +33,37 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
         return cell.Address.ColumnNumber;
     }
 
-    private IEnumerable<Employee> GetEmployees(IXLWorksheet worksheet)
+    private IList<Employee> GetEmployees(IXLWorksheet worksheet)
     {
         var employeeRow = GetFirstEmployeeRow(worksheet);
         var dayColDict = worksheetReaderHelper.GetDayOfTheWeekColumnDictionary(worksheet);
         var ratesCol = RatesColumn(worksheet);
+        var employees = new List<Employee>();
         do
         {
-            yield return GetEmployee(worksheet, employeeRow, dayColDict, ratesCol);
-            employeeRow += 3;
+            employees.Add(GetEmployee(worksheet, employeeRow, dayColDict, ratesCol, out var numRowsUsedByEmployee));
+            employeeRow += numRowsUsedByEmployee;
         } while (!string.IsNullOrEmpty(worksheet.Cell(employeeRow, 1).GetString()));
+
+        return employees;
     }
     
-    private Employee GetEmployee(IXLWorksheet worksheet, int employeeRow, IDictionary<DayOfTheWeek, int> dayDictionary, int ratesCol)
+    private Employee GetEmployee(IXLWorksheet worksheet, int employeeRow, IDictionary<DayOfTheWeek, int> dayDictionary, int ratesCol, out int numRowsUsedByEmployee)
     {
         var name = worksheet.Cell(employeeRow, 1).GetString();
+        
+        var (hasDoneRegularHours, hasDoneOvertimeHours) = worksheetReaderHelper.GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
         var (regularHoursRate, overtimeHoursRate) = worksheetReaderHelper.GetEmployeeRates(worksheet, employeeRow, ratesCol);
         
+        numRowsUsedByEmployee = 1;
+        if (hasDoneRegularHours && hasDoneOvertimeHours)
+        {
+            numRowsUsedByEmployee += 2;
+        }
+        else if (hasDoneRegularHours || hasDoneOvertimeHours)
+        {
+            numRowsUsedByEmployee += 1;
+        }
         return new Employee
         {
             Name = name,

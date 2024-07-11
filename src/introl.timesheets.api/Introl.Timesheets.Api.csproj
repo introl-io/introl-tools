@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,4 +27,8 @@
     <_ContentIncludedByDefault Remove="publish\Introl.Timesheets.Api.runtimeconfig.json" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Introl.Timesheets.Api.Tests.Acceptance" />
+  </ItemGroup>
 </Project>

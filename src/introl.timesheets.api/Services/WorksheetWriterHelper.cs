@@ -111,7 +111,6 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
         var formattedDate =
             $"{inputSheetModel.StartDate.ToString(weekRangedateFormat)} - {inputSheetModel.EndDate.ToString(weekRangedateFormat)}";
         worksheet.Row(WeekRow).Style.Font.Bold = true;
-        worksheet.Cell(WeekRow, 1).Value = $"Week #{inputSheetModel.WeekNumber}";
         worksheet.Cell(WeekRow, 2).Value = formattedDate;
     }
 
