@@ -61,8 +61,8 @@ jobs:
           app-settings-json: |
             [
               {
-                "name": "Dannyyyy",
-                "value": "test",
+                "name": "API_KEY",
+                "value": "${{ secrets.API_KEY }}",
                 "slotSetting": false
               }
             ]
