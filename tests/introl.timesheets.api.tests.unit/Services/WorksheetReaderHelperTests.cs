@@ -1,7 +1,6 @@
 ﻿using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Models;
 using Introl.Timesheets.Api.Services;
 using Xunit;
 

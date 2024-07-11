@@ -1,9 +1,6 @@
-﻿using ClosedXML.Excel;
-using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Models;
+﻿using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Services;
 using Microsoft.AspNetCore.Mvc;
-using OneOf;
 
 namespace Introl.Timesheets.Api.Controllers;
 

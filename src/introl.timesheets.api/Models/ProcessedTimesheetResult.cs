@@ -1,6 +1,4 @@
-﻿using ClosedXML.Excel;
-
-namespace Introl.Timesheets.Api.Models;
+﻿namespace Introl.Timesheets.Api.Models;
 
 public class ProcessedTimesheetResult
 {

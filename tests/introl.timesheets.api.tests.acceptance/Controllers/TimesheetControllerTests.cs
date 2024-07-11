@@ -2,7 +2,6 @@
 using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Authorization;
-using Introl.Timesheets.Api.Constants;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Acceptance.Controllers;
@@ -21,7 +20,7 @@ public class TimesheetControllerTests
     [Fact]
     public async Task Process_GivenKnownInput_GivesKnownOutput()
     {
-        await using var inputFileStream = File.Open("./Resources/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "model", "timesheet_input.xlsx" } };
@@ -35,7 +34,7 @@ public class TimesheetControllerTests
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
-        await using var expectedFileStream = File.Open("./Resources/expected_output.xlsx", FileMode.Open);
+        await using var expectedFileStream = File.Open("./Resources/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
