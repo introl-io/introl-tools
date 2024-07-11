@@ -14,6 +14,11 @@ public class TimesheetController(
     [HttpPost("process")]
     public IActionResult Process(IFormFile model)
     {
+        var extension = Path.GetExtension(model.FileName);
+        if(extension != ".xlsx")
+        {
+            return BadRequest($"Unsupported file type: {extension}");
+        }
         var workbook = new XLWorkbook(model.OpenReadStream());
         
         var inputSheetModel = worksheetReader.Process(workbook);
