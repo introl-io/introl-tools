@@ -1,6 +1,7 @@
 using System.Net;
 using ClosedXML.Excel;
 using FluentAssertions;
+using Introl.Timesheets.Api.Authorization;
 using Introl.Timesheets.Api.Constants;
 using Xunit;
 

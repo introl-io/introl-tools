@@ -1,3 +1,4 @@
+using Introl.Timesheets.Api.Authorization;
 using Introl.Timesheets.Api.Constants;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

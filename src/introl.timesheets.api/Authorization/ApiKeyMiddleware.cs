@@ -1,6 +1,4 @@
-using Introl.Timesheets.Api.Constants;
-
-namespace Introl.Timesheets.Api.Middleware;
+namespace Introl.Timesheets.Api.Authorization;
 
 public class ApiKeyMiddleware : IMiddleware
 {
