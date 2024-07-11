@@ -1,4 +1,6 @@
 ﻿using ClosedXML.Excel;
+using Introl.Timesheets.Api.Enums;
+using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
@@ -22,24 +24,13 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
 
     public IDictionary<DayOfTheWeek, int> GetDayOfTheWeekColumnDictionary(IXLWorksheet worksheet)
     {
-        var monCol = FindSingleCellByValue(worksheet, "mon").Address.ColumnNumber;
-        var tueCol = FindSingleCellByValue(worksheet, "tue").Address.ColumnNumber;
-        var wedCol = FindSingleCellByValue(worksheet, "wed").Address.ColumnNumber;
-        var thuCol = FindSingleCellByValue(worksheet, "thu").Address.ColumnNumber;
-        var friCol = FindSingleCellByValue(worksheet, "fri").Address.ColumnNumber;
-        var satCol = FindSingleCellByValue(worksheet, "sat").Address.ColumnNumber;
-        var sunCol = FindSingleCellByValue(worksheet, "sun").Address.ColumnNumber;
-
-        return new Dictionary<DayOfTheWeek, int>
+        var result = new Dictionary<DayOfTheWeek, int>();
+        foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
         {
-            { DayOfTheWeek.Monday, monCol },
-            { DayOfTheWeek.Tuesday, tueCol },
-            { DayOfTheWeek.Wednesday, wedCol },
-            { DayOfTheWeek.Thursday, thuCol },
-            { DayOfTheWeek.Friday, friCol },
-            { DayOfTheWeek.Saturday, satCol },
-            { DayOfTheWeek.Sunday, sunCol },
-        };
+            result.Add(day, FindSingleCellByValue(worksheet, day.StringValue()).Address.ColumnNumber);
+        }
+
+        return result;
     }
 
     public (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet)

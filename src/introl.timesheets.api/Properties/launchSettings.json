@@ -8,7 +8,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7286;http://localhost:5031",
       "environmentVariables": {
-        "API-KEY": "test",
+        "API_KEY": "test",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
