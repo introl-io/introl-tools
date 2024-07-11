@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using Introl.Timesheets.Api.Authorization;
 using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Services;
@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen(opts =>
 
 
     opts.AddSecurityRequirement(new OpenApiSecurityRequirement { [apiKeyScheme] = new List<string>() });
-    
+
 });
 builder.Services.AddScoped<IWorksheetReader, WorksheetReader>();
 builder.Services.AddScoped<IWorksheetReaderHelper, WorksheetReaderHelper>();

@@ -1,4 +1,4 @@
-namespace Introl.Timesheets.Api.Tests.Acceptance;
+﻿namespace Introl.Timesheets.Api.Tests.Acceptance;
 
 public static class AcceptanceTestConstants
 {

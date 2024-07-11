@@ -1,4 +1,4 @@
-namespace Introl.Timesheets.Api.Constants;
+﻿namespace Introl.Timesheets.Api.Constants;
 
 public static class DimensionConstants
 {

@@ -1,4 +1,4 @@
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
@@ -11,7 +11,7 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
         var rawTimesheetsWorkSheet = workbook.Worksheets.Worksheet("Raw Timesheets");
         ArgumentNullException.ThrowIfNull(teamSummarySheet);
         var (startDate, endDate) = worksheetReaderHelper.GetStartAndEndDate(teamSummarySheet);
-        
+
         return new InputSheetModel
         {
             StartDate = startDate,
@@ -26,7 +26,7 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
         var cell = worksheetReaderHelper.FindSingleCellByValue(worksheet, "name");
         return cell.Address.RowNumber + 1;
     }
-    
+
     private int RatesColumn(IXLWorksheet worksheet)
     {
         var cell = worksheetReaderHelper.FindSingleCellByValue(worksheet, "RATES");
@@ -47,14 +47,14 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
 
         return employees;
     }
-    
+
     private Employee GetEmployee(IXLWorksheet worksheet, int employeeRow, IDictionary<DayOfTheWeek, int> dayDictionary, int ratesCol, out int numRowsUsedByEmployee)
     {
         var name = worksheet.Cell(employeeRow, 1).GetString();
-        
+
         var (hasDoneRegularHours, hasDoneOvertimeHours) = worksheetReaderHelper.GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
         var (regularHoursRate, overtimeHoursRate) = worksheetReaderHelper.GetEmployeeRates(worksheet, employeeRow, ratesCol);
-        
+
         numRowsUsedByEmployee = 1;
         if (hasDoneRegularHours && hasDoneOvertimeHours)
         {
