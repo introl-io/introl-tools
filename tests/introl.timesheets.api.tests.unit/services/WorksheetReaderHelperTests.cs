@@ -1,6 +1,6 @@
 using ClosedXML.Excel;
 using FluentAssertions;
-using Introl.Timesheets.Api.models;
+using Introl.Timesheets.Api.Models;
 using Xunit;
 using Introl.Timesheets.Api.Services;
 

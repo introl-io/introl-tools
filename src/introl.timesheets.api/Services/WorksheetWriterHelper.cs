@@ -1,6 +1,6 @@
 using ClosedXML.Excel;
 using Introl.Timesheets.Api.Constants;
-using Introl.Timesheets.Api.models;
+using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
 
