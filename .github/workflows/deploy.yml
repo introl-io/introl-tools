@@ -53,8 +53,14 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_416EA832A67740ECA241292DA5BF836A }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FFD927686A1C44FFBAAD8CF5023EA9E6 }}
 
+      - name: Set env variables 
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: 'introltimesheeets'
+          slot-name: 'Production'
+          app-settings-json: '{ "Danny2": "test" }'
+      
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'introltimesheeets'
