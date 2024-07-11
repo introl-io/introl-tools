@@ -34,6 +34,7 @@ builder.Services.AddScoped<IWorksheetReader, WorksheetReader>();
 builder.Services.AddScoped<IWorksheetReaderHelper, WorksheetReaderHelper>();
 builder.Services.AddScoped<IWorksheetWriterHelper, WorksheetWriterHelper>();
 builder.Services.AddScoped<IWorksheetWriter, WorksheetWriter>();
+builder.Services.AddScoped<ITimesheetProcessor, TimesheetProcessor>();
 builder.Services.AddScoped<ApiKeyMiddleware>();
 builder.Services.AddLogging();
 
