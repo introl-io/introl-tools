@@ -22,7 +22,7 @@ public class TimesheetController(
 
         var dateFormat = "yyyy.MM.dd";
         var fileName =
-            $"Weekly Timesheet - Introl.io {inputSheetModel.StartDate.ToString(dateFormat)} - {inputSheetModel.EndDate.ToString(dateFormat)}.xslx";
+            $"Weekly Timesheet - Introl.io {inputSheetModel.StartDate.ToString(dateFormat)} - {inputSheetModel.EndDate.ToString(dateFormat)}.xlsx";
         using var stream = new MemoryStream();
         output.SaveAs(stream);
         

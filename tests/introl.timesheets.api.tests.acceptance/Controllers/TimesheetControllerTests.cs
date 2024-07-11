@@ -30,7 +30,7 @@ public class TimesheetControllerTests
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "model", "timesheet_input.xlsx" } });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var expectedFileName = "Weekly Timesheet - Introl.io 2024.07.01 - 2024.07.07.xlsx";
+        var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.08 - 2024.07.14.xlsx\"";
         var contentDisposition = response.Content.Headers.ContentDisposition;
         Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.Content.Headers.ContentType?.MediaType);
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
