@@ -26,10 +26,10 @@ public class TimesheetController(
             },
             failReason =>
             {
-                return failReason switch
+                return failReason.FailureReason switch
                 {
                     TimesheetProcessingFailureReasons.UnsupportedFileType => BadRequest(
-                        "Unsupported file type. Please upload a .xlsx file"),
+                        failReason.Message),
                     _ => throw new Exception("Unhandled fail reason getting results")
                 };
             });

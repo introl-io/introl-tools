@@ -50,7 +50,7 @@ public class TimesheetControllerTests
         var response = await _httpClient.PostAsync("/api/timesheet/process", request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.Equal("Unsupported file type. Please upload a .xlsx file", await response.Content.ReadAsStringAsync());
+        Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
     }
 
     private void CompareWorkbooks(XLWorkbook actual, XLWorkbook expected)
