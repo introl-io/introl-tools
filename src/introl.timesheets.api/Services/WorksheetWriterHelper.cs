@@ -97,6 +97,8 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
 
     public void AddEmployeeRows(IXLWorksheet worksheet, IEnumerable<Employee> employees, ref int employeeRow)
     {
+        var mondayColLetter = GetExcelColumnName(DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday]);
+        var sundayColLetter = GetExcelColumnName(DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday]);
         foreach (var employee in employees)
         {
             worksheet.Row(employeeRow).Style.Font.Bold = true;
@@ -117,13 +119,13 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
                 worksheet.Cell(employeeRow + 2, col).Style.NumberFormat.Format = StyleConstants.HourCellFormat;
             }
 
-            worksheet.Cell(employeeRow, TotalHoursCol).Value = employee.TotalHours;
+            worksheet.Cell(employeeRow, TotalHoursCol).FormulaA1 = $"SUM({mondayColLetter}{employeeRow}:{sundayColLetter}{employeeRow})";
             worksheet.Cell(employeeRow, TotalHoursCol).Style.NumberFormat.Format = StyleConstants.HourCellFormat;
 
-            worksheet.Cell(employeeRow + 1, TotalHoursCol).Value = employee.TotalRegularHours;
+            worksheet.Cell(employeeRow + 1, TotalHoursCol).FormulaA1 = $"SUM({mondayColLetter}{employeeRow+1}:{sundayColLetter}{employeeRow+1})";
             worksheet.Cell(employeeRow + 1, TotalHoursCol).Style.NumberFormat.Format = StyleConstants.HourCellFormat;
 
-            worksheet.Cell(employeeRow + 2, TotalHoursCol).Value = employee.TotalOvertimeHours;
+            worksheet.Cell(employeeRow + 2, TotalHoursCol).FormulaA1 = $"SUM({mondayColLetter}{employeeRow+2}:{sundayColLetter}{employeeRow+2})";
             worksheet.Cell(employeeRow + 2, TotalHoursCol).Style.NumberFormat.Format = StyleConstants.HourCellFormat;
 
             worksheet.Cell(employeeRow + 1, RatesCol).Value = employee.RegularHoursRate;
@@ -131,13 +133,14 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
             worksheet.Cell(employeeRow + 2, RatesCol).Value = employee.OvertimeHoursRate;
             worksheet.Cell(employeeRow + 2, RatesCol).Style.NumberFormat.Format = StyleConstants.CurrencyCellFormat;
 
-            worksheet.Cell(employeeRow, TotalBillCol).Value = employee.TotalBill;
+            worksheet.Cell(employeeRow, TotalBillCol).FormulaA1 =
+                $"{GetExcelColumnName(TotalBillCol)}{employeeRow + 1} + {GetExcelColumnName(TotalBillCol)}{employeeRow + 2}";
             worksheet.Cell(employeeRow, TotalBillCol).Style.NumberFormat.Format = StyleConstants.CurrencyCellFormat;
 
-            worksheet.Cell(employeeRow + 1, TotalBillCol).Value = employee.TotalRegularBill;
+            worksheet.Cell(employeeRow + 1, TotalBillCol).FormulaA1 = $"{GetExcelColumnName(TotalBillCol)}{employeeRow + 1} * ${GetExcelColumnName(RatesCol)}{employeeRow + 1}";;
             worksheet.Cell(employeeRow + 1, TotalBillCol).Style.NumberFormat.Format = StyleConstants.CurrencyCellFormat;
 
-            worksheet.Cell(employeeRow + 2, TotalBillCol).Value = employee.TotalOvertimeBill;
+            worksheet.Cell(employeeRow + 2, TotalBillCol).FormulaA1 = $"{GetExcelColumnName(TotalBillCol)}{employeeRow + 2} * ${GetExcelColumnName(RatesCol)}{employeeRow + 2}";;
             worksheet.Cell(employeeRow + 2, TotalBillCol).Style.NumberFormat.Format = StyleConstants.CurrencyCellFormat;
             employeeRow += 3;
         }
@@ -181,6 +184,20 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
         worksheet.Cell(startRow + 1, TotalHoursCol).Value = weeksTotalHours;
         worksheet.Cell(startRow + 2, TotalHoursCol).Value = weeksTotalRegularHours;
         worksheet.Cell(startRow + 3, TotalHoursCol).Value = weeksTotalOverTimeHours;
+    }
+    
+    private string GetExcelColumnName(int columnNumber)
+    {
+        string columnName = "";
+
+        while (columnNumber > 0)
+        {
+            int modulo = (columnNumber - 1) % 26;
+            columnName = Convert.ToChar('A' + modulo) + columnName;
+            columnNumber = (columnNumber - modulo) / 26;
+        } 
+
+        return columnName;
     }
 }
 
