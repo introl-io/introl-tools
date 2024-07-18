@@ -115,7 +115,7 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
 
             foreach (var (dayOfTheWeek, col) in DayOfTheWeekColumnDictionary)
             {
-                worksheet.Cell(employeeRow, col).Value = employee.WorkDays[dayOfTheWeek].TotalHours;
+                worksheet.Cell(employeeRow, col).FormulaA1 = $"{col.ToExcelColumn()}{employeeRow+1} + {col.ToExcelColumn()}{employeeRow+2}";
                 worksheet.Cell(employeeRow, col).Style.NumberFormat.Format = StyleConstants.HourCellFormat;
 
                 worksheet.Cell(employeeRow + 1, col).Value = employee.WorkDays[dayOfTheWeek].RegularHours;
