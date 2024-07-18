@@ -149,7 +149,7 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
         return new[] { new CellToAdd { Column = 2, Row = WeekRow, Bold = true, Value = formattedDate } };
     }
 
-    public void AddEmployeeRows(IXLWorksheet worksheet, IEnumerable<Employee> employees, ref int employeeRow)
+    public IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<Employee> employees, ref int employeeRow)
     {
         var mondayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday].ToExcelColumn();
         var sundayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday].ToExcelColumn();
@@ -284,31 +284,14 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
                     NumberFormat = StyleConstants.CurrencyCellFormat
                 }
             });
-
-            foreach (var cell in cells)
-            {
-                if (cell.Value.HasValue)
-                {
-                    if (cell.ValueType == CellToAdd.CellValueType.Formula)
-                    {
-                        worksheet.Cell(cell.Row, cell.Column).FormulaA1 = cell.Value.Value.ToString();
-                    }
-                    else
-                    {
-                        worksheet.Cell(cell.Row, cell.Column).Value = cell.Value.Value;
-                    }
-                }
-
-                worksheet.Cell(cell.Row, cell.Column).Style.NumberFormat.Format = cell.NumberFormat;
-                worksheet.Cell(cell.Row, cell.Column).Style.Font.Bold = cell.Bold;
-                worksheet.Cell(cell.Row, cell.Column).Style.Fill.BackgroundColor = cell.Color;
-            }
-
+            
             employeeRow += 3;
         }
+
+        return cells;
     }
 
-    public void AddTotals(IXLWorksheet worksheet, InputSheetModel inputSheetModel, int totalsStartRow,
+    public IEnumerable<CellToAdd> GetTotalsCells(InputSheetModel inputSheetModel, int totalsStartRow,
         int lastEmployeeRow)
     {
         var totalBillableRange = $"{TotalBillColLetter}1:{TotalBillColLetter}{lastEmployeeRow}";
@@ -355,9 +338,13 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
         [
             new CellToAdd
             {
-                Row = totalsStartRow, Column = HoursTypeColInt, Value = OutputWorkbookConstants.TotalHours
+                Row = totalsStartRow, Column = HoursTypeColInt, Value = OutputWorkbookConstants.TotalHours,
+                Bold = true,
+                FontSize = StyleConstants.LargeFontSize
             },
-            new CellToAdd { Row = totalsStartRow, Column = RatesColInt, Value = OutputWorkbookConstants.TotalBillable },
+            new CellToAdd { Row = totalsStartRow, Column = RatesColInt, Value = OutputWorkbookConstants.TotalBillable,
+                Bold = true,
+                FontSize = StyleConstants.LargeFontSize },
             new CellToAdd
             {
                 Row = totalsStartRow,
@@ -365,9 +352,12 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
                 NumberFormat = StyleConstants.CurrencyWithSymbolCellFormat,
                 Value = GetSumRangeBasedOnHourType(totalBillableRange, OutputWorkbookConstants.PayrollHours,
                     lastEmployeeRow),
-                ValueType = CellToAdd.CellValueType.Formula
+                ValueType = CellToAdd.CellValueType.Formula,
+                Bold = true,
+                FontSize = StyleConstants.LargeFontSize
             },
-            new CellToAdd { Row = totalsStartRow, Column = RatesColInt, Value = OutputWorkbookConstants.TotalBillable },
+            new CellToAdd { Row = totalsStartRow, Column = RatesColInt, Value = OutputWorkbookConstants.TotalBillable,Bold = true,
+                FontSize = StyleConstants.LargeFontSize },
             new CellToAdd
             {
                 Row = totalsStartRow + 1,
@@ -413,22 +403,8 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
             },
         ];
 
-        worksheet.Row(totalsStartRow).Style.Font.Bold = true;
-        worksheet.Row(totalsStartRow).Style.Font.FontSize = StyleConstants.LargeFontSize;
 
-        foreach (var cell in cells)
-        {
-            if (cell.ValueType == CellToAdd.CellValueType.Formula)
-            {
-                worksheet.Cell(cell.Row, cell.Column).FormulaA1 = cell.Value!.Value.ToString();
-            }
-            else
-            {
-                worksheet.Cell(cell.Row, cell.Column).Value = cell.Value!.Value;
-            }
-
-            worksheet.Cell(cell.Row, cell.Column).Style.NumberFormat.Format = cell.NumberFormat;
-        }
+        return cells;
     }
 
     private string GetSumRangeBasedOnHourType(string dataCellRange, string hourType, int lastEmployeeRow)
@@ -441,6 +417,6 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
 public interface IWorksheetWriterHelper
 {
     IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, InputSheetModel inputSheetModel);
-    void AddEmployeeRows(IXLWorksheet worksheet, IEnumerable<Employee> employees, ref int employeeRow);
-    void AddTotals(IXLWorksheet worksheet, InputSheetModel inputSheetModel, int totalsStartRow, int lastEmployeeRow);
+    IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<Employee> employees, ref int employeeRow);
+    IEnumerable<CellToAdd> GetTotalsCells(InputSheetModel inputSheetModel, int totalsStartRow, int lastEmployeeRow);
 }

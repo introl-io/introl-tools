@@ -11,6 +11,7 @@ public class CellToAdd
     public CellValueType ValueType = CellValueType.Value;
     public bool Bold = false;
     public XLColor Color = XLColor.White;
+    public int FontSize = 11;
     
     public string? NumberFormat = null;
 

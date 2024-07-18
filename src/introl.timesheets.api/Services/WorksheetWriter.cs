@@ -24,8 +24,10 @@ public class WorksheetWriter(IWorksheetWriterHelper worksheetWriterHelper) : IWo
         var x = worksheetWriterHelper.GetTitleCells(worksheet, inputSheetModel);
         WriteCells(worksheet, x);
         var employeeRow = 6;
-        worksheetWriterHelper.AddEmployeeRows(worksheet, inputSheetModel.Employees, ref employeeRow);
-        worksheetWriterHelper.AddTotals(worksheet, inputSheetModel, employeeRow + 4, employeeRow);
+        var y = worksheetWriterHelper.GetEmployeeCells(inputSheetModel.Employees, ref employeeRow);
+        WriteCells(worksheet, y);
+        var z = worksheetWriterHelper.GetTotalsCells(inputSheetModel, employeeRow + 4, employeeRow);
+        WriteCells(worksheet, z);
 
         worksheet.Columns().AdjustToContents();
         worksheet.Rows().AdjustToContents();
@@ -61,6 +63,7 @@ public class WorksheetWriter(IWorksheetWriterHelper worksheetWriterHelper) : IWo
             worksheet.Cell(cell.Row, cell.Column).Style.NumberFormat.Format = cell.NumberFormat;
             worksheet.Cell(cell.Row, cell.Column).Style.Font.Bold = cell.Bold;
             worksheet.Cell(cell.Row, cell.Column).Style.Fill.BackgroundColor = cell.Color;
+            worksheet.Cell(cell.Row, cell.Column).Style.Font.FontSize = cell.FontSize;
         }
 
     }
