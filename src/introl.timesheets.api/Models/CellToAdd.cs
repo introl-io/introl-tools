@@ -6,7 +6,8 @@ public class CellToAdd
 {
     public required int Column { get; init; }
     public required int Row { get; init; }
-    public required XLCellValue Value { get; init; }
+    
+    public XLCellValue? Value = null;
     public CellValueType ValueType = CellValueType.Value;
     public bool Bold = false;
     public XLColor Color = XLColor.White;
