@@ -1,3 +1,5 @@
+using ClosedXML.Excel;
+
 namespace Introl.Timesheets.Api.Models;
 
 public class CellToAdd
@@ -7,6 +9,7 @@ public class CellToAdd
     public required string Value { get; init; }
     public CellValueType ValueType = CellValueType.Value;
     public bool Bold = false;
+    public XLColor Color = XLColor.White;
     
     public string? NumberFormat = null;
 
