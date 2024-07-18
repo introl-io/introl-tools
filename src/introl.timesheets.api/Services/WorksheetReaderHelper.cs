@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models;
@@ -20,7 +21,7 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
 
     public (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet)
     {
-        var weekCell = worksheet.FindSingleCellByValue("week");
+        var weekCell = worksheet.FindSingleCellByValue(InputWorkbookConstants.WeekCellValue);
         var dateString = weekCell.CellRight().GetString();
         var splitDates = dateString.Split(" - ");
 
@@ -61,7 +62,7 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
 
     public (bool hasRegularHours, bool hasOTHours) GetTypesOfHoursEmployeeHasDone(IXLWorksheet worksheet, int employeeRow)
     {
-        var hourTypeCell = worksheet.FindSingleCellByValue("type");
+        var hourTypeCell = worksheet.FindSingleCellByValue(InputWorkbookConstants.TypeCellValue);
         var hasRegularHours = worksheet.Cell(employeeRow + 1, hourTypeCell.Address.ColumnNumber).GetString().ToUpper() == "REGULAR HOURS";
         var incrementForOt = hasRegularHours ? 2 : 1;
         var overtimeHours = worksheet.Cell(employeeRow + incrementForOt, hourTypeCell.Address.ColumnNumber).GetString().ToUpper() == "WEEKLY OT";
