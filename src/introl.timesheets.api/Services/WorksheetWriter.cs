@@ -24,7 +24,7 @@ public class WorksheetWriter(IWorksheetWriterHelper worksheetWriterHelper) : IWo
         worksheetWriterHelper.AddTitleRows(worksheet, inputSheetModel);
         var employeeRow = 6;
         worksheetWriterHelper.AddEmployeeRows(worksheet, inputSheetModel.Employees, ref employeeRow);
-        worksheetWriterHelper.AddTotals(worksheet, inputSheetModel, employeeRow + 4);
+        worksheetWriterHelper.AddTotals(worksheet, inputSheetModel, employeeRow + 4, employeeRow);
 
         worksheet.Columns().AdjustToContents();
         worksheet.Rows().AdjustToContents();
