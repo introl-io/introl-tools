@@ -20,14 +20,15 @@ public class WorksheetWriter(IOutputCellFactory outputCellFactory) : IWorksheetW
 
     private void CreateSummarySheet(XLWorkbook workbook, InputSheetModel inputSheetModel)
     {
-        var worksheet = workbook.Worksheets.Add("Summary");
-        var x = outputCellFactory.GetTitleCells(worksheet, inputSheetModel);
-        WriteCells(worksheet, x);
         var employeeRow = 6;
-        var y = outputCellFactory.GetEmployeeCells(inputSheetModel.Employees, ref employeeRow);
-        WriteCells(worksheet, y);
-        var z = outputCellFactory.GetTotalsCells(inputSheetModel, employeeRow + 4, employeeRow);
-        WriteCells(worksheet, z);
+        var worksheet = workbook.Worksheets.Add("Summary");
+        var titleCells = outputCellFactory.GetTitleCells(worksheet, inputSheetModel);
+
+        var employeeCells = outputCellFactory.GetEmployeeCells(inputSheetModel.Employees, ref employeeRow);
+
+        var totalsCells = outputCellFactory.GetTotalsCells(inputSheetModel, employeeRow + 4, employeeRow);
+
+        WriteCells(worksheet, [.. titleCells, .. employeeCells, .. totalsCells]);
 
         worksheet.Columns().AdjustToContents();
         worksheet.Rows().AdjustToContents();
@@ -65,7 +66,6 @@ public class WorksheetWriter(IOutputCellFactory outputCellFactory) : IWorksheetW
             worksheet.Cell(cell.Row, cell.Column).Style.Fill.BackgroundColor = cell.Color;
             worksheet.Cell(cell.Row, cell.Column).Style.Font.FontSize = cell.FontSize;
         }
-
     }
 }
 

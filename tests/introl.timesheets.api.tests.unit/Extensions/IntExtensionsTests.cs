@@ -1,4 +1,4 @@
-using Introl.Timesheets.Api.Extensions;
+﻿using Introl.Timesheets.Api.Extensions;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Unit.Extensions;
@@ -14,7 +14,7 @@ public class IntExtensionsTests
     public void ToExcelColumn(int input, string expectedOutput)
     {
         var result = input.ToExcelColumn();
-        
+
         Assert.Equal(expectedOutput, result);
     }
 }

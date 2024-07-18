@@ -1,4 +1,4 @@
-namespace Introl.Timesheets.Api.Extensions;
+﻿namespace Introl.Timesheets.Api.Extensions;
 
 public static class IntExtensions
 {

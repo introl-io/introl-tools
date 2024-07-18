@@ -24,7 +24,7 @@ public class TimesheetProcessor(
 
         var inputSheetModel = worksheetReader.Process(workbook);
         var outputWorkbookBytes = worksheetWriter.Process(inputSheetModel);
-        
+
         return new ProcessedTimesheetResult { Name = GetFileName(inputSheetModel), WorkbookBytes = outputWorkbookBytes };
     }
 

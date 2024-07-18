@@ -56,10 +56,10 @@ public class OutputCellFactory : IOutputCellFactory
 
         return
         [
-            ..cells,
-            ..AddWeekRow(inputSheetModel),
-            ..AddDayRow(),
-            ..AddTitleRow(inputSheetModel)
+            .. cells,
+            .. AddWeekRow(inputSheetModel),
+            .. AddDayRow(),
+            .. AddTitleRow(inputSheetModel)
         ];
     }
 
@@ -95,7 +95,7 @@ public class OutputCellFactory : IOutputCellFactory
                 Color = StyleConstants.DarkGrey,
                 Bold = true
             },
-            ..days,
+            .. days,
             new CellToAdd
             {
                 Column = TotalHoursColInt,
@@ -284,7 +284,7 @@ public class OutputCellFactory : IOutputCellFactory
                     NumberFormat = StyleConstants.CurrencyCellFormat
                 }
             });
-            
+
             employeeRow += 3;
         }
 
@@ -297,7 +297,7 @@ public class OutputCellFactory : IOutputCellFactory
         var totalBillableRange = $"{TotalBillColLetter}1:{TotalBillColLetter}{lastEmployeeRow}";
         var mondayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday].ToExcelColumn();
         var sundayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday].ToExcelColumn();
-        var days = DayOfTheWeekColumnDictionary.SelectMany(ent =>
+        var dayCells = DayOfTheWeekColumnDictionary.SelectMany(ent =>
         {
             var col = ent.Value;
             var colLetter = col.ToExcelColumn();
@@ -338,13 +338,20 @@ public class OutputCellFactory : IOutputCellFactory
         [
             new CellToAdd
             {
-                Row = totalsStartRow, Column = HoursTypeColInt, Value = OutputWorkbookConstants.TotalHours,
+                Row = totalsStartRow,
+                Column = HoursTypeColInt,
+                Value = OutputWorkbookConstants.TotalHours,
                 Bold = true,
                 FontSize = StyleConstants.LargeFontSize
             },
-            new CellToAdd { Row = totalsStartRow, Column = RatesColInt, Value = OutputWorkbookConstants.TotalBillable,
+            new CellToAdd
+            {
+                Row = totalsStartRow,
+                Column = RatesColInt,
+                Value = OutputWorkbookConstants.TotalBillable,
                 Bold = true,
-                FontSize = StyleConstants.LargeFontSize },
+                FontSize = StyleConstants.LargeFontSize
+            },
             new CellToAdd
             {
                 Row = totalsStartRow,
@@ -356,8 +363,14 @@ public class OutputCellFactory : IOutputCellFactory
                 Bold = true,
                 FontSize = StyleConstants.LargeFontSize
             },
-            new CellToAdd { Row = totalsStartRow, Column = RatesColInt, Value = OutputWorkbookConstants.TotalBillable,Bold = true,
-                FontSize = StyleConstants.LargeFontSize },
+            new CellToAdd
+            {
+                Row = totalsStartRow,
+                Column = RatesColInt,
+                Value = OutputWorkbookConstants.TotalBillable,
+                Bold = true,
+                FontSize = StyleConstants.LargeFontSize
+            },
             new CellToAdd
             {
                 Row = totalsStartRow + 1,
@@ -376,7 +389,7 @@ public class OutputCellFactory : IOutputCellFactory
                 Column = HoursTypeColInt,
                 Value = OutputWorkbookConstants.TotalWeeklyOtHours
             },
-            ..days,
+            .. dayCells,
             new CellToAdd
             {
                 Row = totalsStartRow + 1,
