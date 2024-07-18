@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
@@ -69,9 +70,15 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
             new CellToAdd { Column = NameColInt, Row = TitleRow, Value = OutputWorkbookConstants.EmployeeNameTitle },
             new CellToAdd { Column = HoursTypeColInt, Row = TitleRow, Value = OutputWorkbookConstants.HoursTypeTitle, },
             ..days,
-            new CellToAdd { Column = TotalHoursColInt, Row = TitleRow, Value = OutputWorkbookConstants.EmployeeTotalHoursTitle, },
+            new CellToAdd
+            {
+                Column = TotalHoursColInt, Row = TitleRow, Value = OutputWorkbookConstants.EmployeeTotalHoursTitle,
+            },
             new CellToAdd { Column = RatesColInt, Row = TitleRow, Value = OutputWorkbookConstants.EmployeeRatesTitle, },
-            new CellToAdd { Column = TotalBillColInt, Row = TitleRow, Value = OutputWorkbookConstants.EmployeeTotalBillTitle,},
+            new CellToAdd
+            {
+                Column = TotalBillColInt, Row = TitleRow, Value = OutputWorkbookConstants.EmployeeTotalBillTitle,
+            },
         ];
 
         worksheet.Row(TitleRow).Style.Font.Bold = true;
@@ -168,46 +175,119 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
         int lastEmployeeRow)
     {
         var totalBillableRange = $"{TotalBillColLetter}1:{TotalBillColLetter}{lastEmployeeRow}";
-        worksheet.Row(totalsStartRow).Style.Font.Bold = true;
-        worksheet.Row(totalsStartRow).Style.Font.FontSize = StyleConstants.LargeFontSize;
-        worksheet.Cell(totalsStartRow, HoursTypeColInt).Value = OutputWorkbookConstants.TotalHours;
-        worksheet.Cell(totalsStartRow, RatesColInt).Value = OutputWorkbookConstants.TotalBillable;
-        worksheet.Cell(totalsStartRow, TotalBillColInt).FormulaA1 = GetSumRangeBasedOnHourType(totalBillableRange,
-            OutputWorkbookConstants.PayrollHours, lastEmployeeRow);
-        ;
-        worksheet.Cell(totalsStartRow, TotalBillColInt).Style.NumberFormat.Format =
-            StyleConstants.CurrencyWithSymbolCellFormat;
-
-        worksheet.Cell(totalsStartRow + 1, HoursTypeColInt).Value = OutputWorkbookConstants.TotalPayrollHours;
-        worksheet.Cell(totalsStartRow + 2, HoursTypeColInt).Value = OutputWorkbookConstants.TotalRegularHours;
-        worksheet.Cell(totalsStartRow + 3, HoursTypeColInt).Value = OutputWorkbookConstants.TotalWeeklyOtHours;
-
-        foreach (var (_, col) in DayOfTheWeekColumnDictionary)
+        var mondayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday].ToExcelColumn();
+        var sundayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday].ToExcelColumn();
+        var x = DayOfTheWeekColumnDictionary.SelectMany(ent =>
         {
+            var col = ent.Value;
             var colLetter = col.ToExcelColumn();
             var daysHourRangeRange = $"{colLetter}1:{colLetter}{lastEmployeeRow}";
 
-            worksheet.Cell(totalsStartRow + 1, col).FormulaA1 =
-                $"{colLetter}{totalsStartRow + 2} + {colLetter}{totalsStartRow + 3}";
-            worksheet.Cell(totalsStartRow, col).Style.NumberFormat.Format = StyleConstants.HourCellFormat;
+            return new[]
+            {
+                new CellToAdd
+                {
+                    Row = totalsStartRow + 1,
+                    Column = col,
+                    Value = $"{colLetter}{totalsStartRow + 2} + {colLetter}{totalsStartRow + 3}",
+                    ValueType = CellToAdd.CellValueType.Formula,
+                    NumberFormat = StyleConstants.HourCellFormat
+                },
+                new CellToAdd
+                {
+                    Row = totalsStartRow + 2,
+                    Column = col,
+                    Value = GetSumRangeBasedOnHourType(daysHourRangeRange,
+                        OutputWorkbookConstants.RegularHours, lastEmployeeRow),
+                    ValueType = CellToAdd.CellValueType.Formula,
+                    NumberFormat = StyleConstants.HourCellFormat
+                },
+                new CellToAdd
+                {
+                    Row = totalsStartRow + 3,
+                    Column = col,
+                    Value = GetSumRangeBasedOnHourType(daysHourRangeRange,
+                        OutputWorkbookConstants.WeeklyOtHours, lastEmployeeRow),
+                    ValueType = CellToAdd.CellValueType.Formula,
+                    NumberFormat = StyleConstants.HourCellFormat
+                },
+            };
+        });
 
-            worksheet.Cell(totalsStartRow + 2, col).FormulaA1 = GetSumRangeBasedOnHourType(daysHourRangeRange,
-                OutputWorkbookConstants.RegularHours, lastEmployeeRow);
-            worksheet.Cell(totalsStartRow + 2, col).Style.NumberFormat.Format = StyleConstants.HourCellFormat;
+        CellToAdd[] cells =
+        [
+            new CellToAdd
+            {
+                Row = totalsStartRow, Column = HoursTypeColInt, Value = OutputWorkbookConstants.TotalHours
+            },
+            new CellToAdd { Row = totalsStartRow, Column = RatesColInt, Value = OutputWorkbookConstants.TotalBillable },
+            new CellToAdd
+            {
+                Row = totalsStartRow,
+                Column = TotalBillColInt,
+                NumberFormat = StyleConstants.CurrencyWithSymbolCellFormat,
+                Value = GetSumRangeBasedOnHourType(totalBillableRange, OutputWorkbookConstants.PayrollHours,
+                    lastEmployeeRow),
+                ValueType = CellToAdd.CellValueType.Formula
+            },
+            new CellToAdd { Row = totalsStartRow, Column = RatesColInt, Value = OutputWorkbookConstants.TotalBillable },
+            new CellToAdd
+            {
+                Row = totalsStartRow + 1,
+                Column = HoursTypeColInt,
+                Value = OutputWorkbookConstants.TotalPayrollHours
+            },
+            new CellToAdd
+            {
+                Row = totalsStartRow + 2,
+                Column = HoursTypeColInt,
+                Value = OutputWorkbookConstants.TotalRegularHours
+            },
+            new CellToAdd
+            {
+                Row = totalsStartRow + 3,
+                Column = HoursTypeColInt,
+                Value = OutputWorkbookConstants.TotalWeeklyOtHours
+            },
+            ..x,
+            new CellToAdd
+            {
+                Row = totalsStartRow + 1,
+                Column = TotalHoursColInt,
+                Value = $"SUM({mondayColLetter}{totalsStartRow + 1}:{sundayColLetter}{totalsStartRow + 1})",
+                ValueType = CellToAdd.CellValueType.Formula
+            },
+            new CellToAdd
+            {
+                Row = totalsStartRow + 2,
+                Column = TotalHoursColInt,
+                Value = $"SUM({mondayColLetter}{totalsStartRow + 2}:{sundayColLetter}{totalsStartRow + 2})",
+                ValueType = CellToAdd.CellValueType.Formula
+            },new CellToAdd
+            {
+                Row = totalsStartRow + 3,
+                Column = TotalHoursColInt,
+                Value = $"SUM({mondayColLetter}{totalsStartRow + 3}:{sundayColLetter}{totalsStartRow + 3})",
+                ValueType = CellToAdd.CellValueType.Formula
+            },
+        ];
 
-            worksheet.Cell(totalsStartRow + 3, col).FormulaA1 = GetSumRangeBasedOnHourType(daysHourRangeRange,
-                OutputWorkbookConstants.WeeklyOtHours, lastEmployeeRow);
-            worksheet.Cell(totalsStartRow + 3, col).Style.NumberFormat.Format = StyleConstants.HourCellFormat;
+        worksheet.Row(totalsStartRow).Style.Font.Bold = true;
+        worksheet.Row(totalsStartRow).Style.Font.FontSize = StyleConstants.LargeFontSize;
+
+        foreach (var cell in cells)
+        {
+            if (cell.ValueType == CellToAdd.CellValueType.Formula)
+            {
+                worksheet.Cell(cell.Row, cell.Column).FormulaA1 = cell.Value;
+            }
+            else
+            {
+                worksheet.Cell(cell.Row, cell.Column).Value = cell.Value;
+            }
+
+            worksheet.Cell(cell.Row, cell.Column).Style.NumberFormat.Format = cell.NumberFormat;
         }
-
-        var mondayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday].ToExcelColumn();
-        var sundayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday].ToExcelColumn();
-        worksheet.Cell(totalsStartRow + 1, TotalHoursColInt).FormulaA1 =
-            $"SUM({mondayColLetter}{totalsStartRow + 1}:{sundayColLetter}{totalsStartRow + 1})";
-        worksheet.Cell(totalsStartRow + 2, TotalHoursColInt).FormulaA1 =
-            $"SUM({mondayColLetter}{totalsStartRow + 2}:{sundayColLetter}{totalsStartRow + 2})";
-        worksheet.Cell(totalsStartRow + 3, TotalHoursColInt).FormulaA1 =
-            $"SUM({mondayColLetter}{totalsStartRow + 3}:{sundayColLetter}{totalsStartRow + 3})";
     }
 
     private string GetSumRangeBasedOnHourType(string dataCellRange, string hourType, int lastEmployeeRow)

@@ -81,7 +81,7 @@ public class TimesheetControllerTests
 
     private void CompareRows(IXLRow actual, IXLRow expected, string workSheetName, int rowNumber)
     {
-        actual.Cells().Count().Should().Be(expected.Cells().Count(),
+        actual.CellsUsed().Count().Should().Be(expected.CellsUsed().Count(),
             $"Cell count mismatch in worksheet {workSheetName} row {rowNumber}");
 
         for (var i = 1; i <= actual.Cells().Count(); i++)
