@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Enums;
+using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
@@ -24,13 +25,13 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
 
     private int GetFirstEmployeeRow(IXLWorksheet worksheet)
     {
-        var cell = worksheetReaderHelper.FindSingleCellByValue(worksheet, "name");
+        var cell = worksheet.FindSingleCellByValue("name");
         return cell.Address.RowNumber + 1;
     }
 
     private int RatesColumn(IXLWorksheet worksheet)
     {
-        var cell = worksheetReaderHelper.FindSingleCellByValue(worksheet, "RATES");
+        var cell = worksheet.FindSingleCellByValue("RATES");
         return cell.Address.ColumnNumber;
     }
 

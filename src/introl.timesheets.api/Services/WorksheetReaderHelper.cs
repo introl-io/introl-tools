@@ -7,27 +7,12 @@ namespace Introl.Timesheets.Api.Services;
 
 public class WorksheetReaderHelper : IWorksheetReaderHelper
 {
-    public IXLCell FindSingleCellByValue(IXLWorksheet worksheet, string value)
-    {
-        var matchingCells = worksheet.CellsUsed(c => c.GetString().ToUpper() == value.ToUpper());
-        if (!matchingCells.Any())
-        {
-            throw new ArgumentNullException($"No cell found with the value {value}");
-        }
-
-        if (matchingCells.Count() > 1)
-        {
-            throw new InvalidOperationException($"Multiple cells found with the value {value}");
-        }
-        return matchingCells.First();
-    }
-
     public IDictionary<DayOfTheWeek, int> GetDayOfTheWeekColumnDictionary(IXLWorksheet worksheet)
     {
         var result = new Dictionary<DayOfTheWeek, int>();
         foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
         {
-            result.Add(day, FindSingleCellByValue(worksheet, day.StringValue()).Address.ColumnNumber);
+            result.Add(day, worksheet.FindSingleCellByValue(day.StringValue()).Address.ColumnNumber);
         }
 
         return result;
@@ -35,7 +20,7 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
 
     public (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet)
     {
-        var weekCell = FindSingleCellByValue(worksheet, "week");
+        var weekCell = worksheet.FindSingleCellByValue("week");
         var dateString = weekCell.CellRight().GetString();
         var splitDates = dateString.Split(" - ");
 
@@ -76,7 +61,7 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
 
     public (bool hasRegularHours, bool hasOTHours) GetTypesOfHoursEmployeeHasDone(IXLWorksheet worksheet, int employeeRow)
     {
-        var hourTypeCell = FindSingleCellByValue(worksheet, "type");
+        var hourTypeCell = worksheet.FindSingleCellByValue("type");
         var hasRegularHours = worksheet.Cell(employeeRow + 1, hourTypeCell.Address.ColumnNumber).GetString().ToUpper() == "REGULAR HOURS";
         var incrementForOt = hasRegularHours ? 2 : 1;
         var overtimeHours = worksheet.Cell(employeeRow + incrementForOt, hourTypeCell.Address.ColumnNumber).GetString().ToUpper() == "WEEKLY OT";
@@ -110,7 +95,6 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
 
 public interface IWorksheetReaderHelper
 {
-    IXLCell FindSingleCellByValue(IXLWorksheet worksheet, string value);
     IDictionary<DayOfTheWeek, int> GetDayOfTheWeekColumnDictionary(IXLWorksheet worksheet);
     (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet);
     WorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn);
