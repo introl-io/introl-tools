@@ -24,7 +24,7 @@ public class TimesheetControllerTests
         await using var inputFileStream = File.Open("./Resources/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
-            new MultipartFormDataContent { { new StreamContent(inputFileStream), "model", "timesheet_input.xlsx" } };
+            new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
         var response = await _httpClient.PostAsync("/api/timesheet/process", request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -46,7 +46,7 @@ public class TimesheetControllerTests
     public async Task Process_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
     {
         var request =
-            new MultipartFormDataContent { { new StringContent(""), "model", "timesheet_input.pdf" } };
+            new MultipartFormDataContent { { new StringContent(""), "input", "timesheet_input.pdf" } };
         var response = await _httpClient.PostAsync("/api/timesheet/process", request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
