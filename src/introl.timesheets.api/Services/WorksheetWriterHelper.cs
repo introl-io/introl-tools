@@ -255,20 +255,23 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
                 Row = totalsStartRow + 1,
                 Column = TotalHoursColInt,
                 Value = $"SUM({mondayColLetter}{totalsStartRow + 1}:{sundayColLetter}{totalsStartRow + 1})",
-                ValueType = CellToAdd.CellValueType.Formula
+                ValueType = CellToAdd.CellValueType.Formula,
+                NumberFormat = StyleConstants.HourCellFormat
             },
             new CellToAdd
             {
                 Row = totalsStartRow + 2,
                 Column = TotalHoursColInt,
                 Value = $"SUM({mondayColLetter}{totalsStartRow + 2}:{sundayColLetter}{totalsStartRow + 2})",
-                ValueType = CellToAdd.CellValueType.Formula
+                ValueType = CellToAdd.CellValueType.Formula,
+                NumberFormat = StyleConstants.HourCellFormat
             },new CellToAdd
             {
                 Row = totalsStartRow + 3,
                 Column = TotalHoursColInt,
                 Value = $"SUM({mondayColLetter}{totalsStartRow + 3}:{sundayColLetter}{totalsStartRow + 3})",
-                ValueType = CellToAdd.CellValueType.Formula
+                ValueType = CellToAdd.CellValueType.Formula,
+                NumberFormat = StyleConstants.HourCellFormat
             },
         ];
 
