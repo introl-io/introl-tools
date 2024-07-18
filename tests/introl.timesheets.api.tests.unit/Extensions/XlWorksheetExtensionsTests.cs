@@ -1,4 +1,4 @@
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Extensions;
 using Xunit;
 

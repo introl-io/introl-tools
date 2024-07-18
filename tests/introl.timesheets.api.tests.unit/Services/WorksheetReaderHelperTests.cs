@@ -9,7 +9,7 @@ namespace Introl.Timesheets.Api.Tests.Unit.services;
 public class WorksheetReaderHelperTests
 {
     private WorksheetReaderHelper sut = new();
-    
+
     [Fact]
     public void GetDayOfTheWeekDictionary_WhenWeekExist_ReturnDictionary()
     {
