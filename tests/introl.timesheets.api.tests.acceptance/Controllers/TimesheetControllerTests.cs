@@ -2,6 +2,7 @@
 using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Authorization;
+using Introl.Timesheets.Api.Extensions;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Acceptance.Controllers;
@@ -88,7 +89,7 @@ public class TimesheetControllerTests
             var actualCell = actual.Cell(i);
             var expectedCell = expected.Cell(i);
             actualCell.Value.Should().Be(expectedCell.Value,
-                $"Cell value mismatch in worksheet {workSheetName} row {rowNumber} cell {i}");
+                $"Cell value mismatch in worksheet {workSheetName} cell {i.ToExcelColumn()}{rowNumber}");
         }
     }
 }
