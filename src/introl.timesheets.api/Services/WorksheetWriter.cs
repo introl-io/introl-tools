@@ -4,7 +4,7 @@ using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
 
-public class WorksheetWriter(IWorksheetWriterHelper worksheetWriterHelper) : IWorksheetWriter
+public class WorksheetWriter(IOutputCellFactory outputCellFactory) : IWorksheetWriter
 {
     public byte[] Process(InputSheetModel inputSheetModel)
     {
@@ -21,12 +21,12 @@ public class WorksheetWriter(IWorksheetWriterHelper worksheetWriterHelper) : IWo
     private void CreateSummarySheet(XLWorkbook workbook, InputSheetModel inputSheetModel)
     {
         var worksheet = workbook.Worksheets.Add("Summary");
-        var x = worksheetWriterHelper.GetTitleCells(worksheet, inputSheetModel);
+        var x = outputCellFactory.GetTitleCells(worksheet, inputSheetModel);
         WriteCells(worksheet, x);
         var employeeRow = 6;
-        var y = worksheetWriterHelper.GetEmployeeCells(inputSheetModel.Employees, ref employeeRow);
+        var y = outputCellFactory.GetEmployeeCells(inputSheetModel.Employees, ref employeeRow);
         WriteCells(worksheet, y);
-        var z = worksheetWriterHelper.GetTotalsCells(inputSheetModel, employeeRow + 4, employeeRow);
+        var z = outputCellFactory.GetTotalsCells(inputSheetModel, employeeRow + 4, employeeRow);
         WriteCells(worksheet, z);
 
         worksheet.Columns().AdjustToContents();

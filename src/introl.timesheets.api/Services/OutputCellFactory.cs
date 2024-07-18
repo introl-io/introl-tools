@@ -6,7 +6,7 @@ using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Services;
 
-public class WorksheetWriterHelper : IWorksheetWriterHelper
+public class OutputCellFactory : IOutputCellFactory
 {
     private Dictionary<DayOfTheWeek, int> DayOfTheWeekColumnDictionary => new()
     {
@@ -414,7 +414,7 @@ public class WorksheetWriterHelper : IWorksheetWriterHelper
     }
 }
 
-public interface IWorksheetWriterHelper
+public interface IOutputCellFactory
 {
     IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, InputSheetModel inputSheetModel);
     IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<Employee> employees, ref int employeeRow);
