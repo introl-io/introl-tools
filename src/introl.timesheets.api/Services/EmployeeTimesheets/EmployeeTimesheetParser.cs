@@ -31,7 +31,7 @@ public class EmployeeTimesheetParser : IEmployeeTimesheetParser
         return (startDate, endDate);
     }
 
-    public WorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn)
+    public EmployeeWorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn)
     {
 
         var (hasDoneRegularHours, hasDoneOvertimeHours) = GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
@@ -39,7 +39,7 @@ public class EmployeeTimesheetParser : IEmployeeTimesheetParser
 
         var regularHours = hasDoneRegularHours ? worksheet.Cell(employeeRow + 1, dayColumn).GetString() : "";
         var overtimeHours = hasDoneOvertimeHours ? worksheet.Cell(employeeRow + overtimeIncrement, dayColumn).GetString() : "";
-        return new WorkDayHours
+        return new EmployeeWorkDayHours
         {
             RegularHours = ConvertToRoundedHours(regularHours),
             OvertimeHours = ConvertToRoundedHours(overtimeHours)
@@ -98,7 +98,7 @@ public interface IEmployeeTimesheetParser
 {
     IDictionary<DayOfTheWeek, int> GetDayOfTheWeekColumnDictionary(IXLWorksheet worksheet);
     (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet);
-    WorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn);
+    EmployeeWorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn);
     (decimal regularHoursRate, decimal overtimeRate) GetEmployeeRates(IXLWorksheet worksheet, int employeeRow, int ratesColumn);
 
     (bool hasRegularHours, bool hasOTHours) GetTypesOfHoursEmployeeHasDone(IXLWorksheet worksheet, int employeeRow);

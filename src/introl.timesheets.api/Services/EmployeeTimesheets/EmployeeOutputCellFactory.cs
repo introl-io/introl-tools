@@ -36,7 +36,7 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
     private const int DayRow = 4;
     private const int TitleRow = 5;
 
-    public IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, InputSheetModel inputSheetModel)
+    public IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, EmployeeInputSheetModel employeeInputSheetModel)
     {
         var pic = worksheet.AddPicture("./Assets/introl_logo.png")
             .MoveTo(1, 1);
@@ -58,13 +58,13 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
         return
         [
             .. cells,
-            .. AddWeekRow(inputSheetModel),
+            .. AddWeekRow(employeeInputSheetModel),
             .. AddDayRow(),
-            .. AddTitleRow(inputSheetModel)
+            .. AddTitleRow(employeeInputSheetModel)
         ];
     }
 
-    private IEnumerable<CellToAdd> AddTitleRow(InputSheetModel inputSheetModel)
+    private IEnumerable<CellToAdd> AddTitleRow(EmployeeInputSheetModel employeeInputSheetModel)
     {
         var dayDateFormat = "MMMM dd";
 
@@ -73,7 +73,7 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
             {
                 Column = day.Value,
                 Row = TitleRow,
-                Value = $"{inputSheetModel.StartDate.AddDays(ix).ToString(dayDateFormat)}",
+                Value = $"{employeeInputSheetModel.StartDate.AddDays(ix).ToString(dayDateFormat)}",
                 Color = StyleConstants.DarkGrey,
                 Bold = true
             }).ToList();
@@ -141,11 +141,11 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
         }
     }
 
-    private IEnumerable<CellToAdd> AddWeekRow(InputSheetModel inputSheetModel)
+    private IEnumerable<CellToAdd> AddWeekRow(EmployeeInputSheetModel employeeInputSheetModel)
     {
         var weekRangeDateFormat = "dd MMMM yyyy";
         var formattedDate =
-            $"{inputSheetModel.StartDate.ToString(weekRangeDateFormat)} - {inputSheetModel.EndDate.ToString(weekRangeDateFormat)}";
+            $"{employeeInputSheetModel.StartDate.ToString(weekRangeDateFormat)} - {employeeInputSheetModel.EndDate.ToString(weekRangeDateFormat)}";
 
         return new[] { new CellToAdd { Column = 2, Row = WeekRow, Bold = true, Value = formattedDate } };
     }
@@ -292,7 +292,7 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
         return cells;
     }
 
-    public IEnumerable<CellToAdd> GetTotalsCells(InputSheetModel inputSheetModel, int totalsStartRow,
+    public IEnumerable<CellToAdd> GetTotalsCells(EmployeeInputSheetModel employeeInputSheetModel, int totalsStartRow,
         int lastEmployeeRow)
     {
         var totalBillableRange = $"{TotalBillColLetter}1:{TotalBillColLetter}{lastEmployeeRow}";
@@ -430,7 +430,7 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
 
 public interface IOutputCellFactory
 {
-    IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, InputSheetModel inputSheetModel);
+    IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, EmployeeInputSheetModel employeeInputSheetModel);
     IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<Employee> employees, ref int employeeRow);
-    IEnumerable<CellToAdd> GetTotalsCells(InputSheetModel inputSheetModel, int totalsStartRow, int lastEmployeeRow);
+    IEnumerable<CellToAdd> GetTotalsCells(EmployeeInputSheetModel employeeInputSheetModel, int totalsStartRow, int lastEmployeeRow);
 }

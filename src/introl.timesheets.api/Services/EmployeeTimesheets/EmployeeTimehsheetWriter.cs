@@ -7,27 +7,27 @@ namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
 
 public class EmployeeTimehsheetWriter(IOutputCellFactory outputCellFactory) : IEmployeeTimehsheetWriter
 {
-    public byte[] Process(InputSheetModel inputSheetModel)
+    public byte[] Process(EmployeeInputSheetModel employeeInputSheetModel)
     {
         using var workbook = new XLWorkbook();
-        CreateSummarySheet(workbook, inputSheetModel);
+        CreateSummarySheet(workbook, employeeInputSheetModel);
 
-        workbook.AddWorksheet(inputSheetModel.RawTimesheetsWorksheet);
+        workbook.AddWorksheet(employeeInputSheetModel.RawTimesheetsWorksheet);
 
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         return stream.ToArray();
     }
 
-    private void CreateSummarySheet(XLWorkbook workbook, InputSheetModel inputSheetModel)
+    private void CreateSummarySheet(XLWorkbook workbook, EmployeeInputSheetModel employeeInputSheetModel)
     {
         var employeeRow = 6;
         var worksheet = workbook.Worksheets.Add("Summary");
-        var titleCells = outputCellFactory.GetTitleCells(worksheet, inputSheetModel);
+        var titleCells = outputCellFactory.GetTitleCells(worksheet, employeeInputSheetModel);
 
-        var employeeCells = outputCellFactory.GetEmployeeCells(inputSheetModel.Employees, ref employeeRow);
+        var employeeCells = outputCellFactory.GetEmployeeCells(employeeInputSheetModel.Employees, ref employeeRow);
 
-        var totalsCells = outputCellFactory.GetTotalsCells(inputSheetModel, employeeRow + 4, employeeRow);
+        var totalsCells = outputCellFactory.GetTotalsCells(employeeInputSheetModel, employeeRow + 4, employeeRow);
 
         WriteCells(worksheet, [.. titleCells, .. employeeCells, .. totalsCells]);
 
@@ -72,5 +72,5 @@ public class EmployeeTimehsheetWriter(IOutputCellFactory outputCellFactory) : IE
 
 public interface IEmployeeTimehsheetWriter
 {
-    byte[] Process(InputSheetModel inputSheetModel);
+    byte[] Process(EmployeeInputSheetModel employeeInputSheetModel);
 }

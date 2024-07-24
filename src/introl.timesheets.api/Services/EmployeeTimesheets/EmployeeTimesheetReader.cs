@@ -5,16 +5,16 @@ using Introl.Timesheets.Api.Models.EmployeeTimesheets;
 
 namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
 
-public class EmployeeWorksheetReader(IEmployeeTimesheetParser employeeTimesheetParser) : IWorksheetReader
+public class EmployeeTimesheetReader(IEmployeeTimesheetParser employeeTimesheetParser) : IEmployeeTimehsheetReader
 {
-    public InputSheetModel Process(XLWorkbook workbook)
+    public EmployeeInputSheetModel Process(XLWorkbook workbook)
     {
         var teamSummarySheet = workbook.Worksheets.Worksheet("Team Summary");
         var rawTimesheetsWorkSheet = workbook.Worksheets.Worksheet("Raw Timesheets");
         ArgumentNullException.ThrowIfNull(teamSummarySheet);
         var (startDate, endDate) = employeeTimesheetParser.GetStartAndEndDate(teamSummarySheet);
 
-        return new InputSheetModel
+        return new EmployeeInputSheetModel
         {
             StartDate = startDate,
             EndDate = endDate,
@@ -67,7 +67,7 @@ public class EmployeeWorksheetReader(IEmployeeTimesheetParser employeeTimesheetP
             numRowsUsedByEmployee += 1;
         }
 
-        var workDays = new Dictionary<DayOfTheWeek, WorkDayHours>();
+        var workDays = new Dictionary<DayOfTheWeek, EmployeeWorkDayHours>();
         foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
         {
             workDays.Add(day, employeeTimesheetParser.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[day]));
@@ -83,7 +83,7 @@ public class EmployeeWorksheetReader(IEmployeeTimesheetParser employeeTimesheetP
     }
 }
 
-public interface IWorksheetReader
+public interface IEmployeeTimehsheetReader
 {
-    InputSheetModel Process(XLWorkbook workbook);
+    EmployeeInputSheetModel Process(XLWorkbook workbook);
 }
