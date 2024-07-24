@@ -1,13 +1,13 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Models.EmployeeTimesheets;
 using OneOf;
 
-namespace Introl.Timesheets.Api.Services;
+namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
 
-public class TimesheetProcessor(
+public class EmployeeTimesheetProcessor(
     IWorksheetReader worksheetReader,
-    IWorksheetWriter worksheetWriter) : ITimesheetProcessor
+    IEmployeeTimehsheetWriter employeeTimehsheetWriter) : ITimesheetProcessor
 {
     public OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile)
     {
@@ -23,7 +23,7 @@ public class TimesheetProcessor(
         using var workbook = new XLWorkbook(inputFile.OpenReadStream());
 
         var inputSheetModel = worksheetReader.Process(workbook);
-        var outputWorkbookBytes = worksheetWriter.Process(inputSheetModel);
+        var outputWorkbookBytes = employeeTimehsheetWriter.Process(inputSheetModel);
 
         return new ProcessedTimesheetResult { Name = GetFileName(inputSheetModel), WorkbookBytes = outputWorkbookBytes };
     }

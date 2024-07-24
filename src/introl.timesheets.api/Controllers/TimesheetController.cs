@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Services;
+using Introl.Timesheets.Api.Services.EmployeeTimesheets;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Introl.Timesheets.Api.Controllers;
@@ -10,8 +11,8 @@ namespace Introl.Timesheets.Api.Controllers;
 public class TimesheetController(
     ITimesheetProcessor timesheetProcessor) : Controller
 {
-    [HttpPost("process")]
-    public IActionResult Process([Required] IFormFile input)
+    [HttpPost("employee")]
+    public IActionResult Employee([Required] IFormFile input)
     {
         var response = timesheetProcessor.ProcessTimesheet(input);
 

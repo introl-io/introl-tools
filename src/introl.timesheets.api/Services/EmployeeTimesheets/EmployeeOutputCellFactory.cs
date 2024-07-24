@@ -3,10 +3,11 @@ using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Models.EmployeeTimesheets;
 
-namespace Introl.Timesheets.Api.Services;
+namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
 
-public class OutputCellFactory : IOutputCellFactory
+public class EmployeeOutputCellFactory : IOutputCellFactory
 {
     private Dictionary<DayOfTheWeek, int> DayOfTheWeekColumnDictionary => new()
     {

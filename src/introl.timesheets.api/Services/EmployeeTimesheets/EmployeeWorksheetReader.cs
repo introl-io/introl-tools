@@ -1,18 +1,18 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
-using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Models.EmployeeTimesheets;
 
-namespace Introl.Timesheets.Api.Services;
+namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
 
-public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWorksheetReader
+public class EmployeeWorksheetReader(IEmployeeTimesheetParser employeeTimesheetParser) : IWorksheetReader
 {
     public InputSheetModel Process(XLWorkbook workbook)
     {
         var teamSummarySheet = workbook.Worksheets.Worksheet("Team Summary");
         var rawTimesheetsWorkSheet = workbook.Worksheets.Worksheet("Raw Timesheets");
         ArgumentNullException.ThrowIfNull(teamSummarySheet);
-        var (startDate, endDate) = worksheetReaderHelper.GetStartAndEndDate(teamSummarySheet);
+        var (startDate, endDate) = employeeTimesheetParser.GetStartAndEndDate(teamSummarySheet);
 
         return new InputSheetModel
         {
@@ -38,7 +38,7 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
     private IList<Employee> GetEmployees(IXLWorksheet worksheet)
     {
         var employeeRow = GetFirstEmployeeRow(worksheet);
-        var dayColDict = worksheetReaderHelper.GetDayOfTheWeekColumnDictionary(worksheet);
+        var dayColDict = employeeTimesheetParser.GetDayOfTheWeekColumnDictionary(worksheet);
         var ratesCol = RatesColumn(worksheet);
         var employees = new List<Employee>();
         do
@@ -54,8 +54,8 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
     {
         var name = worksheet.Cell(employeeRow, 1).GetString();
 
-        var (hasDoneRegularHours, hasDoneOvertimeHours) = worksheetReaderHelper.GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
-        var (regularHoursRate, overtimeHoursRate) = worksheetReaderHelper.GetEmployeeRates(worksheet, employeeRow, ratesCol);
+        var (hasDoneRegularHours, hasDoneOvertimeHours) = employeeTimesheetParser.GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
+        var (regularHoursRate, overtimeHoursRate) = employeeTimesheetParser.GetEmployeeRates(worksheet, employeeRow, ratesCol);
 
         numRowsUsedByEmployee = 1;
         if (hasDoneRegularHours && hasDoneOvertimeHours)
@@ -70,7 +70,7 @@ public class WorksheetReader(IWorksheetReaderHelper worksheetReaderHelper) : IWo
         var workDays = new Dictionary<DayOfTheWeek, WorkDayHours>();
         foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
         {
-            workDays.Add(day, worksheetReaderHelper.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[day]));
+            workDays.Add(day, employeeTimesheetParser.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[day]));
         }
 
         return new Employee

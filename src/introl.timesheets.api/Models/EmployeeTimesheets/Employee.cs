@@ -1,6 +1,6 @@
 ﻿using Introl.Timesheets.Api.Enums;
 
-namespace Introl.Timesheets.Api.Models;
+namespace Introl.Timesheets.Api.Models.EmployeeTimesheets;
 
 public class Employee
 {

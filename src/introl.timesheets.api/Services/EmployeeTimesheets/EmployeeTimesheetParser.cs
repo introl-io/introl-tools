@@ -2,11 +2,11 @@
 using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
-using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Models.EmployeeTimesheets;
 
-namespace Introl.Timesheets.Api.Services;
+namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
 
-public class WorksheetReaderHelper : IWorksheetReaderHelper
+public class EmployeeTimesheetParser : IEmployeeTimesheetParser
 {
     public IDictionary<DayOfTheWeek, int> GetDayOfTheWeekColumnDictionary(IXLWorksheet worksheet)
     {
@@ -94,7 +94,7 @@ public class WorksheetReaderHelper : IWorksheetReaderHelper
     }
 }
 
-public interface IWorksheetReaderHelper
+public interface IEmployeeTimesheetParser
 {
     IDictionary<DayOfTheWeek, int> GetDayOfTheWeekColumnDictionary(IXLWorksheet worksheet);
     (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet);
