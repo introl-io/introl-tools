@@ -1,14 +1,14 @@
 ﻿using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Services;
+using Introl.Timesheets.Api.Services.EmployeeTimesheets;
 using Xunit;
 
-namespace Introl.Timesheets.Api.Tests.Unit.services;
+namespace Introl.Timesheets.Api.Tests.Unit.Services;
 
-public class WorksheetReaderHelperTests
+public class EmployeeTimesheetParserTests
 {
-    private WorksheetReaderHelper sut = new();
+    private EmployeeTimesheetParser sut = new();
 
     [Fact]
     public void GetDayOfTheWeekDictionary_WhenWeekExist_ReturnDictionary()

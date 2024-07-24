@@ -19,13 +19,13 @@ public class TimesheetControllerTests
     }
 
     [Fact]
-    public async Task Process_GivenKnownInput_GivesKnownOutput()
+    public async Task Employee_GivenKnownInput_GivesKnownOutput()
     {
-        await using var inputFileStream = File.Open("./Resources/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/Employee/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/process", request);
+        var response = await _httpClient.PostAsync("/api/timesheet/employee", request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.08 - 2024.07.14.xlsx\"";
@@ -35,7 +35,7 @@ public class TimesheetControllerTests
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
-        await using var expectedFileStream = File.Open("./Resources/Success/expected_output.xlsx", FileMode.Open);
+        await using var expectedFileStream = File.Open("./Resources/Employee/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
@@ -43,11 +43,11 @@ public class TimesheetControllerTests
     }
 
     [Fact]
-    public async Task Process_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
+    public async Task Employee_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
     {
         var request =
             new MultipartFormDataContent { { new StringContent(""), "input", "timesheet_input.pdf" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/process", request);
+        var response = await _httpClient.PostAsync("/api/timesheet/employee", request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());

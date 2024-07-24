@@ -1,10 +1,11 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Models.EmployeeTimesheets;
 
-namespace Introl.Timesheets.Api.Services;
+namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
 
-public class WorksheetWriter(IOutputCellFactory outputCellFactory) : IWorksheetWriter
+public class EmployeeTimehsheetWriter(IOutputCellFactory outputCellFactory) : IEmployeeTimehsheetWriter
 {
     public byte[] Process(InputSheetModel inputSheetModel)
     {
@@ -69,7 +70,7 @@ public class WorksheetWriter(IOutputCellFactory outputCellFactory) : IWorksheetW
     }
 }
 
-public interface IWorksheetWriter
+public interface IEmployeeTimehsheetWriter
 {
     byte[] Process(InputSheetModel inputSheetModel);
 }
