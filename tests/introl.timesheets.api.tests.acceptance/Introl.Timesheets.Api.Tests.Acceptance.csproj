@@ -31,4 +31,9 @@
     </Content>
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="Resources\Employee\" />
+  </ItemGroup>
+
 </Project>

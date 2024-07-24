@@ -21,7 +21,7 @@ public class TimesheetControllerTests
     [Fact]
     public async Task Employee_GivenKnownInput_GivesKnownOutput()
     {
-        await using var inputFileStream = File.Open("./Resources/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/Employee/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
