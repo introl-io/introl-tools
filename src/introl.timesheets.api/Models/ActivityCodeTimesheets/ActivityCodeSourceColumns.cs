@@ -2,6 +2,7 @@ namespace Introl.Timesheets.Api.Models.ActivityCodeTimesheets;
 
 public class ActivityCodeSourceColumns
 {
+    public required int TitleRow { get; init; }
     public required int Name { get; init; }
     public required int MemberCode { get; init; }
     public required int TrackedHours { get; init; }

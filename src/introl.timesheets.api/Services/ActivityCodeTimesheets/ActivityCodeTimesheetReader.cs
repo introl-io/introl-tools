@@ -19,6 +19,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
     {
         return new ActivityCodeSourceColumns
         {
+            TitleRow = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.ActivityCode).Address.RowNumber,
             ActivityCode = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.ActivityCode).Address.ColumnNumber,
             Date = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.Date, true).Address.ColumnNumber,
             Name = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.Name).Address.ColumnNumber,
