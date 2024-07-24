@@ -35,7 +35,7 @@ public class TimesheetControllerTests
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
-        await using var expectedFileStream = File.Open("./Resources/Success/expected_output.xlsx", FileMode.Open);
+        await using var expectedFileStream = File.Open("./Resources/Employee/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
