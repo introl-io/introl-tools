@@ -38,6 +38,7 @@ builder.Services.AddScoped<IEmployeeTimehsheetWriter, EmployeeTimehsheetWriter>(
 builder.Services.AddScoped<IEmployeeTimesheetProcessor, EmployeeEmployeeTimesheetProcessor>();
 
 builder.Services.AddScoped<IActivityCodeTimesheetProcessor, ActivityCodeTimesheetProcessor>();
+builder.Services.AddScoped<IActivityCodeTimesheetReader, ActivityCodeTimesheetReader>();
 
 builder.Services.AddScoped<ApiKeyMiddleware>();
 builder.Services.AddLogging();

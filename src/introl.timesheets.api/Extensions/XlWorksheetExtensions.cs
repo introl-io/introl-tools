@@ -4,7 +4,7 @@ namespace Introl.Timesheets.Api.Extensions;
 
 public static class XlWorksheetExtensions
 {
-    public static IXLCell FindSingleCellByValue(this IXLWorksheet worksheet, string value)
+    public static IXLCell FindSingleCellByValue(this IXLWorksheet worksheet, string value, bool ifMultipleTakeFirst = false)
     {
         var matchingCells = worksheet.CellsUsed(c => c.GetString().ToUpper() == value.ToUpper());
         if (!matchingCells.Any())
@@ -14,6 +14,10 @@ public static class XlWorksheetExtensions
 
         if (matchingCells.Count() > 1)
         {
+            if (ifMultipleTakeFirst)
+            {
+                return matchingCells.First();
+            }
             throw new InvalidOperationException($"Multiple cells found with the value {value}");
         }
         return matchingCells.First();

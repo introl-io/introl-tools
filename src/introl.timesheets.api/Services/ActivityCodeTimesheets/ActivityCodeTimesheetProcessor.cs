@@ -5,7 +5,8 @@ using OneOf;
 
 namespace Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
 
-public class ActivityCodeTimesheetProcessor : IActivityCodeTimesheetProcessor
+public class ActivityCodeTimesheetProcessor
+    (IActivityCodeTimesheetReader timsheetReader): IActivityCodeTimesheetProcessor
 {
     public OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile)
     {
@@ -19,7 +20,7 @@ public class ActivityCodeTimesheetProcessor : IActivityCodeTimesheetProcessor
             };
         }
         using var workbook = new XLWorkbook(inputFile.OpenReadStream());
-
+var res = timsheetReader.Process(workbook);
         
         return new ProcessedTimesheetError
         {
