@@ -36,6 +36,7 @@ public class TimesheetController(
             });
     }
     
+    [ApiExplorerSettings(IgnoreApi = true)] 
     [HttpPost("activity-code")]
     public IActionResult ActivityCode([Required] IFormFile input)
     {
