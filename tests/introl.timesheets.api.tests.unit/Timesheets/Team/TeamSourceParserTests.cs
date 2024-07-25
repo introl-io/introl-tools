@@ -4,7 +4,7 @@ using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Timesheets.Team.Services;
 using Xunit;
 
-namespace Introl.Timesheets.Api.Tests.Unit.Services;
+namespace Introl.Timesheets.Api.Tests.Unit.Timesheets.Team;
 
 public class TeamSourceParserTests
 {
