@@ -1,8 +1,8 @@
-﻿namespace Introl.Timesheets.Api.Extensions;
+namespace Introl.Timesheets.Api.Utils;
 
-public static class IntExtensions
+public static class ExcelUtils
 {
-    public static string ToExcelColumn(this int columnNumber)
+    public static string ToExcelColumn(int columnNumber)
     {
         string columnName = "";
 

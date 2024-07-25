@@ -4,6 +4,7 @@ using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models;
 using Introl.Timesheets.Api.Timesheets.Team.Models;
+using Introl.Timesheets.Api.Utils;
 
 namespace Introl.Timesheets.Api.Timesheets.Team.Services;
 
@@ -26,10 +27,10 @@ public class TeamResultCellFactory : ITeamResultCellFactory
     private const int RatesColInt = 11;
     private const int TotalBillColInt = 12;
 
-    private string HoursTypeColLetter => HoursTypeColInt.ToExcelColumn();
-    private string TotalHoursColLetter => TotalHoursColInt.ToExcelColumn();
-    private string RatesColLetter => RatesColInt.ToExcelColumn();
-    private string TotalBillColLetter => TotalBillColInt.ToExcelColumn();
+    private string HoursTypeColLetter => ExcelUtils.ToExcelColumn(HoursTypeColInt);
+    private string TotalHoursColLetter => ExcelUtils.ToExcelColumn(TotalHoursColInt);
+    private string RatesColLetter => ExcelUtils.ToExcelColumn(RatesColInt);
+    private string TotalBillColLetter => ExcelUtils.ToExcelColumn(TotalBillColInt);
 
     private const int BufferRow = 2;
     private const int WeekRow = 3;
@@ -152,8 +153,8 @@ public class TeamResultCellFactory : ITeamResultCellFactory
 
     public IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<TeamEmployee> employees, ref int employeeRow)
     {
-        var mondayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday].ToExcelColumn();
-        var sundayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday].ToExcelColumn();
+        var mondayColLetter = ExcelUtils.ToExcelColumn(DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday]);
+        var sundayColLetter = ExcelUtils.ToExcelColumn(DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday]);
 
         var cells = new List<CellToAdd>();
 
@@ -192,6 +193,7 @@ public class TeamResultCellFactory : ITeamResultCellFactory
 
             foreach (var (dayOfTheWeek, col) in DayOfTheWeekColumnDictionary)
             {
+                var colLetter = ExcelUtils.ToExcelColumn(col);
                 cells.AddRange(new[]
                 {
                     new CellToAdd
@@ -200,7 +202,7 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                         Column = col,
                         ValueType = CellToAdd.CellValueType.Formula,
                         Value =
-                            $"{col.ToExcelColumn()}{employeeRow + 1} + {col.ToExcelColumn()}{employeeRow + 2}",
+                            $"{colLetter}{employeeRow + 1} + {colLetter}{employeeRow + 2}",
                         NumberFormat = StyleConstants.HourCellFormat
                     },
                     new CellToAdd
@@ -296,12 +298,12 @@ public class TeamResultCellFactory : ITeamResultCellFactory
         int lastEmployeeRow)
     {
         var totalBillableRange = $"{TotalBillColLetter}1:{TotalBillColLetter}{lastEmployeeRow}";
-        var mondayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday].ToExcelColumn();
-        var sundayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday].ToExcelColumn();
+        var mondayColLetter = ExcelUtils.ToExcelColumn(DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday]);
+        var sundayColLetter = ExcelUtils.ToExcelColumn(DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday]);
         var dayCells = DayOfTheWeekColumnDictionary.SelectMany(ent =>
         {
             var col = ent.Value;
-            var colLetter = col.ToExcelColumn();
+            var colLetter = ExcelUtils.ToExcelColumn(col);
             var daysHourRangeRange = $"{colLetter}1:{colLetter}{lastEmployeeRow}";
 
             return new[]

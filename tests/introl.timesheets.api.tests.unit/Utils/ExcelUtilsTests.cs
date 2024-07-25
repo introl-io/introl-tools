@@ -1,9 +1,10 @@
-﻿using Introl.Timesheets.Api.Extensions;
+using Introl.Timesheets.Api.Extensions;
+using Introl.Timesheets.Api.Utils;
 using Xunit;
 
-namespace Introl.Timesheets.Api.Tests.Unit.Extensions;
+namespace Introl.Timesheets.Api.Tests.Unit.Utils;
 
-public class IntExtensionsTests
+public class ExcelUtilsTests
 {
     [Theory]
     [InlineData(1, "A")]
@@ -13,7 +14,7 @@ public class IntExtensionsTests
     [InlineData(53, "BA")]
     public void ToExcelColumn(int input, string expectedOutput)
     {
-        var result = input.ToExcelColumn();
+        var result = ExcelUtils.ToExcelColumn(input);
 
         Assert.Equal(expectedOutput, result);
     }
