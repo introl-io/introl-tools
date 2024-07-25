@@ -1,13 +1,13 @@
 ﻿using ClosedXML.Excel;
-using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Extensions;
-using Introl.Timesheets.Api.Models.ActivityCodeTimesheets;
+using Introl.Timesheets.Api.Timesheets.ActivityCode.Constants;
+using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 
-namespace Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
+namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 
-public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
+public class ActCodeSourceReader : IActCodeSourceReader
 {
-    public ActivityCodeTimesheetModel Process(XLWorkbook workbook)
+    public ActCodeTimesheetModel Process(XLWorkbook workbook)
     {
         var summaryWorksheet = workbook.Worksheets.Worksheet("Summary");
 
@@ -15,7 +15,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
         var keyPositions = GetActivityCodeKeyPositions(summaryWorksheet);
         var employees = GetEmployees(summaryWorksheet, keyPositions);
 
-        return new ActivityCodeTimesheetModel
+        return new ActCodeTimesheetModel
         {
             StartDate = startDate,
             EndDate = endDate,
@@ -24,12 +24,12 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
         };
     }
 
-    private IDictionary<string, ActivityCodeEmployee> GetEmployees(IXLWorksheet worksheet,
-        ActivityCodeSourceKeyPositions keyPositions)
+    private IDictionary<string, ActCodeEmployee> GetEmployees(IXLWorksheet worksheet,
+        ActCodeSourceKeyPositions keyPositions)
     {
         var startRow = keyPositions.TitleRow + 1;
         var endRow = keyPositions.TotalHoursRow - 1;
-        var result = new Dictionary<string, ActivityCodeEmployee>();
+        var result = new Dictionary<string, ActCodeEmployee>();
 
         for (var i = startRow; i < endRow; i++)
         {
@@ -45,7 +45,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
 
             var startDateTime = new DateTime(date.Year, date.Month, date.Day, startTime.Hour, startTime.Minute, 0);
 
-            var hours = new ActivityCodeHours
+            var hours = new ActCodeHours
             {
                 StartTime = startDateTime,
                 ActivityCode = worksheet.Cell(i, keyPositions.ActivityCodeCol).GetString(),
@@ -57,11 +57,11 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
             }
             else
             {
-                result[memberCode.GetString()] = new ActivityCodeEmployee
+                result[memberCode.GetString()] = new ActCodeEmployee
                 {
                     Name = worksheet.Cell(i, keyPositions.NameCol).GetString(),
                     MemberCode = memberCode.GetString(),
-                    ActivityCodeHours = new List<ActivityCodeHours> { hours }
+                    ActivityCodeHours = new List<ActCodeHours> { hours }
                 };
             }
         }
@@ -69,21 +69,21 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
         return result;
     }
 
-    private ActivityCodeSourceKeyPositions GetActivityCodeKeyPositions(IXLWorksheet worksheet)
+    private ActCodeSourceKeyPositions GetActivityCodeKeyPositions(IXLWorksheet worksheet)
     {
-        return new ActivityCodeSourceKeyPositions
+        return new ActCodeSourceKeyPositions
         {
-            TitleRow = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.ActivityCode).Address.RowNumber,
-            ActivityCodeCol = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.ActivityCode).Address.ColumnNumber,
-            DateCol = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.Date, true).Address.ColumnNumber,
-            NameCol = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.Name).Address.ColumnNumber,
-            MemberCodeCol = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.MemberCode).Address.ColumnNumber,
-            StartTimeCol = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.StartTime).Address.ColumnNumber,
+            TitleRow = worksheet.FindSingleCellByValue(ActCodeSourceConstants.ActivityCode).Address.RowNumber,
+            ActivityCodeCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.ActivityCode).Address.ColumnNumber,
+            DateCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.Date, true).Address.ColumnNumber,
+            NameCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.Name).Address.ColumnNumber,
+            MemberCodeCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.MemberCode).Address.ColumnNumber,
+            StartTimeCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.StartTime).Address.ColumnNumber,
             TrackedHoursCol =
-                worksheet.FindSingleCellByValue(ActivityCodeInputConstants.TrackedHours).Address.ColumnNumber,
+                worksheet.FindSingleCellByValue(ActCodeSourceConstants.TrackedHours).Address.ColumnNumber,
             BillableRateCol =
-                worksheet.FindSingleCellByValue(ActivityCodeInputConstants.BillableRate).Address.ColumnNumber,
-            TotalHoursRow = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.TotalHours).Address.RowNumber,
+                worksheet.FindSingleCellByValue(ActCodeSourceConstants.BillableRate).Address.ColumnNumber,
+            TotalHoursRow = worksheet.FindSingleCellByValue(ActCodeSourceConstants.TotalHours).Address.RowNumber,
         };
     }
 
@@ -113,7 +113,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
 
     private (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet)
     {
-        var dateRangeCell = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.DateRange);
+        var dateRangeCell = worksheet.FindSingleCellByValue(ActCodeSourceConstants.DateRange);
         var dateString = dateRangeCell.CellRight().GetString();
         var splitDates = dateString.Split(" - ");
 
@@ -124,7 +124,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
     }
 }
 
-public interface IActivityCodeTimesheetReader
+public interface IActCodeSourceReader
 {
-    ActivityCodeTimesheetModel Process(XLWorkbook workbook);
+    ActCodeTimesheetModel Process(XLWorkbook workbook);
 }

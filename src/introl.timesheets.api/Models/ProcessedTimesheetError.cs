@@ -1,6 +1,6 @@
 ﻿using Introl.Timesheets.Api.Enums;
 
-namespace Introl.Timesheets.Api.Models.EmployeeTimesheets;
+namespace Introl.Timesheets.Api.Models;
 
 public class ProcessedTimesheetError
 {

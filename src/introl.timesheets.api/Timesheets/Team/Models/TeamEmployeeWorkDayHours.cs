@@ -1,6 +1,6 @@
-﻿namespace Introl.Timesheets.Api.Models.EmployeeTimesheets;
+﻿namespace Introl.Timesheets.Api.Timesheets.Team.Models;
 
-public class EmployeeWorkDayHours
+public class TeamEmployeeWorkDayHours
 {
     public required double RegularHours { get; init; }
     public required double OvertimeHours { get; init; }

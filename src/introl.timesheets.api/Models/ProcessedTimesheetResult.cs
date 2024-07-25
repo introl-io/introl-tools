@@ -1,4 +1,4 @@
-﻿namespace Introl.Timesheets.Api.Models.EmployeeTimesheets;
+﻿namespace Introl.Timesheets.Api.Models;
 
 public class ProcessedTimesheetResult
 {

@@ -1,6 +1,6 @@
-﻿namespace Introl.Timesheets.Api.Models.ActivityCodeTimesheets;
+﻿namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 
-public record ActivityCodeHours
+public record ActCodeHours
 {
     public required DateTime StartTime { get; init; }
     public required double Hours { get; init; }

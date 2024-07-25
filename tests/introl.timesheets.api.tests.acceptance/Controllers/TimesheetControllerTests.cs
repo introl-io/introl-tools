@@ -3,6 +3,7 @@ using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Authorization;
 using Introl.Timesheets.Api.Extensions;
+using Introl.Timesheets.Api.Utils;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Acceptance.Controllers;
@@ -25,7 +26,7 @@ public class TimesheetControllerTests
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/employee", request);
+        var response = await _httpClient.PostAsync("/api/timesheet/team", request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.08 - 2024.07.14.xlsx\"";
@@ -47,7 +48,7 @@ public class TimesheetControllerTests
     {
         var request =
             new MultipartFormDataContent { { new StringContent(""), "input", "timesheet_input.pdf" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/employee", request);
+        var response = await _httpClient.PostAsync("/api/timesheet/team", request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
@@ -124,7 +125,7 @@ public class TimesheetControllerTests
             var actualCell = actual.Cell(i);
             var expectedCell = expected.Cell(i);
             actualCell.Value.Should().Be(expectedCell.Value,
-                $"Cell value mismatch in worksheet {workSheetName} cell {i.ToExcelColumn()}{rowNumber}");
+                $"Cell value mismatch in worksheet {workSheetName} cell {ExcelUtils.ToExcelColumn(i)}{rowNumber}");
         }
     }
 }

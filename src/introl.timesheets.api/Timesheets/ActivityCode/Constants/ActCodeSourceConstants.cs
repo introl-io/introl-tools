@@ -1,6 +1,6 @@
-﻿namespace Introl.Timesheets.Api.Constants;
+﻿namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Constants;
 
-public static class ActivityCodeInputConstants
+public static class ActCodeSourceConstants
 {
     public static string Name => "Full Name";
     public static string MemberCode => "Member Code";

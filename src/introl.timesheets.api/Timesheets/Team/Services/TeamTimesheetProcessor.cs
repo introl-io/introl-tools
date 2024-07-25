@@ -1,13 +1,14 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Models.EmployeeTimesheets;
+using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Timesheets.Team.Models;
 using OneOf;
 
-namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
+namespace Introl.Timesheets.Api.Timesheets.Team.Services;
 
-public class EmployeeEmployeeTimesheetProcessor(
-    IEmployeeTimehsheetReader employeeTimehsheetReader,
-    IEmployeeTimehsheetWriter employeeTimehsheetWriter) : IEmployeeTimesheetProcessor
+public class EmployeeEmployeeEmployeeEmployeeTimesheetProcessor(
+    ITeamSourceReader teamSourceReader,
+    ITeamResultWriter teamResultWriter) : IEmployeeEmployeeTimesheetProcessor
 {
     public OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile)
     {
@@ -22,22 +23,22 @@ public class EmployeeEmployeeTimesheetProcessor(
         }
         using var workbook = new XLWorkbook(inputFile.OpenReadStream());
 
-        var inputSheetModel = employeeTimehsheetReader.Process(workbook);
-        var outputWorkbookBytes = employeeTimehsheetWriter.Process(inputSheetModel);
+        var inputSheetModel = teamSourceReader.Process(workbook);
+        var outputWorkbookBytes = teamResultWriter.Process(inputSheetModel);
 
         return new ProcessedTimesheetResult { Name = GetFileName(inputSheetModel), WorkbookBytes = outputWorkbookBytes };
     }
 
-    private string GetFileName(EmployeeInputSheetModel employeeInputSheetModel)
+    private string GetFileName(TeamParsedSourceModel teamSourceModel)
     {
         var dateFormat = "yyyy.MM.dd";
         return
-            $"Weekly Timesheet - Introl.io {employeeInputSheetModel.StartDate.ToString(dateFormat)} - {employeeInputSheetModel.EndDate.ToString(dateFormat)}.xlsx";
+            $"Weekly Timesheet - Introl.io {teamSourceModel.StartDate.ToString(dateFormat)} - {teamSourceModel.EndDate.ToString(dateFormat)}.xlsx";
 
     }
 }
 
-public interface IEmployeeTimesheetProcessor
+public interface IEmployeeEmployeeTimesheetProcessor
 {
     OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile);
 }

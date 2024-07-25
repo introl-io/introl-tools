@@ -1,33 +1,33 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Models;
-using Introl.Timesheets.Api.Models.EmployeeTimesheets;
+using Introl.Timesheets.Api.Timesheets.Team.Models;
 
-namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
+namespace Introl.Timesheets.Api.Timesheets.Team.Services;
 
-public class EmployeeTimehsheetWriter(IOutputCellFactory outputCellFactory) : IEmployeeTimehsheetWriter
+public class TeamResultWriter(ITeamResultCellFactory teamResultCellFactory) : ITeamResultWriter
 {
-    public byte[] Process(EmployeeInputSheetModel employeeInputSheetModel)
+    public byte[] Process(TeamParsedSourceModel teamSourceModel)
     {
         using var workbook = new XLWorkbook();
-        CreateSummarySheet(workbook, employeeInputSheetModel);
+        CreateSummarySheet(workbook, teamSourceModel);
 
-        workbook.AddWorksheet(employeeInputSheetModel.RawTimesheetsWorksheet);
+        workbook.AddWorksheet(teamSourceModel.RawTimesheetsWorksheet);
 
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         return stream.ToArray();
     }
 
-    private void CreateSummarySheet(XLWorkbook workbook, EmployeeInputSheetModel employeeInputSheetModel)
+    private void CreateSummarySheet(XLWorkbook workbook, TeamParsedSourceModel teamSourceModel)
     {
         var employeeRow = 6;
         var worksheet = workbook.Worksheets.Add("Summary");
-        var titleCells = outputCellFactory.GetTitleCells(worksheet, employeeInputSheetModel);
+        var titleCells = teamResultCellFactory.GetTitleCells(worksheet, teamSourceModel);
 
-        var employeeCells = outputCellFactory.GetEmployeeCells(employeeInputSheetModel.Employees, ref employeeRow);
+        var employeeCells = teamResultCellFactory.GetEmployeeCells(teamSourceModel.Employees, ref employeeRow);
 
-        var totalsCells = outputCellFactory.GetTotalsCells(employeeInputSheetModel, employeeRow + 4, employeeRow);
+        var totalsCells = teamResultCellFactory.GetTotalsCells(teamSourceModel, employeeRow + 4, employeeRow);
 
         WriteCells(worksheet, [.. titleCells, .. employeeCells, .. totalsCells]);
 
@@ -70,7 +70,7 @@ public class EmployeeTimehsheetWriter(IOutputCellFactory outputCellFactory) : IE
     }
 }
 
-public interface IEmployeeTimehsheetWriter
+public interface ITeamResultWriter
 {
-    byte[] Process(EmployeeInputSheetModel employeeInputSheetModel);
+    byte[] Process(TeamParsedSourceModel teamSourceModel);
 }
