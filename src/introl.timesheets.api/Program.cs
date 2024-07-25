@@ -1,7 +1,7 @@
 ﻿using Introl.Timesheets.Api.Authorization;
 using Introl.Timesheets.Api.Services;
 using Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
-using Introl.Timesheets.Api.Services.EmployeeTimesheets;
+using Introl.Timesheets.Api.Timesheets.Team.Services;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,11 +31,11 @@ builder.Services.AddSwaggerGen(opts =>
 
 });
 
-builder.Services.AddScoped<IEmployeeTimehsheetReader, EmployeeTimesheetReader>();
-builder.Services.AddScoped<IEmployeeTimesheetParser, EmployeeTimesheetParser>();
-builder.Services.AddScoped<IOutputCellFactory, EmployeeOutputCellFactory>();
-builder.Services.AddScoped<IEmployeeTimehsheetWriter, EmployeeTimehsheetWriter>();
-builder.Services.AddScoped<IEmployeeTimesheetProcessor, EmployeeEmployeeTimesheetProcessor>();
+builder.Services.AddScoped<ITeamSourceReader, TeamSourceReader>();
+builder.Services.AddScoped<ITeamSourceParser, TeamSourceParser>();
+builder.Services.AddScoped<ITeamResultCellFactory, TeamResultCellFactory>();
+builder.Services.AddScoped<ITeamResultWriter, TeamResultWriter>();
+builder.Services.AddScoped<IEmployeeEmployeeTimesheetProcessor, EmployeeEmployeeEmployeeEmployeeTimesheetProcessor>();
 
 builder.Services.AddScoped<IActivityCodeTimesheetProcessor, ActivityCodeTimesheetProcessor>();
 builder.Services.AddScoped<IActivityCodeTimesheetReader, ActivityCodeTimesheetReader>();

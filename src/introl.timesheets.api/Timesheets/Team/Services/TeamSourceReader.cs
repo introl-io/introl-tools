@@ -1,20 +1,20 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
-using Introl.Timesheets.Api.Models.EmployeeTimesheets;
+using Introl.Timesheets.Api.Timesheets.Team.Models;
 
-namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
+namespace Introl.Timesheets.Api.Timesheets.Team.Services;
 
-public class EmployeeTimesheetReader(IEmployeeTimesheetParser employeeTimesheetParser) : IEmployeeTimehsheetReader
+public class TeamSourceReader(ITeamSourceParser teamSourceParser) : ITeamSourceReader
 {
-    public EmployeeInputSheetModel Process(XLWorkbook workbook)
+    public TeamParsedSourceModel Process(XLWorkbook workbook)
     {
         var teamSummarySheet = workbook.Worksheets.Worksheet("Team Summary");
         var rawTimesheetsWorkSheet = workbook.Worksheets.Worksheet("Raw Timesheets");
         ArgumentNullException.ThrowIfNull(teamSummarySheet);
-        var (startDate, endDate) = employeeTimesheetParser.GetStartAndEndDate(teamSummarySheet);
+        var (startDate, endDate) = teamSourceParser.GetStartAndEndDate(teamSummarySheet);
 
-        return new EmployeeInputSheetModel
+        return new TeamParsedSourceModel
         {
             StartDate = startDate,
             EndDate = endDate,
@@ -35,12 +35,12 @@ public class EmployeeTimesheetReader(IEmployeeTimesheetParser employeeTimesheetP
         return cell.Address.ColumnNumber;
     }
 
-    private IList<Employee> GetEmployees(IXLWorksheet worksheet)
+    private IList<TeamEmployee> GetEmployees(IXLWorksheet worksheet)
     {
         var employeeRow = GetFirstEmployeeRow(worksheet);
-        var dayColDict = employeeTimesheetParser.GetDayOfTheWeekColumnDictionary(worksheet);
+        var dayColDict = teamSourceParser.GetDayOfTheWeekColumnDictionary(worksheet);
         var ratesCol = RatesColumn(worksheet);
-        var employees = new List<Employee>();
+        var employees = new List<TeamEmployee>();
         do
         {
             employees.Add(GetEmployee(worksheet, employeeRow, dayColDict, ratesCol, out var numRowsUsedByEmployee));
@@ -50,12 +50,12 @@ public class EmployeeTimesheetReader(IEmployeeTimesheetParser employeeTimesheetP
         return employees;
     }
 
-    private Employee GetEmployee(IXLWorksheet worksheet, int employeeRow, IDictionary<DayOfTheWeek, int> dayDictionary, int ratesCol, out int numRowsUsedByEmployee)
+    private TeamEmployee GetEmployee(IXLWorksheet worksheet, int employeeRow, IDictionary<DayOfTheWeek, int> dayDictionary, int ratesCol, out int numRowsUsedByEmployee)
     {
         var name = worksheet.Cell(employeeRow, 1).GetString();
 
-        var (hasDoneRegularHours, hasDoneOvertimeHours) = employeeTimesheetParser.GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
-        var (regularHoursRate, overtimeHoursRate) = employeeTimesheetParser.GetEmployeeRates(worksheet, employeeRow, ratesCol);
+        var (hasDoneRegularHours, hasDoneOvertimeHours) = teamSourceParser.GetTypesOfHoursEmployeeHasDone(worksheet, employeeRow);
+        var (regularHoursRate, overtimeHoursRate) = teamSourceParser.GetEmployeeRates(worksheet, employeeRow, ratesCol);
 
         numRowsUsedByEmployee = 1;
         if (hasDoneRegularHours && hasDoneOvertimeHours)
@@ -67,13 +67,13 @@ public class EmployeeTimesheetReader(IEmployeeTimesheetParser employeeTimesheetP
             numRowsUsedByEmployee += 1;
         }
 
-        var workDays = new Dictionary<DayOfTheWeek, EmployeeWorkDayHours>();
+        var workDays = new Dictionary<DayOfTheWeek, TeamEmployeeWorkDayHours>();
         foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
         {
-            workDays.Add(day, employeeTimesheetParser.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[day]));
+            workDays.Add(day, teamSourceParser.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[day]));
         }
 
-        return new Employee
+        return new TeamEmployee
         {
             Name = name,
             RegularHoursRate = regularHoursRate,
@@ -83,7 +83,7 @@ public class EmployeeTimesheetReader(IEmployeeTimesheetParser employeeTimesheetP
     }
 }
 
-public interface IEmployeeTimehsheetReader
+public interface ITeamSourceReader
 {
-    EmployeeInputSheetModel Process(XLWorkbook workbook);
+    TeamParsedSourceModel Process(XLWorkbook workbook);
 }

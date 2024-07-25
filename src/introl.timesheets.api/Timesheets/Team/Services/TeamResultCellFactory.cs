@@ -3,11 +3,11 @@ using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models;
-using Introl.Timesheets.Api.Models.EmployeeTimesheets;
+using Introl.Timesheets.Api.Timesheets.Team.Models;
 
-namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
+namespace Introl.Timesheets.Api.Timesheets.Team.Services;
 
-public class EmployeeOutputCellFactory : IOutputCellFactory
+public class TeamResultCellFactory : ITeamResultCellFactory
 {
     private Dictionary<DayOfTheWeek, int> DayOfTheWeekColumnDictionary => new()
     {
@@ -36,7 +36,7 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
     private const int DayRow = 4;
     private const int TitleRow = 5;
 
-    public IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, EmployeeInputSheetModel employeeInputSheetModel)
+    public IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, TeamParsedSourceModel teamSourceModel)
     {
         var pic = worksheet.AddPicture("./Assets/introl_logo.png")
             .MoveTo(1, 1);
@@ -58,13 +58,13 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
         return
         [
             .. cells,
-            .. AddWeekRow(employeeInputSheetModel),
+            .. AddWeekRow(teamSourceModel),
             .. AddDayRow(),
-            .. AddTitleRow(employeeInputSheetModel)
+            .. AddTitleRow(teamSourceModel)
         ];
     }
 
-    private IEnumerable<CellToAdd> AddTitleRow(EmployeeInputSheetModel employeeInputSheetModel)
+    private IEnumerable<CellToAdd> AddTitleRow(TeamParsedSourceModel teamSourceModel)
     {
         var dayDateFormat = "MMMM dd";
 
@@ -73,7 +73,7 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
             {
                 Column = day.Value,
                 Row = TitleRow,
-                Value = $"{employeeInputSheetModel.StartDate.AddDays(ix).ToString(dayDateFormat)}",
+                Value = $"{teamSourceModel.StartDate.AddDays(ix).ToString(dayDateFormat)}",
                 Color = StyleConstants.DarkGrey,
                 Bold = true
             }).ToList();
@@ -141,16 +141,16 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
         }
     }
 
-    private IEnumerable<CellToAdd> AddWeekRow(EmployeeInputSheetModel employeeInputSheetModel)
+    private IEnumerable<CellToAdd> AddWeekRow(TeamParsedSourceModel teamSourceModel)
     {
         var weekRangeDateFormat = "dd MMMM yyyy";
         var formattedDate =
-            $"{employeeInputSheetModel.StartDate.ToString(weekRangeDateFormat)} - {employeeInputSheetModel.EndDate.ToString(weekRangeDateFormat)}";
+            $"{teamSourceModel.StartDate.ToString(weekRangeDateFormat)} - {teamSourceModel.EndDate.ToString(weekRangeDateFormat)}";
 
         return new[] { new CellToAdd { Column = 2, Row = WeekRow, Bold = true, Value = formattedDate } };
     }
 
-    public IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<Employee> employees, ref int employeeRow)
+    public IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<TeamEmployee> employees, ref int employeeRow)
     {
         var mondayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday].ToExcelColumn();
         var sundayColLetter = DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday].ToExcelColumn();
@@ -292,7 +292,7 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
         return cells;
     }
 
-    public IEnumerable<CellToAdd> GetTotalsCells(EmployeeInputSheetModel employeeInputSheetModel, int totalsStartRow,
+    public IEnumerable<CellToAdd> GetTotalsCells(TeamParsedSourceModel teamSourceModel, int totalsStartRow,
         int lastEmployeeRow)
     {
         var totalBillableRange = $"{TotalBillColLetter}1:{TotalBillColLetter}{lastEmployeeRow}";
@@ -428,9 +428,9 @@ public class EmployeeOutputCellFactory : IOutputCellFactory
     }
 }
 
-public interface IOutputCellFactory
+public interface ITeamResultCellFactory
 {
-    IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, EmployeeInputSheetModel employeeInputSheetModel);
-    IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<Employee> employees, ref int employeeRow);
-    IEnumerable<CellToAdd> GetTotalsCells(EmployeeInputSheetModel employeeInputSheetModel, int totalsStartRow, int lastEmployeeRow);
+    IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, TeamParsedSourceModel teamSourceModel);
+    IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<TeamEmployee> employees, ref int employeeRow);
+    IEnumerable<CellToAdd> GetTotalsCells(TeamParsedSourceModel teamSourceModel, int totalsStartRow, int lastEmployeeRow);
 }

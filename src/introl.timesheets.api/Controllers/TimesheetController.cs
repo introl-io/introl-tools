@@ -2,7 +2,7 @@
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Services;
 using Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
-using Introl.Timesheets.Api.Services.EmployeeTimesheets;
+using Introl.Timesheets.Api.Timesheets.Team.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Introl.Timesheets.Api.Controllers;
@@ -10,13 +10,13 @@ namespace Introl.Timesheets.Api.Controllers;
 [Route("api/timesheet")]
 [ApiController]
 public class TimesheetController(
-    IEmployeeTimesheetProcessor employeeEmployeeTimesheetProcessor,
+    IEmployeeEmployeeTimesheetProcessor employeeEmployeeEmployeeEmployeeTimesheetProcessor,
     IActivityCodeTimesheetProcessor activityCodeTimesheetProcessor) : Controller
 {
     [HttpPost("employee")]
     public IActionResult Employee([Required] IFormFile input)
     {
-        var response = employeeEmployeeTimesheetProcessor.ProcessTimesheet(input);
+        var response = employeeEmployeeEmployeeEmployeeTimesheetProcessor.ProcessTimesheet(input);
 
         return response.Match<IActionResult>(
             results =>

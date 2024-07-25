@@ -32,4 +32,9 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Introl.Timesheets.Api.Tests.Acceptance" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Timesheets\ActivityCode\" />
+  </ItemGroup>
 </Project>
