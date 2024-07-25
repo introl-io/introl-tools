@@ -8,7 +8,7 @@ namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 
 public class ActCodeSourceReader : IActCodeSourceReader
 {
-    public ActCodeTimesheetModel Process(XLWorkbook workbook)
+    public ActCodeParsedSourceModel Process(XLWorkbook workbook)
     {
         var summaryWorksheet = workbook.Worksheets.Worksheet("Summary");
 
@@ -16,7 +16,7 @@ public class ActCodeSourceReader : IActCodeSourceReader
         var keyPositions = GetActivityCodeKeyPositions(summaryWorksheet);
         var employees = GetEmployees(summaryWorksheet, keyPositions);
 
-        return new ActCodeTimesheetModel
+        return new ActCodeParsedSourceModel
         {
             StartDate = startDate,
             EndDate = endDate,
@@ -103,5 +103,5 @@ public class ActCodeSourceReader : IActCodeSourceReader
 
 public interface IActCodeSourceReader
 {
-    ActCodeTimesheetModel Process(XLWorkbook workbook);
+    ActCodeParsedSourceModel Process(XLWorkbook workbook);
 }

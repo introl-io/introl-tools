@@ -2,7 +2,7 @@
 
 namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 
-public class ActCodeTimesheetModel
+public class ActCodeParsedSourceModel
 {
     public required DateOnly StartDate { get; init; }
     public required DateOnly EndDate { get; init; }

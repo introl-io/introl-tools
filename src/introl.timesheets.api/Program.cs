@@ -38,6 +38,8 @@ builder.Services.AddScoped<IEmployeeEmployeeTimesheetProcessor, EmployeeEmployee
 
 builder.Services.AddScoped<IActCodeTimesheetProcessor, ActCodeTimesheetProcessor>();
 builder.Services.AddScoped<IActCodeSourceReader, ActCodeSourceReader>();
+builder.Services.AddScoped<IActCodeResultsWriter, ActCodeResultsWriter>();
+builder.Services.AddScoped<IActCodeResultCellFactory, ActCodeResultCellFactory>();
 
 builder.Services.AddScoped<ApiKeyMiddleware>();
 builder.Services.AddLogging();
