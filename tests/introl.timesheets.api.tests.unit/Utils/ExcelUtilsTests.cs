@@ -1,4 +1,4 @@
-using Introl.Timesheets.Api.Extensions;
+﻿using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Utils;
 using Xunit;
 

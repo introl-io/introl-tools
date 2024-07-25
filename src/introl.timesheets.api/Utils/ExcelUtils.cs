@@ -1,4 +1,4 @@
-namespace Introl.Timesheets.Api.Utils;
+﻿namespace Introl.Timesheets.Api.Utils;
 
 public static class ExcelUtils
 {
