@@ -35,6 +35,7 @@
 
 
   <ItemGroup>
-    <Folder Include="Timesheets\ActivityCode\" />
+    <Folder Include="Models\ActivityCodeTimesheets\" />
+    <Folder Include="Services\ActivityCodeTimesheets\" />
   </ItemGroup>
 </Project>

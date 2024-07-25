@@ -3,10 +3,10 @@ using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Models;
 using OneOf;
 
-namespace Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
+namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 
-public class ActivityCodeTimesheetProcessor
-    (IActivityCodeTimesheetReader timsheetReader) : IActivityCodeTimesheetProcessor
+public class ActCodeTimesheetProcessor
+    (IActCodeSourceReader timsheetReader) : IActCodeTimesheetProcessor
 {
     public OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile)
     {
@@ -30,7 +30,7 @@ public class ActivityCodeTimesheetProcessor
     }
 }
 
-public interface IActivityCodeTimesheetProcessor
+public interface IActCodeTimesheetProcessor
 {
     OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile);
 }

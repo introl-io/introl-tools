@@ -1,6 +1,6 @@
-﻿namespace Introl.Timesheets.Api.Models.ActivityCodeTimesheets;
+﻿namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 
-public class ActivityCodeSourceKeyPositions
+public class ActCodeSourceKeyPositions
 {
     public required int TitleRow { get; init; }
     public required int NameCol { get; init; }

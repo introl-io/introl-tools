@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Services;
-using Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
+using Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 using Introl.Timesheets.Api.Timesheets.Team.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +10,7 @@ namespace Introl.Timesheets.Api.Controllers;
 [ApiController]
 public class TimesheetController(
     IEmployeeEmployeeTimesheetProcessor employeeEmployeeEmployeeEmployeeTimesheetProcessor,
-    IActivityCodeTimesheetProcessor activityCodeTimesheetProcessor) : Controller
+    IActCodeTimesheetProcessor actCodeTimesheetProcessor) : Controller
 {
     [HttpPost("team")]
     public IActionResult Team([Required] IFormFile input)
@@ -40,7 +39,7 @@ public class TimesheetController(
     [HttpPost("activity-code")]
     public IActionResult ActivityCode([Required] IFormFile input)
     {
-        var response = activityCodeTimesheetProcessor.ProcessTimesheet(input);
+        var response = actCodeTimesheetProcessor.ProcessTimesheet(input);
 
         return response.Match<IActionResult>(
             results =>

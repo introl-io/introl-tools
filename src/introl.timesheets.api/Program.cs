@@ -1,6 +1,5 @@
 ﻿using Introl.Timesheets.Api.Authorization;
-using Introl.Timesheets.Api.Services;
-using Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
+using Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 using Introl.Timesheets.Api.Timesheets.Team.Services;
 using Microsoft.OpenApi.Models;
 
@@ -37,8 +36,8 @@ builder.Services.AddScoped<ITeamResultCellFactory, TeamResultCellFactory>();
 builder.Services.AddScoped<ITeamResultWriter, TeamResultWriter>();
 builder.Services.AddScoped<IEmployeeEmployeeTimesheetProcessor, EmployeeEmployeeEmployeeEmployeeTimesheetProcessor>();
 
-builder.Services.AddScoped<IActivityCodeTimesheetProcessor, ActivityCodeTimesheetProcessor>();
-builder.Services.AddScoped<IActivityCodeTimesheetReader, ActivityCodeTimesheetReader>();
+builder.Services.AddScoped<IActCodeTimesheetProcessor, ActCodeTimesheetProcessor>();
+builder.Services.AddScoped<IActCodeSourceReader, ActCodeSourceReader>();
 
 builder.Services.AddScoped<ApiKeyMiddleware>();
 builder.Services.AddLogging();
