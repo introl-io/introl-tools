@@ -13,8 +13,8 @@ public class TimesheetController(
     IEmployeeEmployeeTimesheetProcessor employeeEmployeeEmployeeEmployeeTimesheetProcessor,
     IActivityCodeTimesheetProcessor activityCodeTimesheetProcessor) : Controller
 {
-    [HttpPost("employee")]
-    public IActionResult Employee([Required] IFormFile input)
+    [HttpPost("team")]
+    public IActionResult Team([Required] IFormFile input)
     {
         var response = employeeEmployeeEmployeeEmployeeTimesheetProcessor.ProcessTimesheet(input);
 

@@ -25,7 +25,7 @@ public class TimesheetControllerTests
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/employee", request);
+        var response = await _httpClient.PostAsync("/api/timesheet/team", request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.08 - 2024.07.14.xlsx\"";
@@ -47,7 +47,7 @@ public class TimesheetControllerTests
     {
         var request =
             new MultipartFormDataContent { { new StringContent(""), "input", "timesheet_input.pdf" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/employee", request);
+        var response = await _httpClient.PostAsync("/api/timesheet/team", request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
