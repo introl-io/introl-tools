@@ -1,4 +1,4 @@
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models.ActivityCodeTimesheets;
@@ -14,7 +14,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
         var (startDate, endDate) = GetStartAndEndDate(summaryWorksheet);
         var keyPositions = GetActivityCodeKeyPositions(summaryWorksheet);
         var employees = GetEmployees(summaryWorksheet, keyPositions);
-        
+
         return new ActivityCodeTimesheetModel
         {
             StartDate = startDate,
@@ -51,7 +51,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
                 ActivityCode = worksheet.Cell(i, keyPositions.ActivityCodeCol).GetString(),
                 Hours = totalHours
             };
-            if(result.ContainsKey(memberCode.GetString()))
+            if (result.ContainsKey(memberCode.GetString()))
             {
                 result[memberCode.GetString()].ActivityCodeHours.Add(hours);
             }
@@ -86,7 +86,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
             TotalHoursRow = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.TotalHours).Address.RowNumber,
         };
     }
-    
+
     private double ConvertToRoundedHours(string inputHours)
     {
         if (!inputHours.Contains(":"))
@@ -110,7 +110,7 @@ public class ActivityCodeTimesheetReader : IActivityCodeTimesheetReader
             _ => hours + 1
         };
     }
-    
+
     private (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet)
     {
         var dateRangeCell = worksheet.FindSingleCellByValue(ActivityCodeInputConstants.DateRange);

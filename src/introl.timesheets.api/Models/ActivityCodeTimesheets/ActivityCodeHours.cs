@@ -1,4 +1,4 @@
-namespace Introl.Timesheets.Api.Models.ActivityCodeTimesheets;
+﻿namespace Introl.Timesheets.Api.Models.ActivityCodeTimesheets;
 
 public record ActivityCodeHours
 {

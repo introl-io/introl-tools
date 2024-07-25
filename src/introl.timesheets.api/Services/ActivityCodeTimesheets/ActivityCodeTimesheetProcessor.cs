@@ -1,4 +1,4 @@
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Models.EmployeeTimesheets;
 using OneOf;
@@ -6,7 +6,7 @@ using OneOf;
 namespace Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
 
 public class ActivityCodeTimesheetProcessor
-    (IActivityCodeTimesheetReader timsheetReader): IActivityCodeTimesheetProcessor
+    (IActivityCodeTimesheetReader timsheetReader) : IActivityCodeTimesheetProcessor
 {
     public OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile)
     {
@@ -20,8 +20,8 @@ public class ActivityCodeTimesheetProcessor
             };
         }
         using var workbook = new XLWorkbook(inputFile.OpenReadStream());
-var res = timsheetReader.Process(workbook);
-        
+        var res = timsheetReader.Process(workbook);
+
         return new ProcessedTimesheetError
         {
             FailureReason = TimesheetProcessingFailureReasons.UnsupportedFileType,

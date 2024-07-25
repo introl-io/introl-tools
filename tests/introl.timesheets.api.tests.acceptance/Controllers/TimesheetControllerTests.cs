@@ -52,7 +52,7 @@ public class TimesheetControllerTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
     }
-    
+
     [Fact]
     public async Task ActivityCode_GivenKnownInput_GivesKnownOutput()
     {
