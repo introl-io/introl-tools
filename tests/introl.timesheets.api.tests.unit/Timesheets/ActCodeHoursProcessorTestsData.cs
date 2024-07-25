@@ -7,9 +7,9 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
 {
     private readonly List<object[]> _data = new()
     {
-
-        new object[] { FortyHrsInput, FortyHrsResult }
-
+        new object[] { "40hrs", FortyHrsInput, FortyHrsResult },
+        new object[] { "41hrs Single", FortyOneHrsSingleActInput, FortyOneHrsSingleActResult },
+        new object[] { "Over 40hrs Multiple", OverFortyHrsMultipleActInput, OverFortyHrsMultipleActResult },
     };
     
     public IEnumerator<object[]> GetEnumerator()
@@ -84,4 +84,90 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
                 new Dictionary<string, (double regHours, double otHours)> { { "B", (6, 0) } }
             }
         };
+    
+    private static List<ActCodeHours> FortyOneHrsSingleActInput =>
+    [
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate, new TimeOnly(9, 0)), 
+            Hours = 41, 
+            ActivityCode = "A"
+        }
+    ];
+    
+    private static Dictionary<DateOnly, Dictionary<string, (double regHours, double otHours)>> FortyOneHrsSingleActResult =>
+        new()
+        {
+            {
+                StartDate,
+                new Dictionary<string, (double regHours, double otHours)> { { "A", (40, 1) } }
+            }
+        };
+    
+    private static List<ActCodeHours> OverFortyHrsMultipleActInput =>
+    [
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate, new TimeOnly(9, 0)), 
+            Hours = 2, 
+            ActivityCode = "A"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate, new TimeOnly(11, 30)), 
+            Hours = 8, 
+            ActivityCode = "B"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate.AddDays(1), new TimeOnly(8, 30)), 
+            Hours = 10, 
+            ActivityCode = "B"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate.AddDays(2), new TimeOnly(8, 30)), 
+            Hours = 10, 
+            ActivityCode = "C"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate.AddDays(3), new TimeOnly(8, 30)), 
+            Hours = 8, 
+            ActivityCode = "A"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate.AddDays(3), new TimeOnly(16, 30)), 
+            Hours = 3, 
+            ActivityCode = "C"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate.AddDays(4), new TimeOnly(16, 30)), 
+            Hours = 5, 
+            ActivityCode = "B"
+        },
+    ];
+    
+    private static Dictionary<DateOnly, Dictionary<string, (double regHours, double otHours)>> OverFortyHrsMultipleActResult =>
+        new()
+        {
+            {
+                StartDate, new Dictionary<string, (double regHours, double otHours)> { { "A", (2, 0) }, { "B", (8, 0) } }
+            },
+            {
+                StartDate.AddDays(1), new Dictionary<string, (double regHours, double otHours)> { { "B", (10, 0) } }
+            },
+            {
+                StartDate.AddDays(2), new Dictionary<string, (double regHours, double otHours)> { { "C", (10, 0) } }
+            },
+            {
+                StartDate.AddDays(3), new Dictionary<string, (double regHours, double otHours)> { { "A", (8, 0) }, { "C", (2, 1) } }
+            },
+            {
+                StartDate.AddDays(4), new Dictionary<string, (double regHours, double otHours)> { { "B", (0, 5) } }
+            },
+        };
+
 }
