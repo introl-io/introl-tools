@@ -1,6 +1,6 @@
 ﻿namespace Introl.Timesheets.Api.Constants;
 
-public static class InputWorkbookConstants
+public static class EmployeeInputConstants
 {
     public static string WeekCellValue => "Week";
     public static string TypeCellValue => "Type";

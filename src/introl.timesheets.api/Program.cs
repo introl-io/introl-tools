@@ -1,5 +1,6 @@
 ﻿using Introl.Timesheets.Api.Authorization;
 using Introl.Timesheets.Api.Services;
+using Introl.Timesheets.Api.Services.ActivityCodeTimesheets;
 using Introl.Timesheets.Api.Services.EmployeeTimesheets;
 using Microsoft.OpenApi.Models;
 
@@ -29,11 +30,16 @@ builder.Services.AddSwaggerGen(opts =>
     opts.AddSecurityRequirement(new OpenApiSecurityRequirement { [apiKeyScheme] = new List<string>() });
 
 });
-builder.Services.AddScoped<IWorksheetReader, EmployeeWorksheetReader>();
+
+builder.Services.AddScoped<IEmployeeTimehsheetReader, EmployeeTimesheetReader>();
 builder.Services.AddScoped<IEmployeeTimesheetParser, EmployeeTimesheetParser>();
 builder.Services.AddScoped<IOutputCellFactory, EmployeeOutputCellFactory>();
 builder.Services.AddScoped<IEmployeeTimehsheetWriter, EmployeeTimehsheetWriter>();
-builder.Services.AddScoped<ITimesheetProcessor, EmployeeTimesheetProcessor>();
+builder.Services.AddScoped<IEmployeeTimesheetProcessor, EmployeeEmployeeTimesheetProcessor>();
+
+builder.Services.AddScoped<IActivityCodeTimesheetProcessor, ActivityCodeTimesheetProcessor>();
+builder.Services.AddScoped<IActivityCodeTimesheetReader, ActivityCodeTimesheetReader>();
+
 builder.Services.AddScoped<ApiKeyMiddleware>();
 builder.Services.AddLogging();
 

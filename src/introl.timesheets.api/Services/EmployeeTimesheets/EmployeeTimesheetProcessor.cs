@@ -5,9 +5,9 @@ using OneOf;
 
 namespace Introl.Timesheets.Api.Services.EmployeeTimesheets;
 
-public class EmployeeTimesheetProcessor(
-    IWorksheetReader worksheetReader,
-    IEmployeeTimehsheetWriter employeeTimehsheetWriter) : ITimesheetProcessor
+public class EmployeeEmployeeTimesheetProcessor(
+    IEmployeeTimehsheetReader employeeTimehsheetReader,
+    IEmployeeTimehsheetWriter employeeTimehsheetWriter) : IEmployeeTimesheetProcessor
 {
     public OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile)
     {
@@ -22,22 +22,22 @@ public class EmployeeTimesheetProcessor(
         }
         using var workbook = new XLWorkbook(inputFile.OpenReadStream());
 
-        var inputSheetModel = worksheetReader.Process(workbook);
+        var inputSheetModel = employeeTimehsheetReader.Process(workbook);
         var outputWorkbookBytes = employeeTimehsheetWriter.Process(inputSheetModel);
 
         return new ProcessedTimesheetResult { Name = GetFileName(inputSheetModel), WorkbookBytes = outputWorkbookBytes };
     }
 
-    private string GetFileName(InputSheetModel inputSheetModel)
+    private string GetFileName(EmployeeInputSheetModel employeeInputSheetModel)
     {
         var dateFormat = "yyyy.MM.dd";
         return
-            $"Weekly Timesheet - Introl.io {inputSheetModel.StartDate.ToString(dateFormat)} - {inputSheetModel.EndDate.ToString(dateFormat)}.xlsx";
+            $"Weekly Timesheet - Introl.io {employeeInputSheetModel.StartDate.ToString(dateFormat)} - {employeeInputSheetModel.EndDate.ToString(dateFormat)}.xlsx";
 
     }
 }
 
-public interface ITimesheetProcessor
+public interface IEmployeeTimesheetProcessor
 {
     OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile);
 }

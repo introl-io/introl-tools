@@ -2,7 +2,7 @@
 
 namespace Introl.Timesheets.Api.Models.EmployeeTimesheets;
 
-public class InputSheetModel
+public class EmployeeInputSheetModel
 {
     public required DateOnly StartDate { get; init; }
     public required DateOnly EndDate { get; init; }
