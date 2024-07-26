@@ -10,6 +10,7 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
         new object[] { "40hrs", FortyHrsInput, FortyHrsResult },
         new object[] { "41hrs Single", FortyOneHrsSingleActInput, FortyOneHrsSingleActResult },
         new object[] { "Over 40hrs Multiple", OverFortyHrsMultipleActInput, OverFortyHrsMultipleActResult },
+        new object[] { "Over 40hrs Ordering", OVerFortyHrsOrderingInput, OVerFortyHrsOrderingResult },
     };
     
     public IEnumerator<object[]> GetEnumerator()
@@ -170,4 +171,32 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
             },
         };
 
+    private static List<ActCodeHours> OVerFortyHrsOrderingInput =>
+    [
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate.AddDays(1), new TimeOnly(9, 0)), 
+            Hours = 8, 
+            ActivityCode = "A"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate, new TimeOnly(9, 0)), 
+            Hours = 40, 
+            ActivityCode = "A"
+        }
+    ];
+    
+    private static Dictionary<DateOnly, Dictionary<string, (double regHours, double otHours)>> OVerFortyHrsOrderingResult =>
+        new()
+        {
+            {
+                StartDate,
+                new Dictionary<string, (double regHours, double otHours)> { { "A", (40, 0) } }
+            },
+            {
+                StartDate.AddDays(1),
+                new Dictionary<string, (double regHours, double otHours)> { { "A", (0, 8) } }
+            }
+        };
 }
