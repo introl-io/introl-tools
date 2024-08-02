@@ -88,8 +88,18 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
 
     private static List<ActCodeHours> OverFortyHrsMultipleActInput =>
     [
-        new ActCodeHours { StartTime = new DateTime(StartDate, new TimeOnly(9, 0)), Hours = 2, ActivityCode = "A" },
-        new ActCodeHours { StartTime = new DateTime(StartDate, new TimeOnly(11, 30)), Hours = 8, ActivityCode = "B" },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate, new TimeOnly(9, 0)), 
+            Hours = 2, 
+            ActivityCode = "A"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate, new TimeOnly(11, 30)), 
+            Hours = 8, 
+            ActivityCode = "B"
+        },
         new ActCodeHours
         {
             StartTime = new DateTime(StartDate.AddDays(1), new TimeOnly(8, 30)),
@@ -106,6 +116,12 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
         {
             StartTime = new DateTime(StartDate.AddDays(3), new TimeOnly(8, 30)),
             Hours = 8,
+            ActivityCode = "A"
+        },
+        new ActCodeHours
+        {
+            StartTime = new DateTime(StartDate.AddDays(3), new TimeOnly(12, 30)),
+            Hours = 4,
             ActivityCode = "A"
         },
         new ActCodeHours
@@ -131,7 +147,7 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
                 new Dictionary<DateOnly, (double regHours, double otHours)>
                 {
                     { StartDate, (2, 0) },
-                    { StartDate.AddDays(3), (8, 0) },
+                    { StartDate.AddDays(3), (10, 2) },
                 }
             },
             {
@@ -146,7 +162,7 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
                 "C", new Dictionary<DateOnly, (double regHours, double otHours)>
                 {
                     { StartDate.AddDays(2), (10, 0) },
-                    { StartDate.AddDays(3), (2, 1) },
+                    { StartDate.AddDays(3), (0, 3) },
                 }
             }
         };
