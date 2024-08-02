@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Introl.Timesheets.Api.Models;
 
 namespace Introl.Timesheets.Api.Extensions;
 
@@ -21,5 +22,28 @@ public static class XlWorksheetExtensions
             throw new InvalidOperationException($"Multiple cells found with the value {value}");
         }
         return matchingCells.First();
+    }
+
+    public static void WriteCells(this IXLWorksheet worksheet, IEnumerable<CellToAdd> cells)
+    {
+        foreach (var cell in cells)
+        {
+            if (cell.Value.HasValue)
+            {
+                if (cell.ValueType == CellToAdd.CellValueType.Formula)
+                {
+                    worksheet.Cell(cell.Row, cell.Column).FormulaA1 = cell.Value.Value.ToString();
+                }
+                else
+                {
+                    worksheet.Cell(cell.Row, cell.Column).Value = cell.Value.Value;
+                }
+            }
+
+            worksheet.Cell(cell.Row, cell.Column).Style.NumberFormat.Format = cell.NumberFormat;
+            worksheet.Cell(cell.Row, cell.Column).Style.Font.Bold = cell.Bold;
+            worksheet.Cell(cell.Row, cell.Column).Style.Fill.BackgroundColor = cell.Color;
+            worksheet.Cell(cell.Row, cell.Column).Style.Font.FontSize = cell.FontSize;
+        }
     }
 }

@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 using Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 using Xunit;
@@ -14,6 +14,6 @@ public class ActCodeHoursProcessorTests
     {
         var result = _sut.Process(input);
 
-       result.Should().BeEquivalentTo(expected);
+        result.Should().BeEquivalentTo(expected);
     }
 }

@@ -15,4 +15,9 @@ public static class ExcelUtils
 
         return columnName;
     }
+
+    public static string GetCellLocation(int columnNumber, int rowNumber)
+    {
+        return $"{ToExcelColumn(columnNumber)}{rowNumber}";
+    }
 }
