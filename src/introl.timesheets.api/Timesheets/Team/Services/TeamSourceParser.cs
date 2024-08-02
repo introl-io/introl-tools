@@ -3,6 +3,7 @@ using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Timesheets.Team.Constants;
 using Introl.Timesheets.Api.Timesheets.Team.Models;
+using Introl.Timesheets.Api.Utils;
 
 namespace Introl.Timesheets.Api.Timesheets.Team.Services;
 
@@ -41,8 +42,8 @@ public class TeamSourceParser : ITeamSourceParser
         var overtimeHours = hasDoneOvertimeHours ? worksheet.Cell(employeeRow + overtimeIncrement, dayColumn).GetString() : "";
         return new TeamEmployeeWorkDayHours
         {
-            RegularHours = ConvertToRoundedHours(regularHours),
-            OvertimeHours = ConvertToRoundedHours(overtimeHours)
+            RegularHours = TimeParsingUtils.ConvertToRoundedHours(regularHours),
+            OvertimeHours = TimeParsingUtils.ConvertToRoundedHours(overtimeHours)
         };
     }
 
@@ -67,30 +68,6 @@ public class TeamSourceParser : ITeamSourceParser
         var incrementForOt = hasRegularHours ? 2 : 1;
         var overtimeHours = worksheet.Cell(employeeRow + incrementForOt, hourTypeCell.Address.ColumnNumber).GetString().ToUpper() == TeamSourceConstants.WeeklyOt.ToUpper();
         return (hasRegularHours, overtimeHours);
-    }
-
-    private double ConvertToRoundedHours(string inputHours)
-    {
-        if (!inputHours.Contains(":"))
-        {
-            if (double.TryParse(inputHours, out var parsedHours))
-            {
-                return parsedHours;
-            }
-
-            return 0;
-        }
-
-        var splitHours = inputHours.Split(':');
-        var hours = double.Parse(splitHours[0]);
-        var minutes = double.Parse(splitHours[1]);
-
-        return minutes switch
-        {
-            >= 0 and <= 14 => hours,
-            >= 15 and <= 44 => hours + 0.5,
-            _ => hours + 1
-        };
     }
 }
 

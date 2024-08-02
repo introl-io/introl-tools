@@ -2,6 +2,7 @@
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Timesheets.ActivityCode.Constants;
 using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
+using Introl.Timesheets.Api.Utils;
 
 namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 
@@ -39,7 +40,7 @@ public class ActCodeSourceReader : IActCodeSourceReader
                 continue;
             }
 
-            var totalHours = ConvertToRoundedHours(worksheet.Cell(i, keyPositions.TrackedHoursCol).GetString());
+            var totalHours = TimeParsingUtils.ConvertToRoundedHours(worksheet.Cell(i, keyPositions.TrackedHoursCol).GetString());
             var date = worksheet.Cell(i, keyPositions.DateCol).GetDateTime();
             var startTime = worksheet.Cell(i, keyPositions.StartTimeCol).GetDateTime();
 
@@ -84,30 +85,6 @@ public class ActCodeSourceReader : IActCodeSourceReader
             BillableRateCol =
                 worksheet.FindSingleCellByValue(ActCodeSourceConstants.BillableRate).Address.ColumnNumber,
             TotalHoursRow = worksheet.FindSingleCellByValue(ActCodeSourceConstants.TotalHours).Address.RowNumber,
-        };
-    }
-
-    private double ConvertToRoundedHours(string inputHours)
-    {
-        if (!inputHours.Contains(":"))
-        {
-            if (double.TryParse(inputHours, out var parsedHours))
-            {
-                return parsedHours;
-            }
-
-            return 0;
-        }
-
-        var splitHours = inputHours.Split(':');
-        var hours = double.Parse(splitHours[0]);
-        var minutes = double.Parse(splitHours[1]);
-
-        return minutes switch
-        {
-            >= 0 and <= 14 => hours,
-            >= 15 and <= 44 => hours + 0.5,
-            _ => hours + 1
         };
     }
 
