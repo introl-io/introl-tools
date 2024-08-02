@@ -82,8 +82,8 @@ public class TeamSourceParserTests
 
     [Theory]
     [InlineData("12:00", "00:00", 12, 0)]
-    [InlineData("12:14", "00:15", 12, 0.5)]
-    [InlineData("12:45", "-", 13, 0)]
+    [InlineData("12:19", "00:20", 12, 0.5)]
+    [InlineData("12:39", "00:40", 12.5, 1)]
     [InlineData("12", "-", 12, 0)]
     public void GetWorkdayHoursForEmployeeAndDay_ReturnsCorrectHours(string regularHours, string overtimeHours, double expectedRegularHours, double expectedOvertimeHours)
     {
