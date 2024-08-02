@@ -5,7 +5,8 @@ namespace Introl.Timesheets.Api.Extensions;
 
 public static class XlWorksheetExtensions
 {
-    public static IXLCell FindSingleCellByValue(this IXLWorksheet worksheet, string value, bool ifMultipleTakeFirst = false)
+    public static IXLCell FindSingleCellByValue(this IXLWorksheet worksheet, string value,
+        bool ifMultipleTakeFirst = false)
     {
         var matchingCells = worksheet.CellsUsed(c => c.GetString().ToUpper() == value.ToUpper());
         if (!matchingCells.Any())
@@ -19,8 +20,10 @@ public static class XlWorksheetExtensions
             {
                 return matchingCells.First();
             }
+
             throw new InvalidOperationException($"Multiple cells found with the value {value}");
         }
+
         return matchingCells.First();
     }
 
@@ -42,7 +45,11 @@ public static class XlWorksheetExtensions
 
             worksheet.Cell(cell.Row, cell.Column).Style.NumberFormat.Format = cell.NumberFormat;
             worksheet.Cell(cell.Row, cell.Column).Style.Font.Bold = cell.Bold;
-            worksheet.Cell(cell.Row, cell.Column).Style.Fill.BackgroundColor = cell.Color;
+            if (cell.Color is not null)
+            {
+                worksheet.Cell(cell.Row, cell.Column).Style.Fill.BackgroundColor = cell.Color;
+            }
+
             worksheet.Cell(cell.Row, cell.Column).Style.Font.FontSize = cell.FontSize;
         }
     }
