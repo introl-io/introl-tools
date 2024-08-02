@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 
@@ -9,14 +10,30 @@ public class ActCodeResultsWriter
 {
     public byte[] Process(ActCodeParsedSourceModel sourceModel)
     {
-        var row = 1;
-        var cells = resultCellFactory.CreateEmployeeCells(sourceModel, ref row);
-
         using var workbook = new XLWorkbook();
 
         var worksheet = workbook.Worksheets.Add("Summary");
-        worksheet.WriteCells(cells);
+        
+        var row = 1;
+        var titleCells = resultCellFactory.GetTitleCells(worksheet, sourceModel, ref row);
+        var employeeCells = resultCellFactory.CreateEmployeeCells(sourceModel, ref row);
 
+        worksheet.WriteCells([..titleCells, ..employeeCells]);
+
+        worksheet.Columns().AdjustToContents();
+        worksheet.Rows().AdjustToContents();
+
+        worksheet.SheetView.ZoomScale = DimensionConstants.ZoomLevel;
+        if (worksheet.Column(1).Width < DimensionConstants.ImageWidthInCharacters)
+        {
+            worksheet.Column(1).Width = DimensionConstants.ImageWidthInCharacters;
+        }
+
+        if (worksheet.Row(1).Height < DimensionConstants.ImageHeightInPoints)
+        {
+            worksheet.Row(1).Height = DimensionConstants.ImageHeightInPoints;
+        }
+        
         // workbook.AddWorksheet(sourceModel.InputWorksheet);
 
         using var stream = new MemoryStream();
