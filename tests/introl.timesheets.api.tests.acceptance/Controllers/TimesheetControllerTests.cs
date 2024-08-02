@@ -22,7 +22,7 @@ public class TimesheetControllerTests
     [Fact]
     public async Task Employee_GivenKnownInput_GivesKnownOutput()
     {
-        await using var inputFileStream = File.Open("./Resources/Employee/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/Team/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
@@ -37,7 +37,7 @@ public class TimesheetControllerTests
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
         await using var expectedFileStream =
-            File.Open("./Resources/Employee/Success/expected_output.xlsx", FileMode.Open);
+            File.Open("./Resources/Team/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
