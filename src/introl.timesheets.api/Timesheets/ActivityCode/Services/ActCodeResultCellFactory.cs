@@ -73,7 +73,6 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
             },
         ]);
 
-        var date = sourceModel.StartDate;
         var column = ActCodeResultConstants.DateStartColInt;
 
         var regHoursCell = ExcelUtils.GetCellLocation(ActCodeResultConstants.HoursTypeColInt,
@@ -86,7 +85,10 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         var firstActCodeCell =
             ExcelUtils.GetCellLocation(ActCodeResultConstants.HoursTypeColInt, employeeFinalRow + 1);
         var finalActCodeCell = ExcelUtils.GetCellLocation(ActCodeResultConstants.HoursTypeColInt, finalActCodeRow);
-        while (date <= sourceModel.EndDate)
+
+        var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
+
+        for (var i = 0; i < numDays; i++)
         {
             var firstHoursCell = ExcelUtils.GetCellLocation(column, employeeFinalRow + 1);
             var finalHoursCell = ExcelUtils.GetCellLocation(column, finalActCodeRow);
@@ -120,7 +122,6 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
                 }
             ]);
             column++;
-            date = date.AddDays(1);
         }
 
         var totalBillableColumn = column + ActCodeResultConstants.TotalBillableColOffset - 1;
@@ -240,9 +241,11 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
                 row + ActCodeResultConstants.RegularHoursOffset);
             var otHoursCell = ExcelUtils.GetCellLocation(ActCodeResultConstants.HoursTypeColInt,
                 row + ActCodeResultConstants.OtHoursOffset);
-            var date = sourceModel.StartDate;
+
             var column = ActCodeResultConstants.DateStartColInt;
-            while (date <= sourceModel.EndDate)
+
+            var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
+            for (var i = 0; i < numDays; i++)
             {
                 var employeeFirstCell = ExcelUtils.GetCellLocation(column, employeeFirstRow);
                 var employeeFinalCell = ExcelUtils.GetCellLocation(column, employeeFinalRow);
@@ -276,7 +279,6 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
                         NumberFormat = StyleConstants.HourCellFormat
                     }
                 ]);
-                date = date.AddDays(1);
                 column++;
             }
 
@@ -354,21 +356,20 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         var dayDateFormat = "MMMM dd";
 
         var results = new List<CellToAdd>();
-        var date = sourceModel.StartDate;
         var dayColumn = ActCodeResultConstants.DateStartColInt;
 
-        while (date <= sourceModel.EndDate)
+        var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
+        for (var i = 0; i < numDays; i++)
         {
             results.Add(new CellToAdd
             {
                 Column = dayColumn,
                 Row = row,
-                Value = date.ToString(dayDateFormat),
+                Value = sourceModel.StartDate.AddDays(i).ToString(dayDateFormat),
                 Color = StyleConstants.DarkGrey,
                 Bold = true
             });
             dayColumn++;
-            date = date.AddDays(1);
         }
 
         dayColumn--;
@@ -444,7 +445,6 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
             $"{sourceModel.StartDate.ToString(weekRangeDateFormat)} - {sourceModel.EndDate.ToString(weekRangeDateFormat)}";
 
         var col = ActCodeResultConstants.DateStartColInt;
-        var date = sourceModel.StartDate;
         var results = new List<CellToAdd>();
 
         results.Add(
@@ -455,18 +455,19 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
                 Bold = true,
                 Value = formattedDate
             });
-        while (date <= sourceModel.EndDate)
+
+        var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
+        for (var i = 0; i < numDays; i++)
         {
             results.Add(new CellToAdd
             {
                 Column = col,
                 Row = row,
                 Bold = true,
-                Value = date.ToString("ddd"),
+                Value = sourceModel.StartDate.AddDays(i).ToString("ddd"),
                 Color = StyleConstants.LightGrey
             });
             col++;
-            date = date.AddDays(1);
         }
 
         row++;
@@ -677,6 +678,11 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
                 NumberFormat = StyleConstants.CurrencyCellFormat
             }
         ];
+    }
+
+    private int GetNumberOfDays(DateOnly startDate, DateOnly endDate)
+    {
+        return endDate.DayNumber - startDate.DayNumber + 1;
     }
 }
 
