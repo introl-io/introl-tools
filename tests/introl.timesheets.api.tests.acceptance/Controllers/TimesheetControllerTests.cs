@@ -20,7 +20,7 @@ public class TimesheetControllerTests
     }
 
     [Fact]
-    public async Task Employee_GivenKnownInput_GivesKnownOutput()
+    public async Task Team_GivenKnownInput_GivesKnownOutput()
     {
         await using var inputFileStream = File.Open("./Resources/Team/Success/timesheet_input.xlsx", FileMode.Open);
 
@@ -44,7 +44,7 @@ public class TimesheetControllerTests
     }
 
     [Fact]
-    public async Task Employee_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
+    public async Task Team_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
     {
         var request =
             new MultipartFormDataContent { { new StringContent(""), "input", "timesheet_input.pdf" } };
@@ -94,16 +94,16 @@ public class TimesheetControllerTests
     {
         Assert.Equal(actual.Worksheets.Count(), expected.Worksheets.Count());
 
-        var actualWorksheet = actual.Worksheet(1);
-        var expectedWorksheet = expected.Worksheet(1);
-        CompareWorksheets(actualWorksheet, expectedWorksheet, actualWorksheet.Name);
+        // var actualWorksheet = actual.Worksheet(1);
+        // var expectedWorksheet = expected.Worksheet(1);
+        // CompareWorksheets(actualWorksheet, expectedWorksheet, actualWorksheet.Name);
 
-        // for (var i = 1; i <= actual.Worksheets.Count(); i++)
-        // {
-        //     var actualWorksheet = actual.Worksheet(i);
-        //     var expectedWorksheet = expected.Worksheet(i);
-        //     CompareWorksheets(actualWorksheet, expectedWorksheet, actualWorksheet.Name);
-        // }
+        for (var i = 1; i <= actual.Worksheets.Count(); i++)
+        {
+            var actualWorksheet = actual.Worksheet(i);
+            var expectedWorksheet = expected.Worksheet(i);
+            CompareWorksheets(actualWorksheet, expectedWorksheet, actualWorksheet.Name);
+        }
     }
 
     private void CompareWorksheets(IXLWorksheet actual, IXLWorksheet expected, string worksheetName)
