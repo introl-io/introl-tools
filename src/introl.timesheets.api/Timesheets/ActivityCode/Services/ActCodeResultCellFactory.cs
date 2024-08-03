@@ -57,14 +57,12 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
                 Column = ActCodeResultConstants.HoursTypeColInt,
                 Row = row + ActCodeResultConstants.RegularHoursOffset,
                 Value = OutputWorkbookConstants.RegularHours,
-                Bold = true
             },
             new CellToAdd
             {
                 Column = ActCodeResultConstants.HoursTypeColInt,
                 Row = row + ActCodeResultConstants.OtHoursOffset,
                 Value = OutputWorkbookConstants.WeeklyOtHours,
-                Bold = true
             },
             new CellToAdd
             {
