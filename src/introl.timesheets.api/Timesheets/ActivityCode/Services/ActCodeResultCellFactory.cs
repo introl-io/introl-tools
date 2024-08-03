@@ -481,9 +481,28 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         var processedHoursDict = actCodeHoursProcessor.Process(employee.ActivityCodeHours);
 
         var result = new List<CellToAdd>();
+
+        var totalNumCols = ActCodeResultConstants.DateStartColInt + GetNumberOfDays(startDate, endDate) +
+                           ActCodeResultConstants.TotalBillableColOffset;
+        for (var i = ActCodeResultConstants.NameColInt; i < totalNumCols; i++)
+        {
+            result.Add(new CellToAdd
+            {
+                Row = row,
+                Column = i,
+                Color = StyleConstants.LightGrey
+            });
+        }
+        
         result.AddRange(
         [
-            new CellToAdd { Row = row, Column = ActCodeResultConstants.NameColInt, Value = employee.Name, Bold = true },
+            new CellToAdd
+            {
+                Row = row, 
+                Column = ActCodeResultConstants.NameColInt, 
+                Value = employee.Name, 
+                Bold = true
+            },
             new CellToAdd
             {
                 Row = row,
