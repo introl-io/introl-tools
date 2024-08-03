@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Constants;
 using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Timesheets.ActivityCode.Constants;
 using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 using Introl.Timesheets.Api.Utils;
 
@@ -12,7 +13,7 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         ref int row)
     {
         var pic = worksheet.AddPicture("./Assets/introl_logo.png")
-            .MoveTo(1, row);
+            .MoveTo(ActCodeResultConstants.NameColInt, row);
         pic.Width = DimensionConstants.ImageWightAndHeightInPixels;
         pic.Height = DimensionConstants.ImageWightAndHeightInPixels;
 
@@ -33,28 +34,29 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
 
         var results = new List<CellToAdd>();
         var date = sourceModel.StartDate;
-        var column = 4;
+        var dayColumn = ActCodeResultConstants.DateStartColInt;
 
         while (date <= sourceModel.EndDate)
         {
             results.Add(new CellToAdd
             {
-                Column = column,
+                Column = dayColumn,
                 Row = row,
                 Value = date.ToString(dayDateFormat),
                 Color = StyleConstants.DarkGrey,
                 Bold = true
             });
-            column++;
+            dayColumn++;
             date = date.AddDays(1);
         }
 
+        dayColumn--;
 
         results.AddRange(
         [
             new CellToAdd
             {
-                Column = 1,
+                Column = ActCodeResultConstants.NameColInt,
                 Row = row,
                 Value = OutputWorkbookConstants.EmployeeNameTitle,
                 Color = StyleConstants.DarkGrey,
@@ -62,7 +64,15 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
             },
             new CellToAdd
             {
-                Column = 2,
+                Column = ActCodeResultConstants.EmployeeCodeInt,
+                Row = row,
+                Value = "Employee Code",
+                Color = StyleConstants.DarkGrey,
+                Bold = true
+            },
+            new CellToAdd
+            {
+                Column = ActCodeResultConstants.ActivityCodeColInt,
                 Row = row,
                 Value = "Activity Code",
                 Color = StyleConstants.DarkGrey,
@@ -70,7 +80,7 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
             },
             new CellToAdd
             {
-                Column = 3,
+                Column = ActCodeResultConstants.HoursTypeColInt,
                 Row = row,
                 Value = OutputWorkbookConstants.HoursTypeTitle,
                 Color = StyleConstants.DarkGrey,
@@ -78,7 +88,7 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
             },
             new CellToAdd
             {
-                Column = column,
+                Column = dayColumn + ActCodeResultConstants.TotalHoursColOffset,
                 Row = row,
                 Value = OutputWorkbookConstants.EmployeeTotalHoursTitle,
                 Color = StyleConstants.DarkGrey,
@@ -86,7 +96,7 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
             },
             new CellToAdd
             {
-                Column = column + 1,
+                Column = dayColumn + ActCodeResultConstants.RateColOffset,
                 Row = row,
                 Value = OutputWorkbookConstants.EmployeeRatesTitle,
                 Color = StyleConstants.DarkGrey,
@@ -94,7 +104,7 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
             },
             new CellToAdd
             {
-                Column = column + 2,
+                Column = dayColumn + ActCodeResultConstants.TotalBillableColOffset,
                 Row = row,
                 Value = OutputWorkbookConstants.EmployeeTotalBillTitle,
                 Color = StyleConstants.DarkGrey,
@@ -108,7 +118,7 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
 
     private IEnumerable<CellToAdd> AddDayRow(ActCodeParsedSourceModel sourceModel, ref int row)
     {
-        var col = 4;
+        var col = ActCodeResultConstants.DateStartColInt;
         var date = sourceModel.StartDate;
         var results = new List<CellToAdd>();
         while (date <= sourceModel.EndDate)
@@ -135,7 +145,13 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         var formattedDate =
             $"{sourceModel.StartDate.ToString(weekRangeDateFormat)} - {sourceModel.EndDate.ToString(weekRangeDateFormat)}";
 
-        var result = new[] { new CellToAdd { Column = 2, Row = row, Bold = true, Value = formattedDate } };
+        var result = new[]
+        {
+            new CellToAdd
+            {
+                Column = ActCodeResultConstants.NameColInt, Row = row, Bold = true, Value = formattedDate
+            }
+        };
         row++;
         return result;
     }
@@ -160,12 +176,17 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         var processedHoursDict = actCodeHoursProcessor.Process(employee.ActivityCodeHours);
 
         var result = new List<CellToAdd>();
-        result.Add(new CellToAdd { Row = row, Column = 1, Value = employee.Name, Bold = true });
+        result.AddRange(
+        [
+            new CellToAdd { Row = row, Column = ActCodeResultConstants.NameColInt, Value = employee.Name, Bold = true },
+            new CellToAdd { Row = row, Column = ActCodeResultConstants.EmployeeCodeInt, Value = employee.MemberCode, Bold = true }
+        ]);
 
         row++;
         foreach (var (activityCode, hoursDictionary) in processedHoursDict)
         {
-            result.AddRange(CreateActCodeCells(activityCode, hoursDictionary, employee.Rate, startDate, endDate, ref row));
+            result.AddRange(CreateActCodeCells(activityCode, hoursDictionary, employee.Rate, startDate, endDate,
+                ref row));
         }
 
         return result;
@@ -178,48 +199,70 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
     {
         var cells = new List<CellToAdd>();
 
-        cells.Add(new CellToAdd { Row = row, Column = 2, Value = activityCode, Bold = true });
+        cells.Add(new CellToAdd
+        {
+            Row = row,
+            Column = ActCodeResultConstants.ActivityCodeColInt,
+            Value = activityCode,
+            Bold = true
+        });
         row++;
 
-        cells.Add(new CellToAdd { Row = row, Column = 3, Value = "Payroll Hours", Bold = true });
+        cells.Add(new CellToAdd
+        {
+            Row = row + ActCodeResultConstants.PayrollHoursOffset,
+            Column = ActCodeResultConstants.HoursTypeColInt,
+            Value = "Payroll Hours",
+            Bold = true
+        });
 
-        cells.Add(new CellToAdd { Row = row + 1, Column = 3, Value = "OT Hours", Bold = true });
+        cells.Add(new CellToAdd
+        {
+            Row = row + ActCodeResultConstants.OtHoursOffset,
+            Column = ActCodeResultConstants.HoursTypeColInt,
+            Value = "OT Hours",
+            Bold = true
+        });
 
-        cells.Add(new CellToAdd { Row = row + 2, Column = 3, Value = "Total Hours", Bold = true });
+        cells.Add(new CellToAdd
+        {
+            Row = row + ActCodeResultConstants.TotalHoursOffset,
+            Column = ActCodeResultConstants.HoursTypeColInt,
+            Value = "Total Hours",
+            Bold = true
+        });
 
         var date = startDate;
-        var column = 4;
+        var column = ActCodeResultConstants.DateStartColInt;
         while (date <= endDate)
         {
+            var regHours = 0d;
+            var otHours = 0d;
             if (actCodeHours.TryGetValue(date, out var hours))
             {
-                cells.Add(new CellToAdd
-                {
-                    Row = row, Column = column, Value = hours.regHours, NumberFormat = StyleConstants.HourCellFormat
-                });
-                cells.Add(new CellToAdd
-                {
-                    Row = row + 1,
-                    Column = column,
-                    Value = hours.otHours,
-                    NumberFormat = StyleConstants.HourCellFormat
-                });
-            }
-            else
-            {
-                cells.Add(new CellToAdd
-                {
-                    Row = row, Column = column, Value = 0, NumberFormat = StyleConstants.HourCellFormat
-                });
-                cells.Add(new CellToAdd
-                {
-                    Row = row + 1, Column = column, Value = 0, NumberFormat = StyleConstants.HourCellFormat
-                });
+                regHours = hours.regHours;
+                otHours = hours.otHours;
             }
 
             cells.Add(new CellToAdd
             {
-                Row = row + 2,
+                Row = row + ActCodeResultConstants.PayrollHoursOffset,
+                Column = column,
+                Value = regHours,
+                NumberFormat = StyleConstants.HourCellFormat
+            });
+            cells.Add(new CellToAdd
+            {
+                Row = row + ActCodeResultConstants.OtHoursOffset,
+                Column = column,
+                Value = otHours,
+                NumberFormat = StyleConstants.HourCellFormat
+            });
+
+
+            cells.Add(new CellToAdd
+            {
+                Row = row + ActCodeResultConstants.TotalHoursOffset,
                 Column = column,
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.HourCellFormat,
@@ -233,35 +276,35 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         cells.AddRange([
             new CellToAdd
             {
-                Row = row,
+                Row = row + ActCodeResultConstants.PayrollHoursOffset,
                 Column = column,
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.HourCellFormat,
                 Value =
-                    $"=SUM({ExcelUtils.GetCellLocation(4, row)}:{ExcelUtils.GetCellLocation(column - 1, row)})"
+                    $"=SUM({ExcelUtils.GetCellLocation(ActCodeResultConstants.DateStartColInt, row + ActCodeResultConstants.PayrollHoursOffset)}:{ExcelUtils.GetCellLocation(column - 1, row + ActCodeResultConstants.PayrollHoursOffset)})"
             },
             new CellToAdd
             {
-                Row = row + 1,
+                Row = row + ActCodeResultConstants.OtHoursOffset,
                 Column = column,
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.HourCellFormat,
                 Value =
-                    $"=SUM({ExcelUtils.GetCellLocation(4, row + 1)}:{ExcelUtils.GetCellLocation(column - 1, row + 1)})"
+                    $"=SUM({ExcelUtils.GetCellLocation(ActCodeResultConstants.DateStartColInt, row + ActCodeResultConstants.TotalHoursColOffset)}:{ExcelUtils.GetCellLocation(column - 1, row + ActCodeResultConstants.OtHoursOffset)})"
             },
             new CellToAdd
             {
-                Row = row + 2,
+                Row = row + ActCodeResultConstants.TotalHoursOffset,
                 Column = column,
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.HourCellFormat,
                 Value =
-                    $"=SUM({ExcelUtils.GetCellLocation(4, row + 2)}:{ExcelUtils.GetCellLocation(column - 1, row + 2)})"
+                    $"=SUM({ExcelUtils.GetCellLocation(ActCodeResultConstants.DateStartColInt, row + ActCodeResultConstants.TotalHoursOffset)}:{ExcelUtils.GetCellLocation(column - 1, row + ActCodeResultConstants.TotalHoursOffset)})"
             }
         ]);
         cells.AddRange(AddRatesCells(rate, column + 1, row));
-        cells.AddRange(AddTotalBillableCells(rate, column + 2, row));
-        row += 3;
+        cells.AddRange(AddTotalBillableCells(column + 2, row));
+        row += ActCodeResultConstants.ActCodeTotalRows;
         return cells;
     }
 
@@ -271,48 +314,52 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         [
             new CellToAdd
             {
-                Row = row, 
-                Column = column, 
-                Value = rate, 
+                Row = row + ActCodeResultConstants.PayrollHoursOffset,
+                Column = column,
+                Value = rate,
                 NumberFormat = StyleConstants.CurrencyCellFormat
             },
             new CellToAdd
             {
-                Row = row+1, 
-                Column = column, 
-                Value = rate * 1.5, 
+                Row = row + ActCodeResultConstants.OtHoursOffset,
+                Column = column,
+                ValueType = CellToAdd.CellValueType.Formula,
+                Value = $"{ExcelUtils.GetCellLocation(column, row + ActCodeResultConstants.PayrollHoursOffset)} * 1.5",
                 NumberFormat = StyleConstants.CurrencyCellFormat
             }
         ];
     }
-    
-    private IEnumerable<CellToAdd> AddTotalBillableCells(double rate, int column, int row)
+
+    private IEnumerable<CellToAdd> AddTotalBillableCells(int column, int row)
     {
         return
         [
             new CellToAdd
             {
-                Row = row, 
-                Column = column, 
-                Value = $"{ExcelUtils.GetCellLocation(column -1, row)} * {ExcelUtils.GetCellLocation(column - 2, row)}", 
+                Row = row + ActCodeResultConstants.PayrollHoursOffset,
+                Column = column,
+                Value =
+                    $"{ExcelUtils.GetCellLocation(column - 1, row + ActCodeResultConstants.PayrollHoursOffset)} * {ExcelUtils.GetCellLocation(column - 2, row + ActCodeResultConstants.PayrollHoursOffset)}",
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.CurrencyCellFormat
             },
             new CellToAdd
             {
-                Row = row+1, 
-                Column = column, 
-                Value = $"{ExcelUtils.GetCellLocation(column -1, row+1)} * {ExcelUtils.GetCellLocation(column - 2, row+1)}",
+                Row = row + ActCodeResultConstants.OtHoursOffset,
+                Column = column,
+                Value =
+                    $"{ExcelUtils.GetCellLocation(column - 1, row + ActCodeResultConstants.OtHoursOffset)} * {ExcelUtils.GetCellLocation(column - 2, row + ActCodeResultConstants.OtHoursOffset)}",
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.CurrencyCellFormat
             },
             new CellToAdd
             {
-            Row = row+2, 
-            Column = column, 
-            Value = $"{ExcelUtils.GetCellLocation(column, row)} + {ExcelUtils.GetCellLocation(column, row+1)}",
-            ValueType = CellToAdd.CellValueType.Formula,
-            NumberFormat = StyleConstants.CurrencyCellFormat
+                Row = row + ActCodeResultConstants.TotalHoursOffset,
+                Column = column,
+                Value =
+                    $"{ExcelUtils.GetCellLocation(column, row + ActCodeResultConstants.PayrollHoursOffset)} + {ExcelUtils.GetCellLocation(column, row + ActCodeResultConstants.OtHoursOffset)}",
+                ValueType = CellToAdd.CellValueType.Formula,
+                NumberFormat = StyleConstants.CurrencyCellFormat
             }
         ];
     }

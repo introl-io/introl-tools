@@ -1,4 +1,4 @@
-using Introl.Timesheets.Api.Utils;
+﻿using Introl.Timesheets.Api.Utils;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Unit.Utils;
@@ -17,7 +17,7 @@ public class TimeParsingUtilsTests
     public void ConvertToRoundedHours_ReturnsExpectedOutput(string input, double expectedOutput)
     {
         var result = TimeParsingUtils.ConvertToRoundedHours(input);
-        
+
         Assert.Equal(expectedOutput, result);
     }
 }

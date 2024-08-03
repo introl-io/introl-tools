@@ -90,14 +90,14 @@ public class ActCodeHoursProcessorTestData : IEnumerable<object[]>
     [
         new ActCodeHours
         {
-            StartTime = new DateTime(StartDate, new TimeOnly(9, 0)), 
-            Hours = 2, 
+            StartTime = new DateTime(StartDate, new TimeOnly(9, 0)),
+            Hours = 2,
             ActivityCode = "A"
         },
         new ActCodeHours
         {
-            StartTime = new DateTime(StartDate, new TimeOnly(11, 30)), 
-            Hours = 8, 
+            StartTime = new DateTime(StartDate, new TimeOnly(11, 30)),
+            Hours = 8,
             ActivityCode = "B"
         },
         new ActCodeHours

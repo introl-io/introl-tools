@@ -13,12 +13,12 @@ public class ActCodeResultsWriter
         using var workbook = new XLWorkbook();
 
         var worksheet = workbook.Worksheets.Add("Summary");
-        
+
         var row = 1;
         var titleCells = resultCellFactory.GetTitleCells(worksheet, sourceModel, ref row);
         var employeeCells = resultCellFactory.CreateEmployeeCells(sourceModel, ref row);
 
-        worksheet.WriteCells([..titleCells, ..employeeCells]);
+        worksheet.WriteCells([.. titleCells, .. employeeCells]);
 
         worksheet.Columns().AdjustToContents();
         worksheet.Rows().AdjustToContents();
@@ -33,7 +33,7 @@ public class ActCodeResultsWriter
         {
             worksheet.Row(1).Height = DimensionConstants.ImageHeightInPoints;
         }
-        
+
         // workbook.AddWorksheet(sourceModel.InputWorksheet);
 
         using var stream = new MemoryStream();
