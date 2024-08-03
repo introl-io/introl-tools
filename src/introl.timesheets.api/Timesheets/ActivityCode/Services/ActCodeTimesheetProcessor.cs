@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 using OneOf;
 
 namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
@@ -27,8 +28,16 @@ public class ActCodeTimesheetProcessor(
         return new ProcessedTimesheetResult
         {
             WorkbookBytes = resultBytes,
-            Name = $"{sourceModel.StartDate} - {sourceModel.EndDate} - Activity Code Timesheet.xlsx"
+            Name = GetFileName(sourceModel)
         };
+    }
+
+    private string GetFileName(ActCodeParsedSourceModel sourceModel)
+    {
+        var dateFormat = "yyyy.MM.dd";
+        return
+            $"Weekly Timesheet - Introl.io {sourceModel.StartDate.ToString(dateFormat)} - {sourceModel.EndDate.ToString(dateFormat)}.xlsx";
+
     }
 }
 

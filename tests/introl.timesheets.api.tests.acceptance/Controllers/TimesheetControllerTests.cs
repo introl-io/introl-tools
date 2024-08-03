@@ -64,21 +64,19 @@ public class TimesheetControllerTests
         var response = await _httpClient.PostAsync("/api/timesheet/activity-code", request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.15 - 2024.07.21.xlsx\"";
+        var contentDisposition = response.Content.Headers.ContentDisposition;
+        Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
-        await using var fileStream = new FileStream("./Resources/ActivityCode/Success/test.xlsx", FileMode.Create, FileAccess.Write, FileShare.None);
-        await responseStream.CopyToAsync(fileStream);
-        // var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.08 - 2024.07.14.xlsx\"";
-        // var contentDisposition = response.Content.Headers.ContentDisposition;
-        // Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        //     response.Content.Headers.ContentType?.MediaType);
-        // Assert.Equal(expectedFileName, contentDisposition?.FileName);
-        // await using var responseStream = await response.Content.ReadAsStreamAsync();
-        //
-        // await using var expectedFileStream = File.Open("./Resources/Employee/Success/expected_output.xlsx", FileMode.Open);
-        // var expectedWorkbook = new XLWorkbook(expectedFileStream);
-        // var responseWorkbook = new XLWorkbook(responseStream);
-        //
-        // CompareWorkbooks(responseWorkbook, expectedWorkbook);
+
+        await using var expectedFileStream = File.Open("./Resources/ActivityCode/Success/expected_output.xlsx", FileMode.Open);
+        var expectedWorkbook = new XLWorkbook(expectedFileStream);
+        var responseWorkbook = new XLWorkbook(responseStream);
+
+        CompareWorkbooks(responseWorkbook, expectedWorkbook);
     }
 
     [Fact]

@@ -22,12 +22,12 @@ public class ActCodeResultsWriter(IActCodeResultCellFactory resultCellFactory) :
         row += 2;
         var totalsCells = resultCellFactory.CreateTotalsCell(sourceModel, employeeFirstRow, employeeFinalRow, ref row);
 
-        worksheet.WriteCells([.. titleCells, .. employeeCells, ..totalsCells]);
+        worksheet.WriteCells([.. titleCells, .. employeeCells, .. totalsCells]);
 
         worksheet.Columns().AdjustToContents();
         worksheet.Rows().AdjustToContents();
 
-        worksheet.SheetView.FreezeRows(employeeFirstRow -1);
+        worksheet.SheetView.FreezeRows(employeeFirstRow - 1);
         worksheet.SheetView.ZoomScale = DimensionConstants.ZoomLevel;
         if (worksheet.Column(1).Width < DimensionConstants.ImageWidthInCharacters)
         {
