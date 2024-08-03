@@ -12,4 +12,5 @@ public static class StyleConstants
     public static string HourCellFormat => "0.00";
     public static string CurrencyWithSymbolCellFormat => $"$ {CurrencyCellFormat}";
     public static string CurrencyCellFormat => "#,##0.00";
+    public static string HideTextCellFormat => ";;;";
 }

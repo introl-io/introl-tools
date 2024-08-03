@@ -22,8 +22,4 @@
     <ProjectReference Include="..\..\src\introl.timesheets.api\Introl.Timesheets.Api.csproj"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

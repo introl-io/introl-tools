@@ -10,7 +10,7 @@ public class CellToAdd
     public XLCellValue? Value = null;
     public CellValueType ValueType = CellValueType.Value;
     public bool Bold = false;
-    public XLColor Color = XLColor.White;
+    public XLColor? Color = null;
     public int FontSize = 11;
 
     public string? NumberFormat = null;

@@ -8,20 +8,28 @@ namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 
 public class ActCodeSourceReader : IActCodeSourceReader
 {
-    public ActCodeTimesheetModel Process(XLWorkbook workbook)
+    public ActCodeParsedSourceModel Process(XLWorkbook workbook)
     {
         var summaryWorksheet = workbook.Worksheets.Worksheet("Summary");
 
         var (startDate, endDate) = GetStartAndEndDate(summaryWorksheet);
+        var projectCode = summaryWorksheet.FindSingleCellByValue(ActCodeSourceConstants.ProjectCode).CellBelow().GetString();
         var keyPositions = GetActivityCodeKeyPositions(summaryWorksheet);
         var employees = GetEmployees(summaryWorksheet, keyPositions);
-
-        return new ActCodeTimesheetModel
+        var activityCodes = summaryWorksheet
+            .Column(keyPositions.ActivityCodeCol)
+            .CellsUsed()
+            .Select(c => c.Value.ToString())
+            .Where(c => c.ToUpper() != ActCodeSourceConstants.ActivityCode.ToUpper())
+            .Distinct();
+        return new ActCodeParsedSourceModel
         {
             StartDate = startDate,
             EndDate = endDate,
             InputWorksheet = summaryWorksheet,
-            Employees = employees
+            Employees = employees,
+            ActivityCodes = activityCodes,
+            ProjectCode = projectCode
         };
     }
 
@@ -43,9 +51,9 @@ public class ActCodeSourceReader : IActCodeSourceReader
             var totalHours = TimeParsingUtils.ConvertToRoundedHours(worksheet.Cell(i, keyPositions.TrackedHoursCol).GetString());
             var date = worksheet.Cell(i, keyPositions.DateCol).GetDateTime();
             var startTime = worksheet.Cell(i, keyPositions.StartTimeCol).GetDateTime();
-
             var startDateTime = new DateTime(date.Year, date.Month, date.Day, startTime.Hour, startTime.Minute, 0);
 
+            var rate = worksheet.Cell(i, keyPositions.BillableRateCol).GetDouble();
             var hours = new ActCodeHours
             {
                 StartTime = startDateTime,
@@ -61,6 +69,7 @@ public class ActCodeSourceReader : IActCodeSourceReader
                 result[memberCode.GetString()] = new ActCodeEmployee
                 {
                     Name = worksheet.Cell(i, keyPositions.NameCol).GetString(),
+                    Rate = rate,
                     MemberCode = memberCode.GetString(),
                     ActivityCodeHours = new List<ActCodeHours> { hours }
                 };
@@ -103,5 +112,5 @@ public class ActCodeSourceReader : IActCodeSourceReader
 
 public interface IActCodeSourceReader
 {
-    ActCodeTimesheetModel Process(XLWorkbook workbook);
+    ActCodeParsedSourceModel Process(XLWorkbook workbook);
 }

@@ -1,12 +1,14 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Models;
+using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 using OneOf;
 
 namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 
-public class ActCodeTimesheetProcessor
-    (IActCodeSourceReader timsheetReader) : IActCodeTimesheetProcessor
+public class ActCodeTimesheetProcessor(
+    IActCodeSourceReader timesheetReader,
+    IActCodeResultsWriter resultsWriter) : IActCodeTimesheetProcessor
 {
     public OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile)
     {
@@ -19,14 +21,23 @@ public class ActCodeTimesheetProcessor
                 Message = $"Unsupported file type: {extension}. Please upload a .xlsx file."
             };
         }
-        using var workbook = new XLWorkbook(inputFile.OpenReadStream());
-        var res = timsheetReader.Process(workbook);
 
-        return new ProcessedTimesheetError
+        using var workbook = new XLWorkbook(inputFile.OpenReadStream());
+        var sourceModel = timesheetReader.Process(workbook);
+        var resultBytes = resultsWriter.Process(sourceModel);
+        return new ProcessedTimesheetResult
         {
-            FailureReason = TimesheetProcessingFailureReasons.UnsupportedFileType,
-            Message = "Unsupported file type: .xlsx. Please upload a .xlsx file."
+            WorkbookBytes = resultBytes,
+            Name = GetFileName(sourceModel)
         };
+    }
+
+    private string GetFileName(ActCodeParsedSourceModel sourceModel)
+    {
+        var dateFormat = "yyyy.MM.dd";
+        return
+            $"{sourceModel.ProjectCode} Timesheet - Introl.io {sourceModel.StartDate.ToString(dateFormat)} - {sourceModel.EndDate.ToString(dateFormat)}.xlsx";
+
     }
 }
 

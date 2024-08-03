@@ -11,4 +11,5 @@ public static class ActCodeSourceConstants
     public static string BillableRate => "Billable Rate";
     public static string TotalHours => "Total Hours";
     public static string DateRange => "Date Range";
+    public static string ProjectCode => "Pro. Code";
 }

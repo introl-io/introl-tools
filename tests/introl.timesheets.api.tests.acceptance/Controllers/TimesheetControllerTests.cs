@@ -2,7 +2,6 @@
 using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Authorization;
-using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Utils;
 using Xunit;
 
@@ -11,7 +10,7 @@ namespace Introl.Timesheets.Api.Tests.Acceptance.Controllers;
 public class TimesheetControllerTests
 {
     private readonly AcceptanceTestsWebHost _webHost = new();
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
 
     public TimesheetControllerTests()
     {
@@ -20,9 +19,9 @@ public class TimesheetControllerTests
     }
 
     [Fact]
-    public async Task Employee_GivenKnownInput_GivesKnownOutput()
+    public async Task Team_GivenKnownInput_GivesKnownOutput()
     {
-        await using var inputFileStream = File.Open("./Resources/Employee/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/Team/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
@@ -36,8 +35,7 @@ public class TimesheetControllerTests
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
-        await using var expectedFileStream =
-            File.Open("./Resources/Employee/Success/expected_output.xlsx", FileMode.Open);
+        await using var expectedFileStream = File.Open("./Resources/Team/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
@@ -45,40 +43,39 @@ public class TimesheetControllerTests
     }
 
     [Fact]
-    public async Task Employee_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
+    public async Task Team_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
     {
         var request =
             new MultipartFormDataContent { { new StringContent(""), "input", "timesheet_input.pdf" } };
         var response = await _httpClient.PostAsync("/api/timesheet/team", request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.",
-            await response.Content.ReadAsStringAsync());
+        Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
     public async Task ActivityCode_GivenKnownInput_GivesKnownOutput()
     {
-        await using var inputFileStream =
-            File.Open("./Resources/ActivityCode/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/ActivityCode/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
         var response = await _httpClient.PostAsync("/api/timesheet/activity-code", request);
 
-        // Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        // var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.08 - 2024.07.14.xlsx\"";
-        // var contentDisposition = response.Content.Headers.ContentDisposition;
-        // Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        //     response.Content.Headers.ContentType?.MediaType);
-        // Assert.Equal(expectedFileName, contentDisposition?.FileName);
-        // await using var responseStream = await response.Content.ReadAsStreamAsync();
-        //
-        // await using var expectedFileStream = File.Open("./Resources/Employee/Success/expected_output.xlsx", FileMode.Open);
-        // var expectedWorkbook = new XLWorkbook(expectedFileStream);
-        // var responseWorkbook = new XLWorkbook(responseStream);
-        //
-        // CompareWorkbooks(responseWorkbook, expectedWorkbook);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var expectedFileName = "\"MEM-Q1368 Timesheet - Introl.io 2024.07.15 - 2024.07.21.xlsx\"";
+        var contentDisposition = response.Content.Headers.ContentDisposition;
+        Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(expectedFileName, contentDisposition?.FileName);
+        await using var responseStream = await response.Content.ReadAsStreamAsync();
+
+        await using var expectedFileStream = File.Open("./Resources/ActivityCode/Success/expected_output.xlsx", FileMode.Open);
+        var expectedWorkbook = new XLWorkbook(expectedFileStream);
+        var responseWorkbook = new XLWorkbook(responseStream);
+
+        CompareWorkbooks(responseWorkbook, expectedWorkbook);
     }
 
     [Fact]
@@ -89,16 +86,19 @@ public class TimesheetControllerTests
         var response = await _httpClient.PostAsync("/api/timesheet/activity-code", request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.",
-            await response.Content.ReadAsStringAsync());
+        Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
     }
 
     private void CompareWorkbooks(XLWorkbook actual, XLWorkbook expected)
     {
-        Assert.Equal(actual.Worksheets.Count(), expected.Worksheets.Count());
-        var actualWorksheet = actual.Worksheet(1);
-        var expectedWorksheet = expected.Worksheet(1);
-        CompareWorksheets(actualWorksheet, expectedWorksheet, actualWorksheet.Name);
+        Assert.Equal(expected.Worksheets.Count(), actual.Worksheets.Count());
+
+        for (var i = 1; i <= actual.Worksheets.Count(); i++)
+        {
+            var actualWorksheet = actual.Worksheet(i);
+            var expectedWorksheet = expected.Worksheet(i);
+            CompareWorksheets(actualWorksheet, expectedWorksheet, actualWorksheet.Name);
+        }
     }
 
     private void CompareWorksheets(IXLWorksheet actual, IXLWorksheet expected, string worksheetName)
@@ -124,7 +124,7 @@ public class TimesheetControllerTests
         {
             var actualCell = actual.Cell(i);
             var expectedCell = expected.Cell(i);
-            actualCell.Value.Should().Be(expectedCell.Value,
+            actualCell.Value.ToString().Trim().Should().Be(expectedCell.Value.ToString().Trim(),
                 $"Cell value mismatch in worksheet {workSheetName} cell {ExcelUtils.ToExcelColumn(i)}{rowNumber}");
         }
     }
