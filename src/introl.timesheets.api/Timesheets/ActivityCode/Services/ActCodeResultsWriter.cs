@@ -5,8 +5,7 @@ using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
 
 namespace Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
 
-public class ActCodeResultsWriter
-    (IActCodeResultCellFactory resultCellFactory) : IActCodeResultsWriter
+public class ActCodeResultsWriter(IActCodeResultCellFactory resultCellFactory) : IActCodeResultsWriter
 {
     public byte[] Process(ActCodeParsedSourceModel sourceModel)
     {
@@ -16,13 +15,19 @@ public class ActCodeResultsWriter
 
         var row = 1;
         var titleCells = resultCellFactory.GetTitleCells(worksheet, sourceModel, ref row);
+        var employeeFirstRow = row;
         var employeeCells = resultCellFactory.CreateEmployeeCells(sourceModel, ref row);
+        var employeeFinalRow = row - 1;
 
-        worksheet.WriteCells([.. titleCells, .. employeeCells]);
+        row += 2;
+        var totalsCells = resultCellFactory.CreateTotalsCell(sourceModel, employeeFirstRow, employeeFinalRow, ref row);
+
+        worksheet.WriteCells([.. titleCells, .. employeeCells, ..totalsCells]);
 
         worksheet.Columns().AdjustToContents();
         worksheet.Rows().AdjustToContents();
 
+        worksheet.SheetView.FreezeRows(employeeFirstRow -1);
         worksheet.SheetView.ZoomScale = DimensionConstants.ZoomLevel;
         if (worksheet.Column(1).Width < DimensionConstants.ImageWidthInCharacters)
         {

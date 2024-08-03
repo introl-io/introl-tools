@@ -15,13 +15,19 @@ public class ActCodeSourceReader : IActCodeSourceReader
         var (startDate, endDate) = GetStartAndEndDate(summaryWorksheet);
         var keyPositions = GetActivityCodeKeyPositions(summaryWorksheet);
         var employees = GetEmployees(summaryWorksheet, keyPositions);
-
+        var activityCodes = summaryWorksheet
+            .Column(keyPositions.ActivityCodeCol)
+            .CellsUsed()
+            .Select(c => c.Value.ToString())
+            .Where(c => c.ToUpper() != ActCodeSourceConstants.ActivityCode.ToUpper())
+            .Distinct();
         return new ActCodeParsedSourceModel
         {
             StartDate = startDate,
             EndDate = endDate,
             InputWorksheet = summaryWorksheet,
-            Employees = employees
+            Employees = employees,
+            ActivityCodes = activityCodes
         };
     }
 

@@ -11,8 +11,9 @@ public static class ActCodeResultConstants
     public static int TotalHoursColOffset => 1;
     public static int RateColOffset => 2;
     public static int TotalBillableColOffset => 3;
-    public static int PayrollHoursOffset => 0;
+    public static int RegularHoursOffset => 0;
     public static int OtHoursOffset => 1;
-    public static int TotalHoursOffset => 2;
+    public static int PayrollHoursOffset => 2;
     public static int ActCodeTotalRows => 3;
+    public static int TotalBlockTotalRows => 5; // Adding empty row between
 }
