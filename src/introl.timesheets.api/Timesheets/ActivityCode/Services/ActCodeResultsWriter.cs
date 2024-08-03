@@ -39,8 +39,6 @@ public class ActCodeResultsWriter(IActCodeResultCellFactory resultCellFactory) :
             worksheet.Row(1).Height = DimensionConstants.ImageHeightInPoints;
         }
 
-        // workbook.AddWorksheet(sourceModel.InputWorksheet);
-
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         return stream.ToArray();
