@@ -2,7 +2,6 @@
 using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Authorization;
-using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Utils;
 using Xunit;
 
@@ -11,7 +10,7 @@ namespace Introl.Timesheets.Api.Tests.Acceptance.Controllers;
 public class TimesheetControllerTests
 {
     private readonly AcceptanceTestsWebHost _webHost = new();
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
 
     public TimesheetControllerTests()
     {
@@ -65,17 +64,17 @@ public class TimesheetControllerTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.15 - 2024.07.21.xlsx\"";
+        var expectedFileName = "\"MEM-Q1368 Timesheet - Introl.io 2024.07.15 - 2024.07.21.xlsx\"";
         var contentDisposition = response.Content.Headers.ContentDisposition;
         Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             response.Content.Headers.ContentType?.MediaType);
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
-        
+
         await using var expectedFileStream = File.Open("./Resources/ActivityCode/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
-        
+
         CompareWorkbooks(responseWorkbook, expectedWorkbook);
     }
 
@@ -93,7 +92,7 @@ public class TimesheetControllerTests
     private void CompareWorkbooks(XLWorkbook actual, XLWorkbook expected)
     {
         Assert.Equal(expected.Worksheets.Count(), actual.Worksheets.Count());
-        
+
         for (var i = 1; i <= actual.Worksheets.Count(); i++)
         {
             var actualWorksheet = actual.Worksheet(i);

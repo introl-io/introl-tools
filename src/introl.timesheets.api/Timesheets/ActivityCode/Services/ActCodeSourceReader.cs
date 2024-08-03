@@ -13,6 +13,7 @@ public class ActCodeSourceReader : IActCodeSourceReader
         var summaryWorksheet = workbook.Worksheets.Worksheet("Summary");
 
         var (startDate, endDate) = GetStartAndEndDate(summaryWorksheet);
+        var projectCode = summaryWorksheet.FindSingleCellByValue(ActCodeSourceConstants.ProjectCode).CellBelow().GetString();
         var keyPositions = GetActivityCodeKeyPositions(summaryWorksheet);
         var employees = GetEmployees(summaryWorksheet, keyPositions);
         var activityCodes = summaryWorksheet
@@ -27,7 +28,8 @@ public class ActCodeSourceReader : IActCodeSourceReader
             EndDate = endDate,
             InputWorksheet = summaryWorksheet,
             Employees = employees,
-            ActivityCodes = activityCodes
+            ActivityCodes = activityCodes,
+            ProjectCode = projectCode
         };
     }
 

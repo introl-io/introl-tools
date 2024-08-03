@@ -36,7 +36,7 @@ public class ActCodeTimesheetProcessor(
     {
         var dateFormat = "yyyy.MM.dd";
         return
-            $"Weekly Timesheet - Introl.io {sourceModel.StartDate.ToString(dateFormat)} - {sourceModel.EndDate.ToString(dateFormat)}.xlsx";
+            $"{sourceModel.ProjectCode} Timesheet - Introl.io {sourceModel.StartDate.ToString(dateFormat)} - {sourceModel.EndDate.ToString(dateFormat)}.xlsx";
 
     }
 }

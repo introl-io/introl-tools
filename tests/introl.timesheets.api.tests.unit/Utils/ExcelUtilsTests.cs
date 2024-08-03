@@ -1,5 +1,4 @@
-﻿using Introl.Timesheets.Api.Extensions;
-using Introl.Timesheets.Api.Utils;
+﻿using Introl.Timesheets.Api.Utils;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Unit.Utils;
