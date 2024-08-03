@@ -8,6 +8,7 @@ public static class StyleConstants
     public static XLColor Black => XLColor.SmokyBlack;
     public static XLColor LightGrey => XLColor.LightGray;
     public static XLColor DarkGrey => XLColor.DarkGray;
+    public static XLColor MutedBlue => XLColor.LightSteelBlue;
     public static int LargeFontSize => 14;
     public static string HourCellFormat => "0.00";
     public static string CurrencyWithSymbolCellFormat => $"$ {CurrencyCellFormat}";

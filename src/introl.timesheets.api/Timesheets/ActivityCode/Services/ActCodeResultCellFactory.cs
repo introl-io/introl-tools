@@ -490,17 +490,17 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
             {
                 Row = row,
                 Column = i,
-                Color = StyleConstants.LightGrey
+                Color = StyleConstants.MutedBlue
             });
         }
-        
+
         result.AddRange(
         [
             new CellToAdd
             {
-                Row = row, 
-                Column = ActCodeResultConstants.NameColInt, 
-                Value = employee.Name, 
+                Row = row,
+                Column = ActCodeResultConstants.NameColInt,
+                Value = employee.Name,
                 Bold = true
             },
             new CellToAdd
@@ -536,8 +536,21 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
                 Row = i,
                 Column = ActCodeResultConstants.ActivityCodeColInt,
                 Value = activityCode,
+                // Hides the value, needs to be there so SUMIFS elsewhere can work
                 NumberFormat = i == row ? null : StyleConstants.HideTextCellFormat,
                 Bold = true
+            });
+        }
+        var totalNumCols = ActCodeResultConstants.DateStartColInt + GetNumberOfDays(startDate, endDate) +
+                           ActCodeResultConstants.TotalBillableColOffset;
+
+        for (var i = ActCodeResultConstants.ActivityCodeColInt + 1; i < totalNumCols; i++)
+        {
+            cells.Add(new CellToAdd
+            {
+                Row = row,
+                Column = i,
+                Color = StyleConstants.LightGrey
             });
         }
 
