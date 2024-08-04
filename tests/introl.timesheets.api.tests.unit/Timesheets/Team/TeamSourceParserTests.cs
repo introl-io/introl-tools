@@ -1,6 +1,5 @@
 ﻿using ClosedXML.Excel;
 using FluentAssertions;
-using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Timesheets.Team.Services;
 using Xunit;
 
@@ -9,52 +8,7 @@ namespace Introl.Timesheets.Api.Tests.Unit.Timesheets.Team;
 public class TeamSourceParserTests
 {
     private TeamSourceParser sut = new();
-
-    [Fact]
-    public void GetDayOfTheWeekDictionary_WhenWeekExist_ReturnDictionary()
-    {
-        // Arrange
-        var worksheet = new XLWorkbook().Worksheets.Add("Sheet1");
-        worksheet.Cell("A1").Value = "mon";
-        worksheet.Cell("B1").Value = "tue";
-        worksheet.Cell("C1").Value = "wed";
-        worksheet.Cell("D1").Value = "thu";
-        worksheet.Cell("E1").Value = "fri";
-        worksheet.Cell("F1").Value = "sat";
-        worksheet.Cell("G1").Value = "sun";
-
-        var expected = new Dictionary<DayOfTheWeek, int>
-        {
-            { DayOfTheWeek.Monday, 1 },
-            { DayOfTheWeek.Tuesday, 2 },
-            { DayOfTheWeek.Wednesday, 3 },
-            { DayOfTheWeek.Thursday, 4 },
-            { DayOfTheWeek.Friday, 5 },
-            { DayOfTheWeek.Saturday, 6 },
-            { DayOfTheWeek.Sunday, 7 },
-        };
-
-        // Act
-        var result = sut.GetDayOfTheWeekColumnDictionary(worksheet);
-
-        result.Should().BeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public void GetDayOfTheWeekDictionary_MissingDay_ThrowsException()
-    {
-        // Arrange
-        var worksheet = new XLWorkbook().Worksheets.Add("Sheet1");
-        worksheet.Cell("A1").Value = "mon";
-        worksheet.Cell("C1").Value = "wed";
-        worksheet.Cell("D1").Value = "thu";
-        worksheet.Cell("E1").Value = "fri";
-        worksheet.Cell("F1").Value = "sat";
-        worksheet.Cell("G1").Value = "sun";
-
-        Assert.Throws<ArgumentNullException>(() => sut.GetDayOfTheWeekColumnDictionary(worksheet));
-    }
-
+    
     [Fact]
     public void GetStartAndEndDate_MissingWeekCell_ThrowsException()
     {

@@ -25,7 +25,7 @@ public class TeamResultWriter(ITeamResultCellFactory teamResultCellFactory) : IT
         var worksheet = workbook.Worksheets.Add("Summary");
         var titleCells = teamResultCellFactory.GetTitleCells(worksheet, teamSourceModel);
 
-        var employeeCells = teamResultCellFactory.GetEmployeeCells(teamSourceModel.Employees, ref employeeRow);
+        var employeeCells = teamResultCellFactory.GetEmployeeCells(teamSourceModel, ref employeeRow);
 
         var totalsCells = teamResultCellFactory.GetTotalsCells(teamSourceModel, employeeRow + 4, employeeRow);
 

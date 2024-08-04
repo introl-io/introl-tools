@@ -1,5 +1,4 @@
 ﻿using ClosedXML.Excel;
-using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Timesheets.Team.Constants;
 using Introl.Timesheets.Api.Timesheets.Team.Models;
@@ -9,17 +8,6 @@ namespace Introl.Timesheets.Api.Timesheets.Team.Services;
 
 public class TeamSourceParser : ITeamSourceParser
 {
-    public IDictionary<DayOfTheWeek, int> GetDayOfTheWeekColumnDictionary(IXLWorksheet worksheet)
-    {
-        var result = new Dictionary<DayOfTheWeek, int>();
-        foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
-        {
-            result.Add(day, worksheet.FindSingleCellByValue(day.StringValue()).Address.ColumnNumber);
-        }
-
-        return result;
-    }
-
     public (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet)
     {
         var weekCell = worksheet.FindSingleCellByValue(TeamSourceConstants.WeekCellValue);
@@ -73,7 +61,6 @@ public class TeamSourceParser : ITeamSourceParser
 
 public interface ITeamSourceParser
 {
-    IDictionary<DayOfTheWeek, int> GetDayOfTheWeekColumnDictionary(IXLWorksheet worksheet);
     (DateOnly startDate, DateOnly endDate) GetStartAndEndDate(IXLWorksheet worksheet);
     TeamEmployeeWorkDayHours GetWorkdayHoursForEmployeeAndDay(IXLWorksheet worksheet, int employeeRow, int dayColumn);
     (decimal regularHoursRate, decimal overtimeRate) GetEmployeeRates(IXLWorksheet worksheet, int employeeRow, int ratesColumn);
