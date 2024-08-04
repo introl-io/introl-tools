@@ -1,5 +1,4 @@
 ﻿using ClosedXML.Excel;
-using Introl.Timesheets.Api.Enums;
 using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Timesheets.Team.Models;
 
@@ -18,7 +17,7 @@ public class TeamSourceReader(ITeamSourceParser teamSourceParser) : ITeamSourceR
         {
             StartDate = startDate,
             EndDate = endDate,
-            Employees = GetEmployees(teamSummarySheet),
+            Employees = GetEmployees(teamSummarySheet, startDate, endDate),
             RawTimesheetsWorksheet = rawTimesheetsWorkSheet
         };
     }
@@ -35,22 +34,21 @@ public class TeamSourceReader(ITeamSourceParser teamSourceParser) : ITeamSourceR
         return cell.Address.ColumnNumber;
     }
 
-    private IList<TeamEmployee> GetEmployees(IXLWorksheet worksheet)
+    private IList<TeamEmployee> GetEmployees(IXLWorksheet worksheet, DateOnly startDate, DateOnly endDate)
     {
         var employeeRow = GetFirstEmployeeRow(worksheet);
-        var dayColDict = teamSourceParser.GetDayOfTheWeekColumnDictionary(worksheet);
         var ratesCol = RatesColumn(worksheet);
         var employees = new List<TeamEmployee>();
         do
         {
-            employees.Add(GetEmployee(worksheet, employeeRow, dayColDict, ratesCol, out var numRowsUsedByEmployee));
+            employees.Add(GetEmployee(worksheet, employeeRow, ratesCol, startDate, endDate, out var numRowsUsedByEmployee));
             employeeRow += numRowsUsedByEmployee;
         } while (!string.IsNullOrEmpty(worksheet.Cell(employeeRow, 1).GetString()));
 
         return employees;
     }
 
-    private TeamEmployee GetEmployee(IXLWorksheet worksheet, int employeeRow, IDictionary<DayOfTheWeek, int> dayDictionary, int ratesCol, out int numRowsUsedByEmployee)
+    private TeamEmployee GetEmployee(IXLWorksheet worksheet, int employeeRow, int ratesCol, DateOnly startDate, DateOnly endDate, out int numRowsUsedByEmployee)
     {
         var name = worksheet.Cell(employeeRow, 1).GetString();
 
@@ -67,12 +65,15 @@ public class TeamSourceReader(ITeamSourceParser teamSourceParser) : ITeamSourceR
             numRowsUsedByEmployee += 1;
         }
 
-        var workDays = new Dictionary<DayOfTheWeek, TeamEmployeeWorkDayHours>();
-        foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
+        var workDays = new Dictionary<DateOnly, TeamEmployeeWorkDayHours>();
+        var numDays = GetNumberOfDays(startDate, endDate);
+        
+        for(var i =0; i < numDays; i++)
         {
-            workDays.Add(day, teamSourceParser.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, dayDictionary[day]));
+            var day = startDate.AddDays(i);
+            workDays.Add(day, teamSourceParser.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, 3+i));
         }
-
+        
         return new TeamEmployee
         {
             Name = name,
@@ -80,6 +81,11 @@ public class TeamSourceReader(ITeamSourceParser teamSourceParser) : ITeamSourceR
             OvertimeHoursRate = overtimeHoursRate,
             WorkDays = workDays
         };
+    }
+    
+    private int GetNumberOfDays(DateOnly startDate, DateOnly endDate)
+    {
+        return endDate.DayNumber - startDate.DayNumber + 1;
     }
 }
 

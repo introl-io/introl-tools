@@ -1,7 +1,5 @@
 ﻿using ClosedXML.Excel;
 using Introl.Timesheets.Api.Constants;
-using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Extensions;
 using Introl.Timesheets.Api.Models;
 using Introl.Timesheets.Api.Timesheets.Team.Models;
 using Introl.Timesheets.Api.Utils;
@@ -10,19 +8,9 @@ namespace Introl.Timesheets.Api.Timesheets.Team.Services;
 
 public class TeamResultCellFactory : ITeamResultCellFactory
 {
-    private Dictionary<DayOfTheWeek, int> DayOfTheWeekColumnDictionary => new()
-    {
-        { DayOfTheWeek.Monday, 3 },
-        { DayOfTheWeek.Tuesday, 4 },
-        { DayOfTheWeek.Wednesday, 5 },
-        { DayOfTheWeek.Thursday, 6 },
-        { DayOfTheWeek.Friday, 7 },
-        { DayOfTheWeek.Saturday, 8 },
-        { DayOfTheWeek.Sunday, 9 },
-    };
-
     private const int NameColInt = 1;
     private const int HoursTypeColInt = 2;
+    private const int DateStartColumn = 3;
     private const int TotalHoursColInt = 10;
     private const int RatesColInt = 11;
     private const int TotalBillColInt = 12;
@@ -37,7 +25,7 @@ public class TeamResultCellFactory : ITeamResultCellFactory
     private const int DayRow = 4;
     private const int TitleRow = 5;
 
-    public IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, TeamParsedSourceModel teamSourceModel)
+    public IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, TeamParsedSourceModel sourceModel)
     {
         var pic = worksheet.AddPicture("./Assets/introl_logo.png")
             .MoveTo(1, 1);
@@ -47,39 +35,40 @@ public class TeamResultCellFactory : ITeamResultCellFactory
         var cells = new List<CellToAdd>();
         for (var i = NameColInt; i <= TotalBillColInt; i++)
         {
-            cells.Add(new CellToAdd
-            {
-                Column = i,
-                Row = BufferRow,
-                Color = StyleConstants.Black
-            });
+            cells.Add(new CellToAdd { Column = i, Row = BufferRow, Color = StyleConstants.Black });
         }
 
 
         return
         [
             .. cells,
-            .. AddWeekRow(teamSourceModel),
-            .. AddDayRow(),
-            .. AddTitleRow(teamSourceModel)
+            .. AddWeekRow(sourceModel),
+            .. AddDayRow(sourceModel),
+            .. AddTitleRow(sourceModel)
         ];
     }
 
-    private IEnumerable<CellToAdd> AddTitleRow(TeamParsedSourceModel teamSourceModel)
+    private IEnumerable<CellToAdd> AddTitleRow(TeamParsedSourceModel sourceModel)
     {
         var dayDateFormat = "MMMM dd";
 
-        var days = DayOfTheWeekColumnDictionary.Select((day, ix) =>
-            new CellToAdd
-            {
-                Column = day.Value,
-                Row = TitleRow,
-                Value = $"{teamSourceModel.StartDate.AddDays(ix).ToString(dayDateFormat)}",
-                Color = StyleConstants.DarkGrey,
-                Bold = true
-            }).ToList();
+        var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
+        var result = new List<CellToAdd>();
+        for (var i = 0; i < numDays; i++)
+        {
+            result.Add(
+                new CellToAdd
+                {
+                    Column = DateStartColumn + i,
+                    Row = TitleRow,
+                    Value = $"{sourceModel.StartDate.AddDays(i).ToString(dayDateFormat)}",
+                    Color = StyleConstants.DarkGrey,
+                    Bold = true
+                });
+        }
 
-        CellToAdd[] cells =
+
+        result.AddRange(
         [
             new CellToAdd
             {
@@ -97,7 +86,6 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                 Color = StyleConstants.DarkGrey,
                 Bold = true
             },
-            .. days,
             new CellToAdd
             {
                 Column = TotalHoursColInt,
@@ -122,24 +110,30 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                 Color = StyleConstants.DarkGrey,
                 Bold = true
             },
-        ];
+        ]);
 
-        return cells;
+        return result;
     }
 
-    private IEnumerable<CellToAdd> AddDayRow()
+    private IEnumerable<CellToAdd> AddDayRow(TeamParsedSourceModel sourceModel)
     {
-        foreach (var day in Enum.GetValues(typeof(DayOfTheWeek)).Cast<DayOfTheWeek>())
+        var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
+        var result = new List<CellToAdd>();
+        for (var i = 0; i < numDays; i++)
         {
-            yield return new CellToAdd
-            {
-                Column = DayOfTheWeekColumnDictionary[day],
-                Row = DayRow,
-                Bold = true,
-                Value = day.StringValue().ToUpper(),
-                Color = StyleConstants.LightGrey
-            };
+            result.Add(
+                new CellToAdd
+                {
+                    Column = DateStartColumn + i,
+                    Row = DayRow,
+                    Bold = true,
+                    Value = sourceModel.StartDate.AddDays(i).ToString("ddd").ToUpper(),
+                    Color = StyleConstants.LightGrey
+                }
+            );
         }
+
+        return result;
     }
 
     private IEnumerable<CellToAdd> AddWeekRow(TeamParsedSourceModel teamSourceModel)
@@ -151,14 +145,11 @@ public class TeamResultCellFactory : ITeamResultCellFactory
         return new[] { new CellToAdd { Column = 2, Row = WeekRow, Bold = true, Value = formattedDate } };
     }
 
-    public IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<TeamEmployee> employees, ref int employeeRow)
+    public IEnumerable<CellToAdd> GetEmployeeCells(TeamParsedSourceModel sourceModel, ref int employeeRow)
     {
-        var mondayColLetter = ExcelUtils.ToExcelColumn(DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday]);
-        var sundayColLetter = ExcelUtils.ToExcelColumn(DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday]);
-
         var cells = new List<CellToAdd>();
 
-        foreach (var employee in employees)
+        foreach (var employee in sourceModel.Employees)
         {
             cells.AddRange(new[]
                 {
@@ -191,32 +182,35 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                 }
             );
 
-            foreach (var (dayOfTheWeek, col) in DayOfTheWeekColumnDictionary)
+            var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
+
+            for (var i = 0; i < numDays; i++)
             {
-                var colLetter = ExcelUtils.ToExcelColumn(col);
+                var column = DateStartColumn + i;
+                var date = sourceModel.StartDate.AddDays(i);
                 cells.AddRange(new[]
                 {
                     new CellToAdd
                     {
                         Row = employeeRow,
-                        Column = col,
+                        Column = column,
                         ValueType = CellToAdd.CellValueType.Formula,
                         Value =
-                            $"{colLetter}{employeeRow + 1} + {colLetter}{employeeRow + 2}",
+                            $"{ExcelUtils.GetCellLocation(column, employeeRow + 1)} + {ExcelUtils.GetCellLocation(column, employeeRow + 2)}",
                         NumberFormat = StyleConstants.HourCellFormat
                     },
                     new CellToAdd
                     {
                         Row = employeeRow + 1,
-                        Column = col,
-                        Value = employee.WorkDays[dayOfTheWeek].RegularHours,
+                        Column = column,
+                        Value = employee.WorkDays[date].RegularHours,
                         NumberFormat = StyleConstants.HourCellFormat
                     },
                     new CellToAdd
                     {
                         Row = employeeRow + 2,
-                        Column = col,
-                        Value = employee.WorkDays[dayOfTheWeek].OvertimeHours,
+                        Column = DateStartColumn + i,
+                        Value = employee.WorkDays[date].OvertimeHours,
                         NumberFormat = StyleConstants.HourCellFormat
                     }
                 });
@@ -228,7 +222,8 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                 {
                     Row = employeeRow,
                     Column = TotalHoursColInt,
-                    Value = $"SUM({mondayColLetter}{employeeRow}:{sundayColLetter}{employeeRow})",
+                    Value =
+                        $"SUM({ExcelUtils.GetCellLocation(DateStartColumn, employeeRow)}:{ExcelUtils.GetCellLocation(DateStartColumn + numDays -1 , employeeRow)})",
                     ValueType = CellToAdd.CellValueType.Formula,
                     NumberFormat = StyleConstants.HourCellFormat
                 },
@@ -236,7 +231,8 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                 {
                     Row = employeeRow + 1,
                     Column = TotalHoursColInt,
-                    Value = $"SUM({mondayColLetter}{employeeRow + 1}:{sundayColLetter}{employeeRow + 1})",
+                    Value =
+                        $"SUM({ExcelUtils.GetCellLocation(DateStartColumn, employeeRow + 1)}:{ExcelUtils.GetCellLocation(DateStartColumn + numDays -1, employeeRow + 1)})",
                     ValueType = CellToAdd.CellValueType.Formula,
                     NumberFormat = StyleConstants.HourCellFormat
                 },
@@ -244,7 +240,8 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                 {
                     Row = employeeRow + 2,
                     Column = TotalHoursColInt,
-                    Value = $"SUM({mondayColLetter}{employeeRow + 2}:{sundayColLetter}{employeeRow + 2})",
+                    Value =
+                        $"SUM({ExcelUtils.GetCellLocation(DateStartColumn, employeeRow + 2)}:{ExcelUtils.GetCellLocation(DateStartColumn + numDays - 1, employeeRow + 2)})",
                     ValueType = CellToAdd.CellValueType.Formula,
                     NumberFormat = StyleConstants.HourCellFormat
                 },
@@ -294,20 +291,22 @@ public class TeamResultCellFactory : ITeamResultCellFactory
         return cells;
     }
 
-    public IEnumerable<CellToAdd> GetTotalsCells(TeamParsedSourceModel teamSourceModel, int totalsStartRow,
+    public IEnumerable<CellToAdd> GetTotalsCells(TeamParsedSourceModel sourceModel, int totalsStartRow,
         int lastEmployeeRow)
     {
         var totalBillableRange = $"{TotalBillColLetter}1:{TotalBillColLetter}{lastEmployeeRow}";
-        var mondayColLetter = ExcelUtils.ToExcelColumn(DayOfTheWeekColumnDictionary[DayOfTheWeek.Monday]);
-        var sundayColLetter = ExcelUtils.ToExcelColumn(DayOfTheWeekColumnDictionary[DayOfTheWeek.Sunday]);
-        var dayCells = DayOfTheWeekColumnDictionary.SelectMany(ent =>
-        {
-            var col = ent.Value;
-            var colLetter = ExcelUtils.ToExcelColumn(col);
-            var daysHourRangeRange = $"{colLetter}1:{colLetter}{lastEmployeeRow}";
+        var result = new List<CellToAdd>();
 
-            return new[]
-            {
+        var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
+        var startDateColLetter = ExcelUtils.ToExcelColumn(DateStartColumn);
+        var endDateColLetter = ExcelUtils.ToExcelColumn(DateStartColumn + numDays);
+        for (var i = 0; i < numDays; i++)
+        {
+            var col = DateStartColumn + i;
+            var colLetter = ExcelUtils.ToExcelColumn(col);
+            var daysHourRangeRange = $"{ExcelUtils.GetCellLocation(col, 1)}:{ExcelUtils.GetCellLocation(col, lastEmployeeRow)}";
+
+            result.AddRange([
                 new CellToAdd
                 {
                     Row = totalsStartRow + 1,
@@ -334,10 +333,10 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                     ValueType = CellToAdd.CellValueType.Formula,
                     NumberFormat = StyleConstants.HourCellFormat
                 },
-            };
-        });
+            ]);
+        }
 
-        CellToAdd[] cells =
+        result.AddRange(
         [
             new CellToAdd
             {
@@ -392,12 +391,11 @@ public class TeamResultCellFactory : ITeamResultCellFactory
                 Column = HoursTypeColInt,
                 Value = OutputWorkbookConstants.TotalWeeklyOtHours
             },
-            .. dayCells,
             new CellToAdd
             {
                 Row = totalsStartRow + 1,
                 Column = TotalHoursColInt,
-                Value = $"SUM({mondayColLetter}{totalsStartRow + 1}:{sundayColLetter}{totalsStartRow + 1})",
+                Value = $"SUM({startDateColLetter}{totalsStartRow + 1}:{endDateColLetter}{totalsStartRow + 1})",
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.HourCellFormat
             },
@@ -405,7 +403,7 @@ public class TeamResultCellFactory : ITeamResultCellFactory
             {
                 Row = totalsStartRow + 2,
                 Column = TotalHoursColInt,
-                Value = $"SUM({mondayColLetter}{totalsStartRow + 2}:{sundayColLetter}{totalsStartRow + 2})",
+                Value = $"SUM({startDateColLetter}{totalsStartRow + 2}:{endDateColLetter}{totalsStartRow + 2})",
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.HourCellFormat
             },
@@ -413,14 +411,14 @@ public class TeamResultCellFactory : ITeamResultCellFactory
             {
                 Row = totalsStartRow + 3,
                 Column = TotalHoursColInt,
-                Value = $"SUM({mondayColLetter}{totalsStartRow + 3}:{sundayColLetter}{totalsStartRow + 3})",
+                Value = $"SUM({startDateColLetter}{totalsStartRow + 3}:{endDateColLetter}{totalsStartRow + 3})",
                 ValueType = CellToAdd.CellValueType.Formula,
                 NumberFormat = StyleConstants.HourCellFormat
             },
-        ];
+        ]);
 
 
-        return cells;
+        return result;
     }
 
     private string GetSumRangeBasedOnHourType(string dataCellRange, string hourType, int lastEmployeeRow)
@@ -428,11 +426,18 @@ public class TeamResultCellFactory : ITeamResultCellFactory
         var typeRange = $"{HoursTypeColLetter}1:{HoursTypeColLetter}{lastEmployeeRow}";
         return $"SUMIFS({dataCellRange},{typeRange},\"{hourType}\")";
     }
+
+    private int GetNumberOfDays(DateOnly startDate, DateOnly endDate)
+    {
+        return endDate.DayNumber - startDate.DayNumber + 1;
+    }
 }
 
 public interface ITeamResultCellFactory
 {
-    IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, TeamParsedSourceModel teamSourceModel);
-    IEnumerable<CellToAdd> GetEmployeeCells(IEnumerable<TeamEmployee> employees, ref int employeeRow);
-    IEnumerable<CellToAdd> GetTotalsCells(TeamParsedSourceModel teamSourceModel, int totalsStartRow, int lastEmployeeRow);
+    IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, TeamParsedSourceModel sourceModel);
+    IEnumerable<CellToAdd> GetEmployeeCells(TeamParsedSourceModel sourceModel, ref int employeeRow);
+
+    IEnumerable<CellToAdd> GetTotalsCells(TeamParsedSourceModel sourceModel, int totalsStartRow,
+        int lastEmployeeRow);
 }
