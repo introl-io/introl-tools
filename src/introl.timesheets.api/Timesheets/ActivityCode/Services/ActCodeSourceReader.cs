@@ -19,6 +19,7 @@ public class ActCodeSourceReader : IActCodeSourceReader
         var activityCodes = summaryWorksheet
             .Column(keyPositions.ActivityCodeCol)
             .CellsUsed()
+            .Where(c => c.Address.RowNumber < keyPositions.TotalHoursRow)
             .Select(c => c.Value.ToString())
             .Where(c => c.ToUpper() != ActCodeSourceConstants.ActivityCode.ToUpper())
             .Distinct();
@@ -43,7 +44,9 @@ public class ActCodeSourceReader : IActCodeSourceReader
         for (var i = startRow; i < endRow; i++)
         {
             var memberCode = worksheet.Cell(i, keyPositions.MemberCodeCol);
-            if (string.IsNullOrWhiteSpace(memberCode.GetString()))
+            var activityCode = worksheet.Cell(i, keyPositions.ActivityCodeCol);
+            if (string.IsNullOrWhiteSpace(memberCode.GetString())
+                || string.IsNullOrWhiteSpace(activityCode.GetString()))
             {
                 continue;
             }
@@ -83,8 +86,8 @@ public class ActCodeSourceReader : IActCodeSourceReader
     {
         return new ActCodeSourceKeyPositions
         {
-            TitleRow = worksheet.FindSingleCellByValue(ActCodeSourceConstants.ActivityCode).Address.RowNumber,
-            ActivityCodeCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.ActivityCode).Address.ColumnNumber,
+            TitleRow = worksheet.FindSingleCellByValue(ActCodeSourceConstants.ActivityCode, true).Address.RowNumber,
+            ActivityCodeCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.ActivityCode, true).Address.ColumnNumber,
             DateCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.Date, true).Address.ColumnNumber,
             NameCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.Name).Address.ColumnNumber,
             MemberCodeCol = worksheet.FindSingleCellByValue(ActCodeSourceConstants.MemberCode).Address.ColumnNumber,
