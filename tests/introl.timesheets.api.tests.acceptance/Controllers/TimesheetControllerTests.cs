@@ -2,7 +2,7 @@
 using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Authorization;
-using Introl.Timesheets.Api.Utils;
+using Introl.Tools.Common.Utils;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Acceptance.Controllers;

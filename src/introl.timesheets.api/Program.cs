@@ -1,6 +1,6 @@
 ﻿using Introl.Timesheets.Api.Authorization;
-using Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
-using Introl.Timesheets.Api.Timesheets.Team.Services;
+using Introl.Tools.Timesheets.ActivityCode.Services;
+using Introl.Tools.Timesheets.Team.Services;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

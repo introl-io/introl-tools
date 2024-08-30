@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
-using Introl.Timesheets.Api.Timesheets.Team.Services;
+using Introl.Tools.Timesheets.ActivityCode.Services;
+using Introl.Tools.Timesheets.Enums;
+using Introl.Tools.Timesheets.Team.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Introl.Timesheets.Api.Controllers;
