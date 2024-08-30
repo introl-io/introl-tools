@@ -1,6 +1,7 @@
 ﻿using Introl.Timesheets.Api.Authorization;
-using Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
-using Introl.Timesheets.Api.Timesheets.Team.Services;
+using Introl.Tools.Racks.Services;
+using Introl.Tools.Timesheets.ActivityCode.Services;
+using Introl.Tools.Timesheets.Team.Services;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +42,11 @@ builder.Services.AddScoped<IActCodeSourceReader, ActCodeSourceReader>();
 builder.Services.AddScoped<IActCodeResultsWriter, ActCodeResultsWriter>();
 builder.Services.AddScoped<IActCodeResultCellFactory, ActCodeResultCellFactory>();
 builder.Services.AddScoped<IActCodeHoursProcessor, ActCodeHoursProcessor>();
+
+builder.Services.AddScoped<IRackSourceReader, RackSourceReader>();
+builder.Services.AddScoped<IRackProcessor, RackProcessor>();
+builder.Services.AddScoped<IRackCellFactory, RackCellFactory>();
+builder.Services.AddScoped<IRackResultsWriter, RackResultsWriter>();
 
 builder.Services.AddScoped<ApiKeyMiddleware>();
 builder.Services.AddLogging();

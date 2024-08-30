@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Introl.Timesheets.Api.Enums;
-using Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
-using Introl.Timesheets.Api.Timesheets.Team.Services;
+using Introl.Tools.Common.Enums;
+using Introl.Tools.Timesheets.ActivityCode.Services;
+using Introl.Tools.Timesheets.Team.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Introl.Timesheets.Api.Controllers;
@@ -28,7 +28,7 @@ public class TimesheetController(
             {
                 return failReason.FailureReason switch
                 {
-                    TimesheetProcessingFailureReasons.UnsupportedFileType => BadRequest(
+                    ProcessingFailureReasons.UnsupportedFileType => BadRequest(
                         failReason.Message),
                     _ => throw new Exception("Unhandled fail reason getting results")
                 };
@@ -51,7 +51,7 @@ public class TimesheetController(
             {
                 return failReason.FailureReason switch
                 {
-                    TimesheetProcessingFailureReasons.UnsupportedFileType => BadRequest(
+                    ProcessingFailureReasons.UnsupportedFileType => BadRequest(
                         failReason.Message),
                     _ => throw new Exception("Unhandled fail reason getting results")
                 };

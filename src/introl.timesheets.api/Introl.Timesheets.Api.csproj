@@ -10,16 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
-    <PackageReference Include="OneOf" Version="3.0.271" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="ClosedXML" Version="0.102.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Assets\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="publish\web.config" />
@@ -31,5 +26,17 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Introl.Timesheets.Api.Tests.Acceptance" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\introl.tools.racks\Introl.Tools.Racks.csproj" />
+    <ProjectReference Include="..\introl.tools.timesheets\Introl.Tools.Timesheets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using Introl.Timesheets.Api.Timesheets.ActivityCode.Models;
-using Introl.Timesheets.Api.Timesheets.ActivityCode.Services;
+using Introl.Tools.Timesheets.ActivityCode.Models;
+using Introl.Tools.Timesheets.ActivityCode.Services;
 using Xunit;
 
 namespace Introl.Timesheets.Api.Tests.Unit.Timesheets;
