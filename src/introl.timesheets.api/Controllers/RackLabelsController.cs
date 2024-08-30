@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Introl.Tools.Common.Enums;
 using Introl.Tools.Racks.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ namespace Introl.Timesheets.Api.Controllers;
 
 [Route("api/rack-labels")]
 [ApiController]
-public class RackLabelsController(IRackProcessor rackProcessor): Controller
+public class RackLabelsController(IRackProcessor rackProcessor) : Controller
 {
     [HttpPost("create")]
     public IActionResult CreateLabels([Required] IFormFile input)

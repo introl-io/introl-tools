@@ -1,4 +1,4 @@
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using Introl.Tools.Common.Enums;
 using Introl.Tools.Common.Models;
 using OneOf;
@@ -23,7 +23,7 @@ public class RackProcessor(IRackSourceReader sourceReader, IRackResultsWriter re
         var inputSheetModel = sourceReader.Process(workbook);
 
         var resultFile = resultsWriter.Process(inputSheetModel);
-        
+
         return new ProcessedResult
         {
             WorkbookBytes = resultFile,

@@ -47,7 +47,7 @@ public class RackSourceReader : IRackSourceReader
             Switch = worksheet.Cell(row, portPositions.SlotColumn).GetString().ToUpper(),
         };
     }
-    
+
     private RacksSourceKeyPositions GetKeyPositions(IXLWorksheet worksheet)
     {
         var racks = GetSourceAndDestinationTitleCells(worksheet, "Rack");

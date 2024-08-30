@@ -1,4 +1,4 @@
-namespace Introl.Tools.Racks.Models;
+﻿namespace Introl.Tools.Racks.Models;
 
 public class RackSourceModel
 {

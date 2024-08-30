@@ -2,6 +2,7 @@
 using ClosedXML.Excel;
 using FluentAssertions;
 using Introl.Timesheets.Api.Authorization;
+using Introl.Timesheets.Api.Tests.Acceptance.Utils;
 using Introl.Tools.Common.Utils;
 using Xunit;
 
@@ -21,7 +22,7 @@ public class TimesheetControllerTests
     [Fact]
     public async Task Team_GivenKnownInput_GivesKnownOutput()
     {
-        await using var inputFileStream = File.Open("./Resources/Team/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/Timesheets/Team/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
@@ -35,11 +36,11 @@ public class TimesheetControllerTests
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
-        await using var expectedFileStream = File.Open("./Resources/Team/Success/expected_output.xlsx", FileMode.Open);
+        await using var expectedFileStream = File.Open("./Resources/Timesheets/Team/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
-        CompareWorkbooks(responseWorkbook, expectedWorkbook);
+        AcceptanceTestUtils.CompareWorkbooks(responseWorkbook, expectedWorkbook);
     }
 
     [Fact]
@@ -56,7 +57,7 @@ public class TimesheetControllerTests
     [Fact]
     public async Task ActivityCode_GivenKnownInput_GivesKnownOutput()
     {
-        await using var inputFileStream = File.Open("./Resources/ActivityCode/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/Timesheets/ActivityCode/Success/timesheet_input.xlsx", FileMode.Open);
 
         var request =
             new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
@@ -71,11 +72,11 @@ public class TimesheetControllerTests
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
-        await using var expectedFileStream = File.Open("./Resources/ActivityCode/Success/expected_output.xlsx", FileMode.Open);
+        await using var expectedFileStream = File.Open("./Resources/Timesheets/ActivityCode/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
-        CompareWorkbooks(responseWorkbook, expectedWorkbook);
+        AcceptanceTestUtils.CompareWorkbooks(responseWorkbook, expectedWorkbook);
     }
 
     [Fact]
@@ -89,43 +90,5 @@ public class TimesheetControllerTests
         Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
     }
 
-    private void CompareWorkbooks(XLWorkbook actual, XLWorkbook expected)
-    {
-        Assert.Equal(expected.Worksheets.Count(), actual.Worksheets.Count());
 
-        for (var i = 1; i <= actual.Worksheets.Count(); i++)
-        {
-            var actualWorksheet = actual.Worksheet(i);
-            var expectedWorksheet = expected.Worksheet(i);
-            CompareWorksheets(actualWorksheet, expectedWorksheet, actualWorksheet.Name);
-        }
-    }
-
-    private void CompareWorksheets(IXLWorksheet actual, IXLWorksheet expected, string worksheetName)
-    {
-        actual.Rows().Count().Should().Be(expected.Rows().Count(), $"Row count mismatch in worksheet {worksheetName}");
-        actual.Columns().Count().Should()
-            .Be(expected.Columns().Count(), $"Row count mismatch in worksheet {worksheetName}");
-
-        for (var i = 1; i <= actual.Rows().Count(); i++)
-        {
-            var actualRow = actual.Row(i);
-            var expectedRow = expected.Row(i);
-            CompareRows(actualRow, expectedRow, worksheetName, i);
-        }
-    }
-
-    private void CompareRows(IXLRow actual, IXLRow expected, string workSheetName, int rowNumber)
-    {
-        actual.CellsUsed().Count().Should().Be(expected.CellsUsed().Count(),
-            $"Cell count mismatch in worksheet {workSheetName} row {rowNumber}");
-
-        for (var i = 1; i <= actual.Cells().Count(); i++)
-        {
-            var actualCell = actual.Cell(i);
-            var expectedCell = expected.Cell(i);
-            actualCell.Value.ToString().Trim().Should().Be(expectedCell.Value.ToString().Trim(),
-                $"Cell value mismatch in worksheet {workSheetName} cell {ExcelUtils.ToExcelColumn(i)}{rowNumber}");
-        }
-    }
 }

@@ -1,4 +1,4 @@
-using Introl.Tools.Common.Constants;
+﻿using Introl.Tools.Common.Constants;
 using Introl.Tools.Common.Models;
 using Introl.Tools.Common.Utils;
 using Introl.Tools.Racks.Constants;
@@ -22,14 +22,14 @@ public class RackCellFactory : IRackCellFactory
             },
             new CellToAdd
             {
-                Row = 1, 
-                Column = RackResultConstants.IconColumn, 
-                Value = "", 
+                Row = 1,
+                Column = RackResultConstants.IconColumn,
+                Value = "",
                 Color = StyleConstants.MutedBlue,
                 Bold = true
             }
         };
-        
+
         result.AddRange(GetPortTitleCells(RackResultConstants.SourcePort));
         result.AddRange(GetPortTitleCells(RackResultConstants.DestinationPort));
 
@@ -86,7 +86,10 @@ public class RackCellFactory : IRackCellFactory
             result.AddRange(GetPortCells(portMapping.DestinationPort, RackResultConstants.DestinationPort, row));
             result.Add(new CellToAdd
             {
-                Row = row, Column = RackResultConstants.IconColumn, Value = "<->", Color = StyleConstants.Blue
+                Row = row,
+                Column = RackResultConstants.IconColumn,
+                Value = "<->",
+                Color = StyleConstants.Blue
             });
         }
 

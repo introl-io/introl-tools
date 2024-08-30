@@ -1,4 +1,4 @@
-namespace Introl.Tools.Racks.Constants;
+﻿namespace Introl.Tools.Racks.Constants;
 
 public class RackResultConstants
 {

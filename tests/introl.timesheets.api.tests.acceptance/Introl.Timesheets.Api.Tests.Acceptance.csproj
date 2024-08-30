@@ -33,7 +33,7 @@
 
 
   <ItemGroup>
-    <Folder Include="Resources\Team\" />
+    <Folder Include="Resources\Timesheets\" />
   </ItemGroup>
 
 </Project>
