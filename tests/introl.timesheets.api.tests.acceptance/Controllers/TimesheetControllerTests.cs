@@ -34,11 +34,11 @@ public class TimesheetControllerTests
             response.Content.Headers.ContentType?.MediaType);
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
-        
+
         await using var expectedFileStream = File.Open("./Resources/Team/Success/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
-        
+
         CompareWorkbooks(responseWorkbook, expectedWorkbook);
     }
 

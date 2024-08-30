@@ -67,13 +67,13 @@ public class TeamSourceReader(ITeamSourceParser teamSourceParser) : ITeamSourceR
 
         var workDays = new Dictionary<DateOnly, TeamEmployeeWorkDayHours>();
         var numDays = GetNumberOfDays(startDate, endDate);
-        
-        for(var i =0; i < numDays; i++)
+
+        for (var i = 0; i < numDays; i++)
         {
             var day = startDate.AddDays(i);
-            workDays.Add(day, teamSourceParser.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, 3+i));
+            workDays.Add(day, teamSourceParser.GetWorkdayHoursForEmployeeAndDay(worksheet, employeeRow, 3 + i));
         }
-        
+
         return new TeamEmployee
         {
             Name = name,
@@ -82,7 +82,7 @@ public class TeamSourceReader(ITeamSourceParser teamSourceParser) : ITeamSourceR
             WorkDays = workDays
         };
     }
-    
+
     private int GetNumberOfDays(DateOnly startDate, DateOnly endDate)
     {
         return endDate.DayNumber - startDate.DayNumber + 1;

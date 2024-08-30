@@ -1,7 +1,7 @@
 ﻿using ClosedXML.Excel;
+using Introl.Tools.Common.Enums;
+using Introl.Tools.Common.Models;
 using Introl.Tools.Timesheets.ActivityCode.Models;
-using Introl.Tools.Timesheets.Enums;
-using Introl.Tools.Timesheets.Models;
 using OneOf;
 
 namespace Introl.Tools.Timesheets.ActivityCode.Services;
@@ -10,14 +10,14 @@ public class ActCodeTimesheetProcessor(
     IActCodeSourceReader timesheetReader,
     IActCodeResultsWriter resultsWriter) : IActCodeTimesheetProcessor
 {
-    public OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile)
+    public OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(IFormFile inputFile)
     {
         var extension = Path.GetExtension(inputFile.FileName);
         if (extension != ".xlsx")
         {
-            return new ProcessedTimesheetError
+            return new ProcessingError
             {
-                FailureReason = TimesheetProcessingFailureReasons.UnsupportedFileType,
+                FailureReason = ProcessingFailureReasons.UnsupportedFileType,
                 Message = $"Unsupported file type: {extension}. Please upload a .xlsx file."
             };
         }
@@ -25,7 +25,7 @@ public class ActCodeTimesheetProcessor(
         using var workbook = new XLWorkbook(inputFile.OpenReadStream());
         var sourceModel = timesheetReader.Process(workbook);
         var resultBytes = resultsWriter.Process(sourceModel);
-        return new ProcessedTimesheetResult
+        return new ProcessedResult
         {
             WorkbookBytes = resultBytes,
             Name = GetFileName(sourceModel)
@@ -43,5 +43,5 @@ public class ActCodeTimesheetProcessor(
 
 public interface IActCodeTimesheetProcessor
 {
-    OneOf<ProcessedTimesheetResult, ProcessedTimesheetError> ProcessTimesheet(IFormFile inputFile);
+    OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(IFormFile inputFile);
 }

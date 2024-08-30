@@ -1,32 +1,63 @@
-using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
+﻿using ClosedXML.Excel;
 using Introl.Tools.Racks.Models;
 
 namespace Introl.Tools.Racks.Services;
 
 public class RackSourceReader : IRackSourceReader
 {
-    public RacksSourceModel Process(XLWorkbook workbook)
+    public RackSourceModel Process(XLWorkbook workbook)
     {
         var computeIbWorksheet = workbook.Worksheet("Compute IB");
         var keyPositions = GetKeyPositions(computeIbWorksheet);
-        throw new Exception();
+
+        return ParseRows(computeIbWorksheet, keyPositions);
     }
 
-    private RacksSourceModel ParseRows(IXLWorksheet worksheet, RacksSourceKeyPositions keyPositions)
+    private RackSourceModel ParseRows(IXLWorksheet worksheet, RacksSourceKeyPositions keyPositions)
     {
-        throw new Exception();
+        var portMappings = new List<RacksSourcePortMappingModel>();
+        for (var i = keyPositions.StartRow; i <= keyPositions.EndRow; i++)
+        {
+            var testCell = worksheet.Cell(i, 1).GetString();
+            if (string.IsNullOrWhiteSpace(testCell))
+            {
+                continue;
+            }
+            portMappings.Add(new RacksSourcePortMappingModel
+            {
+                SourcePort = GetPortModel(worksheet, i, keyPositions.SourcePort),
+                DestinationPort = GetPortModel(worksheet, i, keyPositions.DestinationPort),
+            });
+        }
+
+        return new RackSourceModel
+        {
+            PortMappings = portMappings
+        };
     }
+
+    private RacksSourcePortMappingModel.PortModel GetPortModel(IXLWorksheet worksheet, int row,
+        RacksSourceKeyPositions.PortKeyPositions portPositions)
+    {
+        return new RacksSourcePortMappingModel.PortModel
+        {
+            Rack = worksheet.Cell(row, portPositions.RackColumn).GetString().ToUpper(),
+            RackUnit = $"R{worksheet.Cell(row, portPositions.RackUnitColumn).GetString()}".ToUpper(),
+            Port = worksheet.Cell(row, portPositions.PortColumn).GetString().ToUpper(),
+            Switch = worksheet.Cell(row, portPositions.SlotColumn).GetString().ToUpper(),
+        };
+    }
+    
     private RacksSourceKeyPositions GetKeyPositions(IXLWorksheet worksheet)
     {
-        var racks = GetSourceAndDestinationCells(worksheet, "Rack");
-        var rackUnits = GetSourceAndDestinationCells(worksheet, "RU");
-        var slots = GetSourceAndDestinationCells(worksheet, "Slot");
-        var ports = GetSourceAndDestinationCells(worksheet, "Port");
+        var racks = GetSourceAndDestinationTitleCells(worksheet, "Rack");
+        var rackUnits = GetSourceAndDestinationTitleCells(worksheet, "RU");
+        var slots = GetSourceAndDestinationTitleCells(worksheet, "Slot");
+        var ports = GetSourceAndDestinationTitleCells(worksheet, "Port");
 
         return new RacksSourceKeyPositions
         {
-            StartRow = racks.Source.Address.RowNumber,
+            StartRow = racks.Source.Address.RowNumber + 1,
             EndRow = worksheet.RowsUsed().Last().RowNumber(),
             SourcePort = new RacksSourceKeyPositions.PortKeyPositions
             {
@@ -45,9 +76,9 @@ public class RackSourceReader : IRackSourceReader
         };
     }
 
-    private (IXLCell Source, IXLCell Destination) GetSourceAndDestinationCells(IXLWorksheet worksheet, string cellName)
+    private (IXLCell Source, IXLCell Destination) GetSourceAndDestinationTitleCells(IXLWorksheet worksheet, string cellName)
     {
-        var cells = worksheet.CellsUsed().Where(c => c.Value.ToString().ToUpper() == cellName).ToList();
+        var cells = worksheet.Row(1).CellsUsed().Where(c => c.GetString().ToUpper() == cellName.ToUpper()).ToList();
 
         if (cells.Count != 2)
         {
@@ -60,5 +91,5 @@ public class RackSourceReader : IRackSourceReader
 
 public interface IRackSourceReader
 {
-    public RacksSourceModel Process(XLWorkbook workbook);
+    public RackSourceModel Process(XLWorkbook workbook);
 }

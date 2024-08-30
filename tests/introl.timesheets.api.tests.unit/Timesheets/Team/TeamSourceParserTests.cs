@@ -8,7 +8,7 @@ namespace Introl.Timesheets.Api.Tests.Unit.Timesheets.Team;
 public class TeamSourceParserTests
 {
     private TeamSourceParser sut = new();
-    
+
     [Fact]
     public void GetStartAndEndDate_MissingWeekCell_ThrowsException()
     {

@@ -45,6 +45,7 @@ public static class XlWorksheetExtensions
 
             worksheet.Cell(cell.Row, cell.Column).Style.NumberFormat.Format = cell.NumberFormat;
             worksheet.Cell(cell.Row, cell.Column).Style.Font.Bold = cell.Bold;
+            worksheet.Cell(cell.Row, cell.Column).Style.Alignment.WrapText = cell.Wrap;
             if (cell.Color is not null)
             {
                 worksheet.Cell(cell.Row, cell.Column).Style.Fill.BackgroundColor = cell.Color;

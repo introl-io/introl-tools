@@ -18,6 +18,5 @@
   <ItemGroup>
     <ProjectReference Include="..\introl.tools.common\Introl.Tools.Common.csproj" />
   </ItemGroup>
-  
 
 </Project>

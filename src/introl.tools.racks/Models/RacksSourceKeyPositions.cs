@@ -1,4 +1,4 @@
-namespace Introl.Tools.Racks.Models;
+﻿namespace Introl.Tools.Racks.Models;
 
 public class RacksSourceKeyPositions
 {
@@ -6,7 +6,7 @@ public class RacksSourceKeyPositions
     public required int EndRow { get; init; }
     public required PortKeyPositions SourcePort { get; init; }
     public required PortKeyPositions DestinationPort { get; init; }
-    
+
     public sealed class PortKeyPositions
     {
         public required int RackColumn { get; init; }

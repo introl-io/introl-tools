@@ -2,7 +2,7 @@
 using Introl.Tools.Common.Extensions;
 using Xunit;
 
-namespace Introl.Timesheets.Api.Tests.Unit.Extensions;
+namespace Introl.Tools.Timesheets.Tests.Unit.Extensions;
 
 public class XlWorksheetExtensionsTests
 {
