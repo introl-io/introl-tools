@@ -15,8 +15,8 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
     {
         var pic = worksheet.AddPicture("./Assets/introl_logo.png")
             .MoveTo(ActCodeResultConstants.NameColInt, row);
-        pic.Width = DimensionConstants.ImageWightAndHeightInPixels;
-        pic.Height = DimensionConstants.ImageWightAndHeightInPixels;
+        pic.Width = DimensionConstants.ImageWidthInPixels;
+        pic.Height = DimensionConstants.ImageHeightInPixels;
 
         row++;
 
