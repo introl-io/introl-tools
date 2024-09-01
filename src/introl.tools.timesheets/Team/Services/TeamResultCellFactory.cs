@@ -30,8 +30,8 @@ public class TeamResultCellFactory : ITeamResultCellFactory
     {
         var pic = worksheet.AddPicture("./Assets/introl_logo.png")
             .MoveTo(1, 1);
-        pic.Width = DimensionConstants.ImageWightAndHeightInPixels;
-        pic.Height = DimensionConstants.ImageWightAndHeightInPixels;
+        pic.Width = DimensionConstants.ImageHeightInPixels;
+        pic.Height = DimensionConstants.ImageWidthInPixels;
 
         var cells = new List<CellToAdd>();
         for (var i = NameColInt; i <= TotalBillColInt; i++)
