@@ -9,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opts =>
 {
+    opts.EnableAnnotations();
     opts.AddSecurityDefinition("ApiKey",
         new OpenApiSecurityScheme
         {

@@ -12,12 +12,10 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.0" />
     <PackageReference Include="ClosedXML" Version="0.102.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.8.0" />
   </ItemGroup>
-
-
-
+  
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="publish\web.config" />
     <_ContentIncludedByDefault Remove="publish\appsettings.json" />
     <_ContentIncludedByDefault Remove="publish\Introl.Timesheets.Api.deps.json" />
     <_ContentIncludedByDefault Remove="publish\Introl.Timesheets.Api.runtimeconfig.json" />
@@ -27,8 +25,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Introl.Timesheets.Api.Tests.Acceptance" />
   </ItemGroup>
-
-
+  
   <ItemGroup>
     <ProjectReference Include="..\introl.tools.racks\Introl.Tools.Racks.csproj" />
     <ProjectReference Include="..\introl.tools.timesheets\Introl.Tools.Timesheets.csproj" />
