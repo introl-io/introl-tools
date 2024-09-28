@@ -6,10 +6,12 @@ namespace Introl.Tools.Racks.Services;
 
 public class RackResultsWriter(IRackCellFactory cellFactory) : IRackResultsWriter
 {
-    public byte[] Process(RackSourceModel sourceModel)
+    public byte[] Process(RackSourceModel sourceModel,
+        string sourcePortLabelFormat,
+        string destinationPortLabelFormat)
     {
-        var titleCells = cellFactory.GetTitleCells();
-        var mappingCells = cellFactory.GetPortMappingCells(sourceModel, 2);
+        var titleCells = cellFactory.GetHeaderCells(sourceModel);
+        var mappingCells = cellFactory.GetPortMappingCells(sourceModel, 2, sourcePortLabelFormat, destinationPortLabelFormat);
 
         using var workbook = new XLWorkbook();
 
@@ -29,5 +31,7 @@ public class RackResultsWriter(IRackCellFactory cellFactory) : IRackResultsWrite
 
 public interface IRackResultsWriter
 {
-    byte[] Process(RackSourceModel sourceModel);
+    byte[] Process(RackSourceModel sourceModel,
+        string sourcePortLabelFormat,
+        string destinationPortLabelFormat);
 }

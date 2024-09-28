@@ -1,95 +1,101 @@
-﻿using ClosedXML.Excel;
+﻿using System.Text.RegularExpressions;
+using ClosedXML.Excel;
 using Introl.Tools.Racks.Models;
 
 namespace Introl.Tools.Racks.Services;
 
 public class RackSourceReader : IRackSourceReader
 {
-    public RackSourceModel Process(XLWorkbook workbook)
+    public RackSourceModel Process(
+        XLWorkbook workbook,
+        string sourcePortLabelFormat,
+        string destinationPortLabelFormat,
+        bool hasHeadingRow)
     {
-        var computeIbWorksheet = workbook.Worksheet("Compute IB");
-        var keyPositions = GetKeyPositions(computeIbWorksheet);
+        var worksheet = workbook.Worksheets.First();
+        var keyPositions = GetKeyPositions(worksheet, sourcePortLabelFormat, destinationPortLabelFormat, hasHeadingRow);
 
-        return ParseRows(computeIbWorksheet, keyPositions);
+        return ParseRows(worksheet, keyPositions, hasHeadingRow);
     }
 
-    private RackSourceModel ParseRows(IXLWorksheet worksheet, RacksSourceKeyPositions keyPositions)
+    private RackSourceModel ParseRows(
+        IXLWorksheet worksheet,
+        RacksSourceKeyPositions keyPositions,
+        bool hasHeadingRow)
     {
+        List<string> srcPortHeadings = Enumerable.Repeat(string.Empty, keyPositions.SourceColumns.Length).ToList();
+        List<string> destPortHeadings = Enumerable.Repeat(string.Empty, keyPositions.DestinationColumns.Length).ToList();
+
+        if (hasHeadingRow)
+        {
+            srcPortHeadings = keyPositions.SourceColumns
+                .Select(c => worksheet.Cell(1, c).GetString())
+                .ToList();
+
+            destPortHeadings = keyPositions.DestinationColumns
+                .Select(c => worksheet.Cell(1, c).GetString())
+                .ToList();
+        }
+
         var portMappings = new List<RacksSourcePortMappingModel>();
         for (var i = keyPositions.StartRow; i <= keyPositions.EndRow; i++)
         {
-            var testCell = worksheet.Cell(i, 1).GetString();
+            var testCell = worksheet.Cell(i, keyPositions.SourceColumns[0]).GetString();
             if (string.IsNullOrWhiteSpace(testCell))
             {
                 continue;
             }
+
             portMappings.Add(new RacksSourcePortMappingModel
             {
-                SourcePort = GetPortModel(worksheet, i, keyPositions.SourcePort),
-                DestinationPort = GetPortModel(worksheet, i, keyPositions.DestinationPort),
+                SourcePort = GetPortModel(worksheet, i, keyPositions.SourceColumns),
+                DestinationPort = GetPortModel(worksheet, i, keyPositions.DestinationColumns),
             });
         }
 
         return new RackSourceModel
         {
-            PortMappings = portMappings
+            PortMappings = portMappings,
+            SourcePortHeadings = srcPortHeadings,
+            DestinationPortHeadings = destPortHeadings
         };
     }
 
-    private RacksSourcePortMappingModel.PortModel GetPortModel(IXLWorksheet worksheet, int row,
-        RacksSourceKeyPositions.PortKeyPositions portPositions)
+    private string[] GetPortModel(IXLWorksheet worksheet, int row,
+        string[] portColumns)
     {
-        return new RacksSourcePortMappingModel.PortModel
-        {
-            Rack = worksheet.Cell(row, portPositions.RackColumn).GetString().ToUpper(),
-            RackUnit = $"R{worksheet.Cell(row, portPositions.RackUnitColumn).GetString()}".ToUpper(),
-            Port = worksheet.Cell(row, portPositions.PortColumn).GetString().ToUpper(),
-            Switch = worksheet.Cell(row, portPositions.SlotColumn).GetString().ToUpper(),
-        };
+        return portColumns.Select(column => worksheet.Cell(row, column).GetString().ToUpper()).ToArray();
     }
 
-    private RacksSourceKeyPositions GetKeyPositions(IXLWorksheet worksheet)
+    private RacksSourceKeyPositions GetKeyPositions(
+        IXLWorksheet worksheet,
+        string sourcePortLabelFormat,
+        string destinationPortLabelFormat,
+        bool hasHeadingRow)
     {
-        var racks = GetSourceAndDestinationTitleCells(worksheet, "Rack");
-        var rackUnits = GetSourceAndDestinationTitleCells(worksheet, "RU");
-        var slots = GetSourceAndDestinationTitleCells(worksheet, "Slot");
-        var ports = GetSourceAndDestinationTitleCells(worksheet, "Port");
-
         return new RacksSourceKeyPositions
         {
-            StartRow = racks.Source.Address.RowNumber + 1,
+            StartRow = hasHeadingRow ? 2 : 1,
             EndRow = worksheet.RowsUsed().Last().RowNumber(),
-            SourcePort = new RacksSourceKeyPositions.PortKeyPositions
-            {
-                RackColumn = racks.Source.Address.ColumnNumber,
-                RackUnitColumn = rackUnits.Source.Address.ColumnNumber,
-                SlotColumn = slots.Source.Address.ColumnNumber,
-                PortColumn = ports.Source.Address.ColumnNumber,
-            },
-            DestinationPort = new RacksSourceKeyPositions.PortKeyPositions
-            {
-                RackColumn = racks.Destination.Address.ColumnNumber,
-                RackUnitColumn = rackUnits.Destination.Address.ColumnNumber,
-                SlotColumn = slots.Destination.Address.ColumnNumber,
-                PortColumn = ports.Destination.Address.ColumnNumber,
-            }
+            SourceColumns = ExtractColumns(sourcePortLabelFormat),
+            DestinationColumns = ExtractColumns(destinationPortLabelFormat)
         };
     }
 
-    private (IXLCell Source, IXLCell Destination) GetSourceAndDestinationTitleCells(IXLWorksheet worksheet, string cellName)
+    private string[] ExtractColumns(string labelFormat)
     {
-        var cells = worksheet.Row(1).CellsUsed().Where(c => c.GetString().ToUpper() == cellName.ToUpper()).ToList();
-
-        if (cells.Count != 2)
-        {
-            throw new ArgumentException($"Incorrect number of cells found for {cellName}, found {cells.Count} cells");
-        }
-
-        return (cells[0], cells[1]);
+        return Regex.Matches(labelFormat, @"\{([^}]*)\}")
+            .Cast<Match>()
+            .Select(match => match.Groups[1].Value)
+            .ToArray();
     }
 }
 
 public interface IRackSourceReader
 {
-    public RackSourceModel Process(XLWorkbook workbook);
+    public RackSourceModel Process(
+        XLWorkbook workbook,
+        string sourcePortLabelFormat,
+        string destinationPortLabelFormat,
+        bool hasHeadingRow);
 }
