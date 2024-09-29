@@ -20,4 +20,23 @@ public static class ExcelUtils
     {
         return $"{ToExcelColumn(columnNumber)}{rowNumber}";
     }
+
+    public static int ExcelColumnLetterToZeroBasedInt(string column)
+    {
+        column = column.ToUpper();
+        int position = 0;
+
+        foreach (var (letter, index) in column.Select((letter, index) => (letter, index)))
+        {
+            var positionMultiplier = column.Length - index - 1;
+            var letterValue = letter - 'A';
+            if (positionMultiplier > 0)
+            {
+                position += (letterValue + 1) * positionMultiplier * 26;
+                break;
+            }
+            position += letterValue;
+        }
+        return position;
+    }
 }

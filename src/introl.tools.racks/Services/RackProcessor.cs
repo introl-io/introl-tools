@@ -6,12 +6,13 @@ using OneOf;
 
 namespace Introl.Tools.Racks.Services;
 
-public class RackProcessor(IRackSourceReader sourceReader, IRackResultsWriter resultsWriter) : IRackProcessor
+public class RackProcessor(IRackSourceReaderFactory sourceReaderFactory, IRackResultsWriter resultsWriter) : IRackProcessor
 {
     public OneOf<ProcessedResult, ProcessingError> Process(ProcessFileRequest request)
     {
         var extension = Path.GetExtension(request.File.FileName);
-        if (extension != ".xlsx")
+        var sourceReader = sourceReaderFactory.GetReader(extension);
+        if (sourceReader is null)
         {
             return new ProcessingError
             {
@@ -19,13 +20,8 @@ public class RackProcessor(IRackSourceReader sourceReader, IRackResultsWriter re
                 Message = $"Unsupported file type: {extension}. Please upload a .xlsx file."
             };
         }
-        using var workbook = new XLWorkbook(request.File.OpenReadStream());
 
-        var inputSheetModel = sourceReader.Process(
-            workbook,
-            request.SourcePortLabelFormat,
-            request.DestinationPortLabelFormat,
-            request.HasHeadingRow);
+        var inputSheetModel = sourceReader.Process(request);
 
         var resultFile = resultsWriter.Process(
             inputSheetModel,

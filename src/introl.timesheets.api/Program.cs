@@ -44,7 +44,9 @@ builder.Services.AddScoped<IActCodeResultsWriter, ActCodeResultsWriter>();
 builder.Services.AddScoped<IActCodeResultCellFactory, ActCodeResultCellFactory>();
 builder.Services.AddScoped<IActCodeHoursProcessor, ActCodeHoursProcessor>();
 
-builder.Services.AddScoped<IRackSourceReader, RackSourceReader>();
+builder.Services.AddScoped<IRackSourceReaderFactory, RackSourceReaderFactory>();
+builder.Services.AddScoped<IRackSourceReader, RackSourceXlsxReader>();
+builder.Services.AddScoped<IRackSourceReader, RackSourceCsvReader>();
 builder.Services.AddScoped<IRackProcessor, RackProcessor>();
 builder.Services.AddScoped<IRackCellFactory, RackCellFactory>();
 builder.Services.AddScoped<IRackResultsWriter, RackResultsWriter>();
