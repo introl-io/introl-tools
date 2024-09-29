@@ -10,8 +10,9 @@ public class RackProcessor(IRackSourceReader sourceReader, IRackResultsWriter re
 {
     public OneOf<ProcessedResult, ProcessingError> Process(ProcessFileRequest request)
     {
+        var supportedExtensions = new[] { ".xlsx", ".csv" };
         var extension = Path.GetExtension(request.File.FileName);
-        if (extension != ".xlsx")
+        if (!supportedExtensions.Contains(extension))
         {
             return new ProcessingError
             {
@@ -19,13 +20,8 @@ public class RackProcessor(IRackSourceReader sourceReader, IRackResultsWriter re
                 Message = $"Unsupported file type: {extension}. Please upload a .xlsx file."
             };
         }
-        using var workbook = new XLWorkbook(request.File.OpenReadStream());
 
-        var inputSheetModel = sourceReader.Process(
-            workbook,
-            request.SourcePortLabelFormat,
-            request.DestinationPortLabelFormat,
-            request.HasHeadingRow);
+        var inputSheetModel = sourceReader.Process(request);
 
         var resultFile = resultsWriter.Process(
             inputSheetModel,
