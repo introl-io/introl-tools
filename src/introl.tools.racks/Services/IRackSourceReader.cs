@@ -1,4 +1,4 @@
-using Introl.Tools.Racks.Models;
+﻿using Introl.Tools.Racks.Models;
 
 namespace Introl.Tools.Racks.Services;
 

@@ -37,20 +37,20 @@ public class RackLabelControllerTests
         var response = await _httpClient.SendAsync(request);
 
         await using var responseStream = await response.Content.ReadAsStreamAsync();
-    
+
         // await using var fileStream = new FileStream($"./Resources/RackLabels/{fileType}/output.xlsx", FileMode.Create, FileAccess.Write, FileShare.None);
         // await responseStream.CopyToAsync(fileStream);
-        
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var contentDisposition = response.Content.Headers.ContentDisposition;
         Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             response.Content.Headers.ContentType?.MediaType);
         Assert.Equal("PortLabels.xlsx", contentDisposition?.FileName);
-        
+
         await using var expectedFileStream = File.Open($"./Resources/RackLabels/{fileType}/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
-        
+
         AcceptanceTestUtils.CompareWorkbooks(responseWorkbook, expectedWorkbook);
     }
 

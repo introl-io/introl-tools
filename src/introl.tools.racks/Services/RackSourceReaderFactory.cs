@@ -1,4 +1,4 @@
-namespace Introl.Tools.Racks.Services;
+﻿namespace Introl.Tools.Racks.Services;
 
 public class RackSourceReaderFactory(IEnumerable<IRackSourceReader> sourceReaders) : IRackSourceReaderFactory
 {

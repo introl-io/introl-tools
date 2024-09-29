@@ -7,10 +7,10 @@ public class RackSourceCsvReader : IRackSourceReader
     public string SupportedFileType => ".csv";
     public RackSourceModel Process(ProcessFileRequest request)
     {
-       var csvText = new StreamReader(request.File.OpenReadStream()).ReadToEnd();
-       var csvRows = csvText.Split(Environment.NewLine);
+        var csvText = new StreamReader(request.File.OpenReadStream()).ReadToEnd();
+        var csvRows = csvText.Split(Environment.NewLine);
 
-       return ParseRows(csvRows, request);
+        return ParseRows(csvRows, request);
     }
 
     private RackSourceModel ParseRows(string[] csvRows,
@@ -52,20 +52,20 @@ public class RackSourceCsvReader : IRackSourceReader
             DestinationPortHeadings = destPortHeadings
         };
     }
-    
+
     private int[] GetZeroIndexedColumns(string[] columns)
     {
         return columns.Select(c =>
         {
-           if(int.TryParse(c, out var column))
-           {
-               return column - 1;
-           }
+            if (int.TryParse(c, out var column))
+            {
+                return column - 1;
+            }
 
-           return LetterToPosition(c);
+            return LetterToPosition(c);
         }).ToArray();
     }
-    
+
     private int LetterToPosition(string letter)
     {
         letter = letter.ToUpper();
