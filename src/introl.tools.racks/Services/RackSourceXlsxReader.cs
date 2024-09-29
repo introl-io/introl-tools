@@ -4,8 +4,9 @@ using Introl.Tools.Racks.Models;
 
 namespace Introl.Tools.Racks.Services;
 
-public class RackSourceReader : IRackSourceReader
+public class RackSourceXlsxReader : IRackSourceReader
 {
+    public string SupportedFileType => ".xlsx";
     public RackSourceModel Process(ProcessFileRequest request)
     {
         using var workbook = new XLWorkbook(request.File.OpenReadStream());
@@ -64,9 +65,4 @@ public class RackSourceReader : IRackSourceReader
         return portColumns.Select(column => worksheet.Cell(row, column).GetString().ToUpper()).ToArray();
     }
 
-}
-
-public interface IRackSourceReader
-{
-    public RackSourceModel Process(ProcessFileRequest request);
 }

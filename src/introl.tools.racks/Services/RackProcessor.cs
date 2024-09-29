@@ -6,13 +6,13 @@ using OneOf;
 
 namespace Introl.Tools.Racks.Services;
 
-public class RackProcessor(IRackSourceReader sourceReader, IRackResultsWriter resultsWriter) : IRackProcessor
+public class RackProcessor(IRackSourceReaderFactory sourceReaderFactory, IRackResultsWriter resultsWriter) : IRackProcessor
 {
     public OneOf<ProcessedResult, ProcessingError> Process(ProcessFileRequest request)
     {
-        var supportedExtensions = new[] { ".xlsx", ".csv" };
         var extension = Path.GetExtension(request.File.FileName);
-        if (!supportedExtensions.Contains(extension))
+        var sourceReader = sourceReaderFactory.GetReader(extension);
+        if (sourceReader is null)
         {
             return new ProcessingError
             {

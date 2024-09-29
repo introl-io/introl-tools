@@ -20,40 +20,44 @@ public class RackLabelControllerTests
         _httpClient.DefaultRequestHeaders.Add(AuthorizationConstants.ApiKeyHeader, AcceptanceTestConstants.ApiKey);
     }
 
-    [Fact]
-    public async Task RackLabels_GivenKnownInput_GivesKnownOutput()
+    [Theory]
+    [InlineData("xlsx", "{6}.R{G}.{I}.{J}", "{18}.R{S}.{U}.{V}", true)]
+    [InlineData("csv", "{1}", "{B}", false)]
+    public async Task RackLabels_GivenKnownInput_GivesKnownOutput(string fileType, string sourceFormat, string destinationFormat, bool hasHeaderRow)
     {
-        await using var inputFileStream = File.Open("./Resources/RackLabels/input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open($"./Resources/RackLabels/{fileType}/input.{fileType}", FileMode.Open);
 
         using var content = new MultipartFormDataContent();
-        content.Add(new StreamContent(inputFileStream), "File", "input.xlsx");
-        content.Add(new StringContent("{6}.R{G}.{I}.{J}"), "SourcePortLabelFormat");
-        content.Add(new StringContent("{18}.R{S}.{U}.{V}"), "DestinationPortLabelFormat");
+        content.Add(new StreamContent(inputFileStream), "File", $"input.{fileType}");
+        content.Add(new StringContent(sourceFormat), "SourcePortLabelFormat");
+        content.Add(new StringContent(destinationFormat), "DestinationPortLabelFormat");
+        content.Add(new StringContent(hasHeaderRow.ToString()), "HasHeadingRow");
         using var request = new HttpRequestMessage(HttpMethod.Post, "/api/rack-labels/create");
         request.Content = content;
         var response = await _httpClient.SendAsync(request);
 
+        await using var responseStream = await response.Content.ReadAsStreamAsync();
+    
+        // await using var fileStream = new FileStream($"./Resources/RackLabels/{fileType}/output.xlsx", FileMode.Create, FileAccess.Write, FileShare.None);
+        // await responseStream.CopyToAsync(fileStream);
+        
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var contentDisposition = response.Content.Headers.ContentDisposition;
         Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             response.Content.Headers.ContentType?.MediaType);
         Assert.Equal("PortLabels.xlsx", contentDisposition?.FileName);
-        await using var responseStream = await response.Content.ReadAsStreamAsync();
-
-        // await using var fileStream = new FileStream("./Resources/RackLabels/output.xlsx", FileMode.Create, FileAccess.Write, FileShare.None);
-        // await responseStream.CopyToAsync(fileStream);
-
-        await using var expectedFileStream = File.Open("./Resources/RackLabels/expected_output.xlsx", FileMode.Open);
+        
+        await using var expectedFileStream = File.Open($"./Resources/RackLabels/{fileType}/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
-
+        
         AcceptanceTestUtils.CompareWorkbooks(responseWorkbook, expectedWorkbook);
     }
 
     [Fact]
     public async Task Team_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
     {
-        await using var inputFileStream = File.Open("./Resources/RackLabels/input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/RackLabels/xlsx/input.xlsx", FileMode.Open);
 
         using var content = new MultipartFormDataContent();
         content.Add(new StreamContent(inputFileStream), "File", "input.pdf");
