@@ -1,4 +1,5 @@
-﻿using Introl.Tools.Racks.Models;
+﻿using Introl.Tools.Common.Utils;
+using Introl.Tools.Racks.Models;
 
 namespace Introl.Tools.Racks.Services;
 
@@ -62,21 +63,11 @@ public class RackSourceCsvReader : IRackSourceReader
                 return column - 1;
             }
 
-            return LetterToPosition(c);
+            return ExcelUtils.ExcelColumnLetterToZeroBasedInt(c);
         }).ToArray();
     }
 
-    private int LetterToPosition(string letter)
-    {
-        letter = letter.ToUpper();
-        int position = 0;
-        foreach (var t in letter)
-        {
-            position *= 26;
-            position += (t - 'A');
-        }
-        return position;
-    }
+
 
     private string[] GetPortModel(string[] row,
         int[] portColumns)
