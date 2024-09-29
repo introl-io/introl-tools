@@ -27,8 +27,8 @@ public class RackLabelControllerTests
 
         using var content = new MultipartFormDataContent();
         content.Add(new StreamContent(inputFileStream), "File", "input.xlsx");
-        content.Add(new StringContent("{F}.R{G}.{I}.{J}"), "SourcePortLabelFormat");
-        content.Add(new StringContent("{R}.R{S}.{U}.{V}"), "DestinationPortLabelFormat");
+        content.Add(new StringContent("{6}.R{G}.{I}.{J}"), "SourcePortLabelFormat");
+        content.Add(new StringContent("{18}.R{S}.{U}.{V}"), "DestinationPortLabelFormat");
         using var request = new HttpRequestMessage(HttpMethod.Post, "/api/rack-labels/create");
         request.Content = content;
         var response = await _httpClient.SendAsync(request);
@@ -57,8 +57,8 @@ public class RackLabelControllerTests
 
         using var content = new MultipartFormDataContent();
         content.Add(new StreamContent(inputFileStream), "File", "input.pdf");
-        content.Add(new StringContent("{F}.R{G}.{I}.{J}"), "SourcePortLabelFormat");
-        content.Add(new StringContent("{R}.R{S}.{U}.{V}"), "DestinationPortLabelFormat");
+        content.Add(new StringContent("{6}.R{G}.{I}.{J}"), "SourcePortLabelFormat");
+        content.Add(new StringContent("{18}.R{S}.{U}.{V}"), "DestinationPortLabelFormat");
         using var request = new HttpRequestMessage(HttpMethod.Post, "/api/rack-labels/create");
         request.Content = content;
         var response = await _httpClient.SendAsync(request);
