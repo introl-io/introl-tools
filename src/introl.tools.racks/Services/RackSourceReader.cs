@@ -10,7 +10,7 @@ public class RackSourceReader : IRackSourceReader
     {
         using var workbook = new XLWorkbook(request.File.OpenReadStream());
         var worksheet = workbook.Worksheets.First();
-        
+
         return ParseRows(worksheet, request);
     }
 

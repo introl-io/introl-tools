@@ -15,8 +15,8 @@ public class ProcessFileRequest
     public string[] SourceColumns => _sourceColumnsCache ??= Regex.Matches(SourcePortLabelFormat, ColumnCaptureRegex)
         .Select(match => match.Groups[1].Value)
         .ToArray();
-    
-    
+
+
     private string[]? _destinationColumnsCache;
     public string[] DestinationColumns => _destinationColumnsCache ??= Regex.Matches(DestinationPortLabelFormat, ColumnCaptureRegex)
         .Select(match => match.Groups[1].Value)
