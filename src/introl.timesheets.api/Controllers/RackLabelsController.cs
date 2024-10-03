@@ -19,7 +19,8 @@ public class RackLabelsController(IRackProcessor rackProcessor) : Controller
             File = request.File,
             SourcePortLabelFormat = request.SourcePortLabelFormat,
             DestinationPortLabelFormat = request.DestinationPortLabelFormat,
-            HasHeadingRow = request.HasHeadingRow
+            HasHeadingRow = request.HasHeadingRow,
+            LineCharacterLimit = request.LineCharacterLimit
         });
         return response.Match<IActionResult>(
             results =>
