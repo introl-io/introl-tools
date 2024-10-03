@@ -8,10 +8,15 @@ public class RackResultsWriter(IRackCellFactory cellFactory) : IRackResultsWrite
 {
     public byte[] Process(RackSourceModel sourceModel,
         string sourcePortLabelFormat,
-        string destinationPortLabelFormat)
+        string destinationPortLabelFormat,
+        int? lineCharacterLimit)
     {
         var titleCells = cellFactory.GetHeaderCells(sourceModel);
-        var mappingCells = cellFactory.GetPortMappingCells(sourceModel, 2, sourcePortLabelFormat, destinationPortLabelFormat);
+        var mappingCells = cellFactory.GetPortMappingCells(
+            sourceModel, 2, 
+            sourcePortLabelFormat, 
+            destinationPortLabelFormat,
+            lineCharacterLimit);
 
         using var workbook = new XLWorkbook();
 
@@ -33,5 +38,6 @@ public interface IRackResultsWriter
 {
     byte[] Process(RackSourceModel sourceModel,
         string sourcePortLabelFormat,
-        string destinationPortLabelFormat);
+        string destinationPortLabelFormat,
+        int? lineCharacterLimit);
 }

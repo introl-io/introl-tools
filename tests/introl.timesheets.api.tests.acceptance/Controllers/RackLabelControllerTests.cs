@@ -21,9 +21,14 @@ public class RackLabelControllerTests
     }
 
     [Theory]
-    [InlineData("xlsx", "{6}.R{G}.{I}.{J}", "{18}.R{S}.{U}.{V}", true)]
-    [InlineData("csv", "{1}", "{B}", false)]
-    public async Task RackLabels_GivenKnownInput_GivesKnownOutput(string fileType, string sourceFormat, string destinationFormat, bool hasHeaderRow)
+    [InlineData("xlsx", "{6}.R{G}.{I}.{J}", "{18}.R{S}.{U}.{V}", true, 5)]
+    [InlineData("csv", "{1}", "{B}", false, null)]
+    public async Task RackLabels_GivenKnownInput_GivesKnownOutput(
+        string fileType, 
+        string sourceFormat, 
+        string destinationFormat, 
+        bool hasHeaderRow,
+        int? lineLength)
     {
         await using var inputFileStream = File.Open($"./Resources/RackLabels/{fileType}/input.{fileType}", FileMode.Open);
 
@@ -32,6 +37,11 @@ public class RackLabelControllerTests
         content.Add(new StringContent(sourceFormat), "SourcePortLabelFormat");
         content.Add(new StringContent(destinationFormat), "DestinationPortLabelFormat");
         content.Add(new StringContent(hasHeaderRow.ToString()), "HasHeadingRow");
+        if (lineLength is not null)
+        {
+            content.Add(new StringContent(lineLength.Value.ToString()), "LineCharacterLimit");
+        }
+
         using var request = new HttpRequestMessage(HttpMethod.Post, "/api/rack-labels/create");
         request.Content = content;
         var response = await _httpClient.SendAsync(request);

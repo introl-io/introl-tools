@@ -53,7 +53,8 @@ public class RackCellFactory : IRackCellFactory
     public IList<CellToAdd> GetPortMappingCells(RackSourceModel sourceModel,
         int startRow,
         string sourcePortLabelFormat,
-        string destinationPortLabelFormat)
+        string destinationPortLabelFormat,
+        int? lineCharacterLimit)
     {
         var result = new List<CellToAdd>();
 
@@ -62,7 +63,7 @@ public class RackCellFactory : IRackCellFactory
             var row = i + startRow;
             var portMapping = sourceModel.PortMappings[i];
 
-            result.Add(GetLabelCell(row, portMapping, sourcePortLabelFormat, destinationPortLabelFormat));
+            result.Add(GetLabelCell(row, portMapping, sourcePortLabelFormat, destinationPortLabelFormat, lineCharacterLimit));
             result.AddRange(GetPortCells(portMapping.SourcePort, row, 2));
             result.AddRange(GetPortCells(portMapping.DestinationPort, row, 3 + portMapping.SourcePort.Length));
             result.Add(new CellToAdd
@@ -80,10 +81,12 @@ public class RackCellFactory : IRackCellFactory
     private CellToAdd GetLabelCell(int row,
         RacksSourcePortMappingModel portMapping,
         string sourcePortLabelFormat,
-        string destinationPortLabelFormat)
+        string destinationPortLabelFormat,
+        int? lineCharacterLimit)
     {
-        var srcFormattedPortAddress = GetPortLabel(sourcePortLabelFormat, portMapping.SourcePort);
-        var destFormattedPortAddress = GetPortLabel(destinationPortLabelFormat, portMapping.DestinationPort);
+        var srcFormattedPortAddress = GetPortLabel(sourcePortLabelFormat, portMapping.SourcePort, lineCharacterLimit);
+        var destFormattedPortAddress =
+            GetPortLabel(destinationPortLabelFormat, portMapping.DestinationPort, lineCharacterLimit);
         var value = $"{srcFormattedPortAddress}{Environment.NewLine} - {Environment.NewLine}{destFormattedPortAddress}";
 
         return new CellToAdd
@@ -96,10 +99,10 @@ public class RackCellFactory : IRackCellFactory
     }
 
 
-    private string GetPortLabel(string sourcePortLabelFormat, string[] portValues)
+    private string GetPortLabel(string sourcePortLabelFormat, string[] portValues, int? lineCharacterLimit)
     {
         int index = 0;
-        return Regex.Replace(sourcePortLabelFormat, @"\{[^}]*\}", match =>
+        var formatedLabel = Regex.Replace(sourcePortLabelFormat, @"\{[^}]*\}", match =>
         {
             if (index < portValues.Length)
             {
@@ -107,6 +110,34 @@ public class RackCellFactory : IRackCellFactory
             }
             return match.Value; // If there are not enough replacements, keep the original value
         });
+
+        if (lineCharacterLimit is null)
+        {
+            return formatedLabel;
+        }
+
+        var labelChunks = SplitStringIntoChunks(formatedLabel, lineCharacterLimit.Value);
+
+        return string.Join(Environment.NewLine, labelChunks);
+    }
+    
+    private string[] SplitStringIntoChunks(string str, int chunkSize)
+    {
+        // Calculate how many chunks are needed
+        int numOfChunks = (str.Length + chunkSize - 1) / chunkSize;
+    
+        // Create an array to hold the result
+        string[] result = new string[numOfChunks];
+    
+        for (int i = 0; i < numOfChunks; i++)
+        {
+            // Get the substring of length `chunkSize`, handling the last part
+            int startIndex = i * chunkSize;
+            int length = Math.Min(chunkSize, str.Length - startIndex);
+            result[i] = str.Substring(startIndex, length);
+        }
+    
+        return result;
     }
 
     private IList<CellToAdd> GetPortCells(
@@ -127,5 +158,6 @@ public interface IRackCellFactory
     IList<CellToAdd> GetPortMappingCells(RackSourceModel sourceModel,
         int startRow,
         string sourcePortLabelFormat,
-        string destinationPortLabelForma);
+        string destinationPortLabelFormat,
+        int? lineCharacterLimit);
 }

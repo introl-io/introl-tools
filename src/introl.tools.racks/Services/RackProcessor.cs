@@ -26,7 +26,8 @@ public class RackProcessor(IRackSourceReaderFactory sourceReaderFactory, IRackRe
         var resultFile = resultsWriter.Process(
             inputSheetModel,
             request.SourcePortLabelFormat,
-            request.DestinationPortLabelFormat);
+            request.DestinationPortLabelFormat,
+            request.LineCharacterLimit);
 
         return new ProcessedResult
         {
