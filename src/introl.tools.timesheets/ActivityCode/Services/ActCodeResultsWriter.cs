@@ -16,7 +16,7 @@ public class ActCodeResultsWriter(IActCodeResultCellFactory resultCellFactory) :
         var row = 1;
         var titleCells = resultCellFactory.GetTitleCells(worksheet, sourceModel, ref row);
         var employeeFirstRow = row;
-        var employeeCells = resultCellFactory.CreateEmployeeCells(sourceModel,calculateOvertime, ref row);
+        var employeeCells = resultCellFactory.CreateEmployeeCells(sourceModel, calculateOvertime, ref row);
         var employeeFinalRow = row - 1;
 
         row += 2;

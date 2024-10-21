@@ -15,7 +15,7 @@ public class ActCodeHoursProcessor : IActCodeHoursProcessor
         foreach (var hr in hours)
         {
             var (regHrs, otHrs) = CalculateHours(hr.Hours, calculateOvertime, ref processedHours);
-            
+
             var date = DateOnly.FromDateTime(hr.StartTime);
 
             if (result.TryGetValue(hr.ActivityCode, out var dayHours))
@@ -39,7 +39,7 @@ public class ActCodeHoursProcessor : IActCodeHoursProcessor
 
         return result;
     }
-    
+
     private (double regHours, double otHours) CalculateHours(double hours, bool calculateOvertime, ref double processedHours)
     {
         if (!calculateOvertime)
