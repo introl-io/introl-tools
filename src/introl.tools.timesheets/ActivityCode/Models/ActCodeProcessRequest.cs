@@ -1,6 +1,6 @@
-﻿namespace Introl.Tools.Timesheets.Models;
+﻿namespace Introl.Tools.Timesheets.ActivityCode.Models;
 
-public record ProcessTimesheetRequest
+public record ActCodeProcessRequest
 {
     public required IFormFile File { get; init; }
     public required bool CalculateOvertime { get; init; }
