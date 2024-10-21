@@ -120,15 +120,15 @@ public class RackCellFactory : IRackCellFactory
 
         return string.Join(Environment.NewLine, labelChunks);
     }
-    
+
     private string[] SplitStringIntoChunks(string str, int chunkSize)
     {
         // Calculate how many chunks are needed
         int numOfChunks = (str.Length + chunkSize - 1) / chunkSize;
-    
+
         // Create an array to hold the result
         string[] result = new string[numOfChunks];
-    
+
         for (int i = 0; i < numOfChunks; i++)
         {
             // Get the substring of length `chunkSize`, handling the last part
@@ -136,7 +136,7 @@ public class RackCellFactory : IRackCellFactory
             int length = Math.Min(chunkSize, str.Length - startIndex);
             result[i] = str.Substring(startIndex, length);
         }
-    
+
         return result;
     }
 

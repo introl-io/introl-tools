@@ -2,6 +2,7 @@
 using Introl.Tools.Common.Enums;
 using Introl.Tools.Common.Models;
 using Introl.Tools.Timesheets.ActivityCode.Models;
+using Introl.Tools.Timesheets.Models;
 using OneOf;
 
 namespace Introl.Tools.Timesheets.ActivityCode.Services;
@@ -10,9 +11,9 @@ public class ActCodeTimesheetProcessor(
     IActCodeSourceReader timesheetReader,
     IActCodeResultsWriter resultsWriter) : IActCodeTimesheetProcessor
 {
-    public OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(IFormFile inputFile)
+    public OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(ProcessTimesheetRequest request)
     {
-        var extension = Path.GetExtension(inputFile.FileName);
+        var extension = Path.GetExtension(request.File.FileName);
         if (extension != ".xlsx")
         {
             return new ProcessingError
@@ -22,7 +23,7 @@ public class ActCodeTimesheetProcessor(
             };
         }
 
-        using var workbook = new XLWorkbook(inputFile.OpenReadStream());
+        using var workbook = new XLWorkbook(request.File.OpenReadStream());
         var sourceModel = timesheetReader.Process(workbook);
         var resultBytes = resultsWriter.Process(sourceModel);
         return new ProcessedResult
@@ -43,5 +44,5 @@ public class ActCodeTimesheetProcessor(
 
 public interface IActCodeTimesheetProcessor
 {
-    OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(IFormFile inputFile);
+    OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(ProcessTimesheetRequest request);
 }

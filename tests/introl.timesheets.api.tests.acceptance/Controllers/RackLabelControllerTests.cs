@@ -24,9 +24,9 @@ public class RackLabelControllerTests
     [InlineData("xlsx", "{6}.R{G}.{I}.{J}", "{18}.R{S}.{U}.{V}", true, 5)]
     [InlineData("csv", "{1}", "{B}", false, null)]
     public async Task RackLabels_GivenKnownInput_GivesKnownOutput(
-        string fileType, 
-        string sourceFormat, 
-        string destinationFormat, 
+        string fileType,
+        string sourceFormat,
+        string destinationFormat,
         bool hasHeaderRow,
         int? lineLength)
     {

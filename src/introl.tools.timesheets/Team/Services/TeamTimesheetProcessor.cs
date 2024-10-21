@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using Introl.Tools.Common.Enums;
 using Introl.Tools.Common.Models;
+using Introl.Tools.Timesheets.Models;
 using Introl.Tools.Timesheets.Team.Models;
 using OneOf;
 
@@ -10,9 +11,9 @@ public class EmployeeEmployeeEmployeeEmployeeTimesheetProcessor(
     ITeamSourceReader teamSourceReader,
     ITeamResultWriter teamResultWriter) : IEmployeeEmployeeTimesheetProcessor
 {
-    public OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(IFormFile inputFile)
+    public OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(ProcessTimesheetRequest request)
     {
-        var extension = Path.GetExtension(inputFile.FileName);
+        var extension = Path.GetExtension(request.File.FileName);
         if (extension != ".xlsx")
         {
             return new ProcessingError
@@ -21,7 +22,7 @@ public class EmployeeEmployeeEmployeeEmployeeTimesheetProcessor(
                 Message = $"Unsupported file type: {extension}. Please upload a .xlsx file."
             };
         }
-        using var workbook = new XLWorkbook(inputFile.OpenReadStream());
+        using var workbook = new XLWorkbook(request.File.OpenReadStream());
 
         var inputSheetModel = teamSourceReader.Process(workbook);
         var outputWorkbookBytes = teamResultWriter.Process(inputSheetModel);
@@ -40,5 +41,5 @@ public class EmployeeEmployeeEmployeeEmployeeTimesheetProcessor(
 
 public interface IEmployeeEmployeeTimesheetProcessor
 {
-    OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(IFormFile inputFile);
+    OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(ProcessTimesheetRequest request);
 }
