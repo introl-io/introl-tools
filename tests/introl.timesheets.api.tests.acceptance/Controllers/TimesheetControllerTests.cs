@@ -63,14 +63,16 @@ public class TimesheetControllerTests
         Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
     }
 
-    [Fact]
-    public async Task ActivityCode_GivenKnownInput_GivesKnownOutput()
+    [Theory]
+    [InlineData("./Resources/Timesheets/ActivityCode/With_OT", true)]
+    [InlineData("./Resources/Timesheets/ActivityCode/Without_OT", false)]
+    public async Task ActivityCode_GivenKnownInput_GivesKnownOutput(string path, bool withOt)
     {
-        await using var inputFileStream = File.Open("./Resources/Timesheets/ActivityCode/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open($"{path}/timesheet_input.xlsx", FileMode.Open);
 
         using var content = new MultipartFormDataContent();
         content.Add(new StreamContent(inputFileStream), "File", "input.xlsx");
-        content.Add(new StringContent(true.ToString()), "CalculateOvertime");
+        content.Add(new StringContent(withOt.ToString()), "CalculateOvertime");
 
         using var request = new HttpRequestMessage(HttpMethod.Post, "/api/timesheet/activity-code");
         request.Content = content;
@@ -85,7 +87,7 @@ public class TimesheetControllerTests
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
-        await using var expectedFileStream = File.Open("./Resources/Timesheets/ActivityCode/Success/expected_output.xlsx", FileMode.Open);
+        await using var expectedFileStream = File.Open($"{path}/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
@@ -95,7 +97,7 @@ public class TimesheetControllerTests
     [Fact]
     public async Task ActivityCode_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
     {
-        await using var inputFileStream = File.Open("./Resources/Timesheets/ActivityCode/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open("./Resources/Timesheets/ActivityCode/With_OT/timesheet_input.xlsx", FileMode.Open);
 
         using var content = new MultipartFormDataContent();
         content.Add(new StreamContent(inputFileStream), "File", "input.pdf");
