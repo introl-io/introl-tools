@@ -27,13 +27,13 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
         ];
     }
 
-    public IEnumerable<CellToAdd> CreateEmployeeCells(ActCodeParsedSourceModel sourceModel, ref int row)
+    public IEnumerable<CellToAdd> CreateEmployeeCells(ActCodeParsedSourceModel sourceModel, bool calculateOvertime, ref int row)
     {
         var cells = new List<CellToAdd>();
 
         foreach (var employee in sourceModel.Employees)
         {
-            cells.AddRange(CreateEmployeeCells(employee.Value, sourceModel.StartDate, sourceModel.EndDate,
+            cells.AddRange(CreateEmployeeCells(employee.Value, sourceModel.StartDate, sourceModel.EndDate, calculateOvertime,
                 ref row));
         }
 
@@ -477,9 +477,10 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
 
     private IEnumerable<CellToAdd> CreateEmployeeCells(ActCodeEmployee employee, DateOnly startDate,
         DateOnly endDate,
+        bool calculateOvertime,
         ref int row)
     {
-        var processedHoursDict = actCodeHoursProcessor.Process(employee.ActivityCodeHours);
+        var processedHoursDict = actCodeHoursProcessor.Process(employee.ActivityCodeHours, calculateOvertime);
 
         var result = new List<CellToAdd>();
 
@@ -722,7 +723,7 @@ public class ActCodeResultCellFactory(IActCodeHoursProcessor actCodeHoursProcess
 public interface IActCodeResultCellFactory
 {
     IEnumerable<CellToAdd> GetTitleCells(IXLWorksheet worksheet, ActCodeParsedSourceModel sourceModel, ref int row);
-    IEnumerable<CellToAdd> CreateEmployeeCells(ActCodeParsedSourceModel sourceModel, ref int row);
+    IEnumerable<CellToAdd> CreateEmployeeCells(ActCodeParsedSourceModel sourceModel, bool calculateOvertime, ref int row);
 
     IEnumerable<CellToAdd> CreateTotalsCell(ActCodeParsedSourceModel sourceModel, int employeeFirstRow,
         int employeeFinalRow, ref int row);

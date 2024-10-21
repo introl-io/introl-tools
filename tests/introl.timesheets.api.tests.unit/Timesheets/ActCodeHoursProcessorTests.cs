@@ -12,7 +12,7 @@ public class ActCodeHoursProcessorTests
     [Theory, ClassData(typeof(ActCodeHoursProcessorTestData))]
     public void Process_WhenCalled_ReturnsExpectedResult(string _, List<ActCodeHours> input, Dictionary<string, Dictionary<DateOnly, (double regHours, double otHours)>> expected)
     {
-        var result = _sut.Process(input);
+        var result = _sut.Process(input, true);
 
         result.Should().BeEquivalentTo(expected);
     }

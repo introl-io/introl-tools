@@ -4,7 +4,7 @@ namespace Introl.Tools.Timesheets.ActivityCode.Services;
 
 public class ActCodeHoursProcessor : IActCodeHoursProcessor
 {
-    public Dictionary<string, Dictionary<DateOnly, (double regHours, double otHours)>> Process(List<ActCodeHours> hours)
+    public Dictionary<string, Dictionary<DateOnly, (double regHours, double otHours)>> Process(List<ActCodeHours> hours, bool calculateOvertime)
     {
         var result = new Dictionary<string, Dictionary<DateOnly, (double regHours, double otHours)>>();
 
@@ -14,19 +14,8 @@ public class ActCodeHoursProcessor : IActCodeHoursProcessor
 
         foreach (var hr in hours)
         {
-            var inOvertime = processedHours >= 40;
-
-            var otHrs = inOvertime ? hr.Hours : 0d;
-            var regHrs = inOvertime ? 0 : hr.Hours;
-
-            if (!inOvertime && (processedHours + hr.Hours) > 40)
-            {
-                regHrs = 40 - processedHours;
-                otHrs = hr.Hours - regHrs;
-            }
-
-            processedHours += hr.Hours;
-
+            var (regHrs, otHrs) = CalculateHours(hr.Hours, calculateOvertime, ref processedHours);
+            
             var date = DateOnly.FromDateTime(hr.StartTime);
 
             if (result.TryGetValue(hr.ActivityCode, out var dayHours))
@@ -50,9 +39,29 @@ public class ActCodeHoursProcessor : IActCodeHoursProcessor
 
         return result;
     }
+    
+    private (double regHours, double otHours) CalculateHours(double hours, bool calculateOvertime, ref double processedHours)
+    {
+        if (!calculateOvertime)
+        {
+            return (hours, 0);
+        }
+        var inOvertime = processedHours >= 40;
+
+        var otHrs = inOvertime ? hours : 0d;
+        var regHrs = inOvertime ? 0 : hours;
+
+        if (!inOvertime && (processedHours + hours) > 40)
+        {
+            regHrs = 40 - processedHours;
+            otHrs = hours - regHrs;
+        }
+        processedHours += hours;
+        return (regHrs, otHrs);
+    }
 }
 
 public interface IActCodeHoursProcessor
 {
-    Dictionary<string, Dictionary<DateOnly, (double regHours, double otHours)>> Process(List<ActCodeHours> hours);
+    Dictionary<string, Dictionary<DateOnly, (double regHours, double otHours)>> Process(List<ActCodeHours> hours, bool calculateOvertime);
 }

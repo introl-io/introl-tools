@@ -25,7 +25,7 @@ public class ActCodeTimesheetProcessor(
 
         using var workbook = new XLWorkbook(request.File.OpenReadStream());
         var sourceModel = timesheetReader.Process(workbook);
-        var resultBytes = resultsWriter.Process(sourceModel);
+        var resultBytes = resultsWriter.Process(sourceModel, request.CalculateOvertime);
         return new ProcessedResult
         {
             WorkbookBytes = resultBytes,
