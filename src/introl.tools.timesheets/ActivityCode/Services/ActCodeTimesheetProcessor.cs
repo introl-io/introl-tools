@@ -10,9 +10,9 @@ public class ActCodeTimesheetProcessor(
     IActCodeSourceReader timesheetReader,
     IActCodeResultsWriter resultsWriter) : IActCodeTimesheetProcessor
 {
-    public OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(IFormFile inputFile)
+    public OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(ActCodeProcessRequest request)
     {
-        var extension = Path.GetExtension(inputFile.FileName);
+        var extension = Path.GetExtension(request.File.FileName);
         if (extension != ".xlsx")
         {
             return new ProcessingError
@@ -22,9 +22,9 @@ public class ActCodeTimesheetProcessor(
             };
         }
 
-        using var workbook = new XLWorkbook(inputFile.OpenReadStream());
+        using var workbook = new XLWorkbook(request.File.OpenReadStream());
         var sourceModel = timesheetReader.Process(workbook);
-        var resultBytes = resultsWriter.Process(sourceModel);
+        var resultBytes = resultsWriter.Process(sourceModel, request.CalculateOvertime);
         return new ProcessedResult
         {
             WorkbookBytes = resultBytes,
@@ -43,5 +43,5 @@ public class ActCodeTimesheetProcessor(
 
 public interface IActCodeTimesheetProcessor
 {
-    OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(IFormFile inputFile);
+    OneOf<ProcessedResult, ProcessingError> ProcessTimesheet(ActCodeProcessRequest request);
 }

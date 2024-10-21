@@ -13,8 +13,8 @@ public class RackResultsWriter(IRackCellFactory cellFactory) : IRackResultsWrite
     {
         var titleCells = cellFactory.GetHeaderCells(sourceModel);
         var mappingCells = cellFactory.GetPortMappingCells(
-            sourceModel, 2, 
-            sourcePortLabelFormat, 
+            sourceModel, 2,
+            sourcePortLabelFormat,
             destinationPortLabelFormat,
             lineCharacterLimit);
 

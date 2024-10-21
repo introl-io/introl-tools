@@ -24,9 +24,13 @@ public class TimesheetControllerTests
     {
         await using var inputFileStream = File.Open("./Resources/Timesheets/Team/Success/timesheet_input.xlsx", FileMode.Open);
 
-        var request =
-            new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/team", request);
+        using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(inputFileStream), "File", $"input.xlsx");
+        content.Add(new StringContent(true.ToString()), "CalculateOvertime");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/timesheet/team");
+        request.Content = content;
+        var response = await _httpClient.SendAsync(request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var expectedFileName = "\"Weekly Timesheet - Introl.io 2024.07.08 - 2024.07.14.xlsx\"";
@@ -46,22 +50,33 @@ public class TimesheetControllerTests
     [Fact]
     public async Task Team_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
     {
-        var request =
-            new MultipartFormDataContent { { new StringContent(""), "input", "timesheet_input.pdf" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/team", request);
+        await using var inputFileStream = File.Open("./Resources/Timesheets/Team/Success/timesheet_input.xlsx", FileMode.Open);
 
+        using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(inputFileStream), "File", $"input.pdf");
+        content.Add(new StringContent(true.ToString()), "CalculateOvertime");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/timesheet/team");
+        request.Content = content;
+        var response = await _httpClient.SendAsync(request);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());
     }
 
-    [Fact]
-    public async Task ActivityCode_GivenKnownInput_GivesKnownOutput()
+    [Theory]
+    [InlineData("./Resources/Timesheets/ActivityCode/With_OT", true)]
+    [InlineData("./Resources/Timesheets/ActivityCode/Without_OT", false)]
+    public async Task ActivityCode_GivenKnownInput_GivesKnownOutput(string path, bool withOt)
     {
-        await using var inputFileStream = File.Open("./Resources/Timesheets/ActivityCode/Success/timesheet_input.xlsx", FileMode.Open);
+        await using var inputFileStream = File.Open($"{path}/timesheet_input.xlsx", FileMode.Open);
 
-        var request =
-            new MultipartFormDataContent { { new StreamContent(inputFileStream), "input", "timesheet_input.xlsx" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/activity-code", request);
+        using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(inputFileStream), "File", "input.xlsx");
+        content.Add(new StringContent(withOt.ToString()), "CalculateOvertime");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/timesheet/activity-code");
+        request.Content = content;
+        var response = await _httpClient.SendAsync(request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -72,7 +87,7 @@ public class TimesheetControllerTests
         Assert.Equal(expectedFileName, contentDisposition?.FileName);
         await using var responseStream = await response.Content.ReadAsStreamAsync();
 
-        await using var expectedFileStream = File.Open("./Resources/Timesheets/ActivityCode/Success/expected_output.xlsx", FileMode.Open);
+        await using var expectedFileStream = File.Open($"{path}/expected_output.xlsx", FileMode.Open);
         var expectedWorkbook = new XLWorkbook(expectedFileStream);
         var responseWorkbook = new XLWorkbook(responseStream);
 
@@ -82,9 +97,15 @@ public class TimesheetControllerTests
     [Fact]
     public async Task ActivityCode_WhenUploadUnsupportedFileTime_ReturnsBadRequest()
     {
-        var request =
-            new MultipartFormDataContent { { new StringContent(""), "input", "timesheet_input.pdf" } };
-        var response = await _httpClient.PostAsync("/api/timesheet/activity-code", request);
+        await using var inputFileStream = File.Open("./Resources/Timesheets/ActivityCode/With_OT/timesheet_input.xlsx", FileMode.Open);
+
+        using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(inputFileStream), "File", "input.pdf");
+        content.Add(new StringContent(true.ToString()), "CalculateOvertime");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/timesheet/activity-code");
+        request.Content = content;
+        var response = await _httpClient.SendAsync(request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("Unsupported file type: .pdf. Please upload a .xlsx file.", await response.Content.ReadAsStringAsync());

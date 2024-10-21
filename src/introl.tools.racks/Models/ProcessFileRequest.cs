@@ -8,8 +8,8 @@ public record ProcessFileRequest
     public required string SourcePortLabelFormat { get; init; }
     public required string DestinationPortLabelFormat { get; init; }
     public required bool HasHeadingRow { get; init; }
-    
-    public required int? LineCharacterLimit { get; init; } 
+
+    public required int? LineCharacterLimit { get; init; }
 
     private string ColumnCaptureRegex => @"\{([^}]*)\}";
 

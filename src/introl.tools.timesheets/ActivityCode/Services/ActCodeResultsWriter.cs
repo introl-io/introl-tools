@@ -7,7 +7,7 @@ namespace Introl.Tools.Timesheets.ActivityCode.Services;
 
 public class ActCodeResultsWriter(IActCodeResultCellFactory resultCellFactory) : IActCodeResultsWriter
 {
-    public byte[] Process(ActCodeParsedSourceModel sourceModel)
+    public byte[] Process(ActCodeParsedSourceModel sourceModel, bool calculateOvertime)
     {
         using var workbook = new XLWorkbook();
 
@@ -16,7 +16,7 @@ public class ActCodeResultsWriter(IActCodeResultCellFactory resultCellFactory) :
         var row = 1;
         var titleCells = resultCellFactory.GetTitleCells(worksheet, sourceModel, ref row);
         var employeeFirstRow = row;
-        var employeeCells = resultCellFactory.CreateEmployeeCells(sourceModel, ref row);
+        var employeeCells = resultCellFactory.CreateEmployeeCells(sourceModel, calculateOvertime, ref row);
         var employeeFinalRow = row - 1;
 
         row += 2;
@@ -47,5 +47,5 @@ public class ActCodeResultsWriter(IActCodeResultCellFactory resultCellFactory) :
 
 public interface IActCodeResultsWriter
 {
-    byte[] Process(ActCodeParsedSourceModel sourceModel);
+    byte[] Process(ActCodeParsedSourceModel sourceModel, bool calculateOvertime);
 }
