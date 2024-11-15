@@ -300,7 +300,7 @@ public class TeamResultCellFactory : ITeamResultCellFactory
 
         var numDays = GetNumberOfDays(sourceModel.StartDate, sourceModel.EndDate);
         var startDateColLetter = ExcelUtils.ToExcelColumn(DateStartColumn);
-        var endDateColLetter = ExcelUtils.ToExcelColumn(DateStartColumn + numDays);
+        var endDateColLetter = ExcelUtils.ToExcelColumn(DateStartColumn + numDays - 1);
         for (var i = 0; i < numDays; i++)
         {
             var col = DateStartColumn + i;
