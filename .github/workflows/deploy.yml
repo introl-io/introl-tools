@@ -25,7 +25,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        working-directory: src/introl.timesheets.api
+        working-directory: src/introl.tools.api
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/publish
 
       - name: Upload artifact for deployment job
