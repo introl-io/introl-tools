@@ -19,9 +19,4 @@
     <ProjectReference Include="..\introl.tools.common\Introl.Tools.Common.csproj" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>
