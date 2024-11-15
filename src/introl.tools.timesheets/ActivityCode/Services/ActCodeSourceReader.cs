@@ -53,8 +53,8 @@ public class ActCodeSourceReader : IActCodeSourceReader
 
             var totalHours = TimeParsingUtils.ConvertToRoundedHours(worksheet.Cell(i, keyPositions.TrackedHoursCol).GetString());
             var date = worksheet.Cell(i, keyPositions.DateCol).GetDateTime();
-            var startTime = worksheet.Cell(i, keyPositions.StartTimeCol).GetDateTime();
-            var startDateTime = new DateTime(date.Year, date.Month, date.Day, startTime.Hour, startTime.Minute, 0);
+            var startTime = worksheet.Cell(i, keyPositions.StartTimeCol).GetTimeSpan();
+            var startDateTime = new DateTime(date.Year, date.Month, date.Day, startTime.Hours, startTime.Minutes, 0);
 
             var rate = worksheet.Cell(i, keyPositions.BillableRateCol).GetDouble();
             var hours = new ActCodeHours
