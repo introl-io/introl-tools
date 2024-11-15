@@ -32,19 +32,19 @@ jobs:
 
       - name: API Unit tests
         shell: bash
-        run: dotnet test tests/introl.timesheets.api.tests.unit --no-build --no-restore -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test tests/introl.tools.api.tests.unit --no-build --no-restore -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
       - name: Common Unit tests
         shell: bash
         run: dotnet test tests/introl.tools.common.tests.unit --no-build --no-restore -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
-      - name: Timesheets Unit tests
+      - name: Tools Unit tests
         shell: bash
-        run: dotnet test tests/introl.tools.timesheets.tests.unit --no-build --no-restore -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test tests/introl.tools.tools.tests.unit --no-build --no-restore -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
       - name: Acceptance tests
         shell: bash
-        run: dotnet test tests/introl.timesheets.api.tests.acceptance --no-build --no-restore -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test tests/introl.tools.api.tests.acceptance --no-build --no-restore -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
         if: success() || failure()
 
       - name: Test Report
