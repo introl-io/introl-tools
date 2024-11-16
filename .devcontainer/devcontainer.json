@@ -1,0 +1,35 @@
+{
+  "name": "Introl tools",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "options": [
+      "--network=host",
+      "--platform=linux/arm64"
+    ]
+  },
+  "remoteUser": "root",
+  "customizations": {
+    "jetbrains": {
+      "backend":"Rider"
+    },
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "mounts": [
+    {
+      "source": "x509stores",
+      "target": "/home/.dotnet/corefx/cryptography/x509stores",
+      "type": "volume"
+    }
+  ],
+  "onCreateCommand": "bash .devcontainer/setup-dotnet-dev-cert.sh",
+  "forwardPorts": [
+    6001
+  ]
+}
