@@ -2,34 +2,13 @@
 using Introl.Tools.Racks.Services;
 using Introl.Tools.Timesheets.ActivityCode.Services;
 using Introl.Tools.Timesheets.Team.Services;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(opts =>
+builder.Services.AddOpenApi(opts =>
 {
-    opts.EnableAnnotations();
-    opts.AddSecurityDefinition("ApiKey",
-        new OpenApiSecurityScheme
-        {
-            Description = "The API Key to access the API.",
-            Type = SecuritySchemeType.ApiKey,
-            Name = AuthorizationConstants.ApiKeyHeader,
-            In = ParameterLocation.Header,
-            Scheme = "ApiKeyScheme"
-        });
-
-    var apiKeyScheme = new OpenApiSecurityScheme
-    {
-        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "ApiKey" }
-    };
-
-    opts.AddSecurityRequirement(new OpenApiSecurityRequirement { [apiKeyScheme] = new List<string>() });
-
-
-    opts.AddSecurityRequirement(new OpenApiSecurityRequirement { [apiKeyScheme] = new List<string>() });
-
+    opts.AddDocumentTransformer<AuthHeaderTransformer>();
 });
 
 builder.Services.AddScoped<ITeamSourceReader, TeamSourceReader>();
@@ -56,8 +35,13 @@ builder.Services.AddLogging();
 
 var app = builder.Build();
 app.UseMiddleware<ApiKeyMiddleware>();
-app.UseSwagger();
-app.UseSwaggerUI();
+const string swaggerSchemaFile = "/swagger/v1/openapi.json";
+app.MapOpenApi(swaggerSchemaFile);
+
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint(swaggerSchemaFile, "v1");
+});
 
 app.MapControllers();
 app.UseHttpsRedirection();

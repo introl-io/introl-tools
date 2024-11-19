@@ -1,6 +1,6 @@
 ﻿namespace Introl.Tools.Api.Authorization;
 
-public class ApiKeyMiddleware : IMiddleware
+public sealed class ApiKeyMiddleware : IMiddleware
 {
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
